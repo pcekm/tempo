@@ -5,20 +5,28 @@ import 'weekday.dart';
 /// Contains a date and time with no time zone on the proleptic Gregorian
 /// calendar.
 class LocalDateTime {
-  static const int _secsPerDay = 86400;
-  static const int _secsPerMinute = 60;
-  static const int _secsPerHour = 3600;
   static const int _milli = 1000;
   static const int _micro = 1000000;
 
-  // Internally, this is represented in (fractional) seconds since 12:00
-  // January 1, 4713 BC on the proleptic Julian calendar. Since this
-  // value is externally meaningless without a time zone, these values
-  // need to be private.
-  final int _julianSeconds;
+  static const int _secsPerDay = 86400;
+  static const int _secsPerMinute = 60;
+  static const int _minsPerHour = 60;
+  static const int _secsPerHour = 3600;
+  static const int _hoursPerDay = 24;
 
-  // The fractional part of _julianSeconds.
-  final int _julianMicroseconds;
+  static const int _daysPerWeek = 7;
+
+  // Internally, dates are represented in days since 12:00 January 1, 4713 BC
+  // on the proleptic Julian calendar. Because this is externally meaningless
+  // without a time zone, these values need to be private.
+  final int _julianDays;
+
+  // For simplicity, this class assumes _julianDays implies no time of day.
+  // To combine both of these into the fractional part of a Julian day,
+  // add 12 hours and divide by the number of microseconds in a day:
+  //
+  //    (_microsecondsSinceMidnight + (12 * 60 * 60 * 1000000)) / (86400 * 1000000)
+  final int _microsecondsSinceMidnight;
 
   const LocalDateTime(int year,
       [int month = 1,
@@ -28,19 +36,17 @@ class LocalDateTime {
       int second = 0,
       int millisecond = 0,
       int microsecond = 0])
-      : _julianSeconds = _secsPerDay *
-                ((1461 * (year + 4800 + (month - 14) ~/ 12)) ~/ 4 +
-                    (367 * (month - 2 - 12 * ((month - 14) ~/ 12))) ~/ 12 -
-                    (3 * ((year + 4900 + (month - 14) ~/ 12) ~/ 100)) ~/ 4 +
-                    day -
-                    32075) +
-            (hour - 12) * _secsPerHour +
-            minute * _secsPerMinute +
-            second +
-            millisecond ~/ _milli +
-            microsecond ~/ _micro,
-        _julianMicroseconds =
-            (millisecond % _milli) * _milli + (microsecond % _micro);
+      // See https://en.wikipedia.org/wiki/Julian_day
+      : _julianDays = ((1461 * (year + 4800 + (month - 14) ~/ 12)) ~/ 4 +
+            (367 * (month - 2 - 12 * ((month - 14) ~/ 12))) ~/ 12 -
+            (3 * ((year + 4900 + (month - 14) ~/ 12) ~/ 100)) ~/ 4 +
+            day -
+            32075),
+        _microsecondsSinceMidnight = hour * _secsPerHour * _micro +
+            minute * _secsPerMinute * _micro +
+            second * _micro +
+            millisecond * _milli +
+            microsecond;
 
   /// Constructs a [LocalDateTime] with the current date and time in the
   /// current time zone.
@@ -66,6 +72,7 @@ class LocalDateTime {
             time.second, time.millisecond, time.microsecond);
 
   LocalDate get date {
+    // See https://en.wikipedia.org/wiki/Julian_day
     const int y = 4716;
     const int j = 1401;
     const int m = 2;
@@ -79,13 +86,13 @@ class LocalDateTime {
     const int B = 274277;
     const int C = -38;
 
-    final int J = _julianSeconds ~/ _secsPerDay;
-    final int f = J + j + (((4 * J + B) ~/ 146097) * 3) ~/ 4 + C;
+    final int f =
+        _julianDays + j + (((4 * _julianDays + B) ~/ 146097) * 3) ~/ 4 + C;
     final int e = r * f + v;
     final int g = (e % p) ~/ r;
     final int h = u * g + w;
 
-    final int D = (h % s) ~/ u + 1 + (hour < 12 ? 1 : 0);
+    final int D = (h % s) ~/ u + 1;
     final int M = (h ~/ s + m) % n + 1;
     final int Y = e ~/ p - y + (n + m - M) ~/ n;
 
@@ -99,38 +106,39 @@ class LocalDateTime {
   LocalTime get time => LocalTime(
       this.hour, this.minute, this.second, this.millisecond, this.microsecond);
 
-  int get hour => (_julianSeconds ~/ _secsPerHour + 12) % 24;
-  int get minute => (_julianSeconds ~/ _secsPerMinute) % 60;
-  int get second => _julianSeconds % 60;
-  int get millisecond => _julianMicroseconds ~/ _milli;
-  int get microsecond => _julianMicroseconds % _micro - millisecond * _milli;
+  int get hour =>
+      (_microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
+  int get minute =>
+      (_microsecondsSinceMidnight ~/ (_secsPerMinute * _micro)) % _minsPerHour;
+  int get second => (_microsecondsSinceMidnight ~/ _micro) % _secsPerMinute;
+  int get millisecond => (_microsecondsSinceMidnight ~/ _milli) % 1000;
+  int get microsecond => _microsecondsSinceMidnight % 1000;
 
-  Weekday get weekday => Weekday
-      .values[((_julianSeconds + 12 * _secsPerHour) ~/ _secsPerDay) % 7 + 1];
+  Weekday get weekday => Weekday.values[_julianDays % _daysPerWeek + 1];
 
   @override
   bool operator ==(Object other) =>
       other is LocalDateTime &&
-      _julianSeconds == other._julianSeconds &&
-      _julianMicroseconds == other._julianMicroseconds;
+      _julianDays == other._julianDays &&
+      _microsecondsSinceMidnight == other._microsecondsSinceMidnight;
 
   bool operator >(LocalDateTime other) =>
-      _julianSeconds > other._julianSeconds ||
-      (_julianSeconds == other._julianSeconds &&
-          _julianMicroseconds > other._julianMicroseconds);
+      _julianDays > other._julianDays ||
+      (_julianDays == other._julianDays &&
+          _microsecondsSinceMidnight > other._microsecondsSinceMidnight);
 
   bool operator >=(LocalDateTime other) =>
-      _julianSeconds >= other._julianSeconds ||
-      (_julianSeconds == other._julianSeconds &&
-          _julianMicroseconds >= other._julianMicroseconds);
+      _julianDays >= other._julianDays ||
+      (_julianDays == other._julianDays &&
+          _microsecondsSinceMidnight >= other._microsecondsSinceMidnight);
 
   bool operator <(LocalDateTime other) =>
-      _julianSeconds < other._julianSeconds ||
-      (_julianSeconds == other._julianSeconds &&
-          _julianMicroseconds < other._julianMicroseconds);
+      _julianDays < other._julianDays ||
+      (_julianDays == other._julianDays &&
+          _microsecondsSinceMidnight < other._microsecondsSinceMidnight);
 
   bool operator <=(LocalDateTime other) =>
-      _julianSeconds <= other._julianSeconds ||
-      (_julianSeconds == other._julianSeconds &&
-          _julianMicroseconds <= other._julianMicroseconds);
+      _julianDays <= other._julianDays ||
+      (_julianDays == other._julianDays &&
+          _microsecondsSinceMidnight <= other._microsecondsSinceMidnight);
 }

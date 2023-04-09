@@ -111,9 +111,13 @@ void main() {
   });
 
   group('weekday', () {
+    // In the current implementation, morning and afternoon aren't treated
+    // any differently. But just in case some future me decides to switch to
+    // fractional Julian days, test both.
+
     test('morning', () {
       // A date which will live in infamy.
-      expect(LocalDateTime(1941, 12, 6).weekday, Weekday.sunday);
+      expect(LocalDateTime(1941, 12, 7).weekday, Weekday.sunday);
       expect(LocalDateTime(2023, 4, 10).weekday, Weekday.monday);
       expect(LocalDateTime(2023, 4, 11).weekday, Weekday.tuesday);
       expect(LocalDateTime(2023, 4, 12).weekday, Weekday.wednesday);
@@ -124,7 +128,8 @@ void main() {
     });
 
     test('afternoon', () {
-      expect(LocalDateTime(1941, 12, 6, 12).weekday, Weekday.sunday);
+      // A date which will live in infamy.
+      expect(LocalDateTime(1941, 12, 7, 12).weekday, Weekday.sunday);
       expect(LocalDateTime(2023, 4, 10, 12).weekday, Weekday.monday);
       expect(LocalDateTime(2023, 4, 11, 12).weekday, Weekday.tuesday);
       expect(LocalDateTime(2023, 4, 12, 12).weekday, Weekday.wednesday);
