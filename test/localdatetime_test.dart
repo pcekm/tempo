@@ -53,6 +53,12 @@ void main() {
       expect(d1 == d2, true);
     });
 
+    test('!=', () {
+      var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+      var d2 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 8);
+      expect(d1 != d2, true);
+    });
+
     test('> — different day', () {
       var d1 = LocalDateTime(2000, 1, 2, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
