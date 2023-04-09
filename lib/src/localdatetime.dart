@@ -1,3 +1,5 @@
+import 'package:sprintf/sprintf.dart';
+
 import 'localdate.dart';
 import 'localtime.dart';
 import 'weekday.dart';
@@ -28,8 +30,9 @@ class LocalDateTime {
   //    (_microsecondsSinceMidnight + (12 * 60 * 60 * 1000000)) / (86400 * 1000000)
   final int _microsecondsSinceMidnight;
 
-  const LocalDateTime(int year,
-      [int month = 1,
+  const LocalDateTime(
+      [int year = 0,
+      int month = 1,
       int day = 1,
       int hour = 0,
       int minute = 0,
@@ -47,6 +50,17 @@ class LocalDateTime {
             second * _micro +
             millisecond * _milli +
             microsecond;
+
+  const LocalDateTime._(this._julianDays, this._microsecondsSinceMidnight);
+
+  /// The earliest date that can be properly represented by this class.
+  static LocalDateTime minimum = LocalDateTime._(0, 0);
+
+  /// The latest date that can be _safely_ represented by this class across
+  /// web and native platforms. Native platforms with 64-bit ints will be able
+  /// to exceed this by quite a bit.
+  static LocalDateTime safeMaximum = LocalDateTime._(
+      9007199254740992, (_secsPerDay - 1) * _micro + _micro - 1);
 
   /// Constructs a [LocalDateTime] with the current date and time in the
   /// current time zone.
@@ -141,4 +155,12 @@ class LocalDateTime {
       _julianDays <= other._julianDays ||
       (_julianDays == other._julianDays &&
           _microsecondsSinceMidnight <= other._microsecondsSinceMidnight);
+
+  @override
+  String toString() {
+    var format =
+        "%${(year < 1 || year > 9999) ? '+05' : '04'}d-%02d-%02dT%02d:%02d:%02d.%03d%03d";
+    return sprintf(format,
+        [year, month, day, hour, minute, second, millisecond, microsecond]);
+  }
 }

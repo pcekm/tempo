@@ -53,56 +53,56 @@ void main() {
       expect(d1 == d2, true);
     });
 
-    test('> — different Julian seconds', () {
+    test('> — different day', () {
       var d1 = LocalDateTime(2000, 1, 2, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       expect(d1 > d2, true);
       expect(d1 > d1, false);
     });
 
-    test('> — different Julian microseconds', () {
+    test('> — different time', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 2);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       expect(d1 > d2, true);
       expect(d1 > d1, false);
     });
 
-    test('>= — different Julian seconds', () {
+    test('>= — different day', () {
       var d1 = LocalDateTime(2000, 1, 2, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       expect(d1 >= d2, true);
       expect(d1 >= d1, true);
     });
 
-    test('>= — different Julian microseconds', () {
+    test('>= — different time', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 2);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       expect(d1 >= d2, true);
       expect(d1 >= d1, true);
     });
 
-    test('< — different Julian seconds', () {
+    test('< — different day', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 2, 0, 0, 0, 1);
       expect(d1 < d2, true);
       expect(d1 < d1, false);
     });
 
-    test('< — different Julian microseconds', () {
+    test('< — different time', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 2);
       expect(d1 < d2, true);
       expect(d1 < d1, false);
     });
 
-    test('<= — different Julian seconds', () {
+    test('<= — different day', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 2, 0, 0, 0, 1);
       expect(d1 <= d2, true);
       expect(d1 <= d1, true);
     });
 
-    test('<= — different Julian microseconds', () {
+    test('<= — different time', () {
       var d1 = LocalDateTime(2000, 1, 1, 0, 0, 0, 1);
       var d2 = LocalDateTime(2000, 1, 1, 0, 0, 0, 2);
       expect(d1 <= d2, true);
@@ -112,7 +112,7 @@ void main() {
 
   group('weekday', () {
     // In the current implementation, morning and afternoon aren't treated
-    // any differently. But just in case some future me decides to switch to
+    // any differently. But in case some future me decides to switch to
     // fractional Julian days, test both.
 
     test('morning', () {
@@ -138,5 +138,21 @@ void main() {
       expect(LocalDateTime(2023, 4, 15, 12).weekday, Weekday.saturday);
       expect(LocalDateTime(2023, 4, 16, 12).weekday, Weekday.sunday);
     });
+  });
+
+  test('toString()', () {
+    expect(LocalDateTime(2023, 4, 10, 1, 2, 3, 4, 5).toString(),
+        '2023-04-10T01:02:03.004005');
+    expect(LocalDateTime(1).toString(), '0001-01-01T00:00:00.000000');
+    expect(LocalDateTime(0).toString(), '+0000-01-01T00:00:00.000000'); // 1 BC
+    expect(LocalDateTime(-4711).toString(), '-4711-01-01T00:00:00.000000');
+    expect(LocalDateTime(9999).toString(), '9999-01-01T00:00:00.000000');
+    expect(LocalDateTime(10000).toString(), '+10000-01-01T00:00:00.000000');
+  });
+
+  test('minimum and maximum', () {
+    expect(LocalDateTime.minimum.toString(), '-4713-11-24T00:00:00.000000');
+    expect(LocalDateTime.safeMaximum.toString(),
+        '+24660873948184-12-03T23:59:59.999999');
   });
 }
