@@ -45,6 +45,10 @@ class LocalDate {
 
   Weekday get weekday => Weekday.values[julianDays % _daysPerWeek + 1];
 
+  /// The number of days since the beginning of the year. This will range from
+  /// 1 to 366.
+  int get ordinalDay => julianDays - LocalDate(year).julianDays + 1;
+
   @override
   bool operator ==(Object other) =>
       other is LocalDate && julianDays == other.julianDays;

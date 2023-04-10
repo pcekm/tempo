@@ -2,7 +2,7 @@ import 'package:tuple/tuple.dart';
 
 /// Converts Julian Day to Year, Month, Day.
 Tuple3<int, int, int> julianDaysToGregorian(int julianDays) {
-  // See https://en.wikipedia.org/wiki/Julian_day
+  // Source: https://en.wikipedia.org/wiki/Julian_day
   const int y = 4716;
   const int j = 1401;
   const int m = 2;

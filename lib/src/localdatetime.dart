@@ -92,6 +92,10 @@ class LocalDateTime {
 
   Weekday get weekday => date.weekday;
 
+  /// The number of days since the beginning of the year. This will range from
+  /// 1 to 366.
+  int get ordinalDay => LocalDate.ofJulianDays(_julianDays).ordinalDay;
+
   LocalTime get time => LocalTime.ofMicroseconds(_microsecondsSinceMidnight);
 
   int get hour => time.hour;

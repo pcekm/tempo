@@ -92,4 +92,10 @@ void main() {
     expect(LocalDate.minimum.toString(), '-4713-11-24');
     expect(LocalDate.safeMaximum.toString(), '+24660873948184-12-03');
   });
+
+  test('ordinalDay', () {
+    expect(LocalDate(2023, 4, 10).ordinalDay, 100);
+    expect(LocalDate(2023, 1, 1).ordinalDay, 1);
+    expect(LocalDate(2023, 12, 31).ordinalDay, 365);
+  });
 }
