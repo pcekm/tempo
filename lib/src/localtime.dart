@@ -1,6 +1,5 @@
 import 'package:sprintf/sprintf.dart';
 
-
 /// TODO: This repeats a lot that's in [LocalDateTime].
 ///
 /// Contains a time of day. Think of this as exactly what you'd normally see

@@ -2,6 +2,7 @@ import 'package:sprintf/sprintf.dart';
 
 import 'localdate.dart';
 import 'localtime.dart';
+import 'util.dart';
 import 'weekday.dart';
 
 /// Contains a date and time with no time zone on the proleptic Gregorian
@@ -86,39 +87,16 @@ class LocalDateTime {
             time.second, time.millisecond, time.microsecond);
 
   LocalDate get date {
-    // See https://en.wikipedia.org/wiki/Julian_day
-    const int y = 4716;
-    const int j = 1401;
-    const int m = 2;
-    const int n = 12;
-    const int r = 4;
-    const int p = 1461;
-    const int v = 3;
-    const int u = 5;
-    const int s = 153;
-    const int w = 2;
-    const int B = 274277;
-    const int C = -38;
-
-    final int f =
-        _julianDays + j + (((4 * _julianDays + B) ~/ 146097) * 3) ~/ 4 + C;
-    final int e = r * f + v;
-    final int g = (e % p) ~/ r;
-    final int h = u * g + w;
-
-    final int D = (h % s) ~/ u + 1;
-    final int M = (h ~/ s + m) % n + 1;
-    final int Y = e ~/ p - y + (n + m - M) ~/ n;
-
-    return LocalDate(Y, M, D);
+    var parts = julianDaysToGregorian(_julianDays);
+    return LocalDate(parts.item1, parts.item2, parts.item3);
   }
 
   int get year => date.year;
   int get month => date.month;
   int get day => date.day;
 
-  LocalTime get time => LocalTime(
-      hour, minute, second, millisecond, microsecond);
+  LocalTime get time =>
+      LocalTime(hour, minute, second, millisecond, microsecond);
 
   int get hour =>
       (_microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
