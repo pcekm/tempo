@@ -4,6 +4,8 @@ import 'localdate.dart';
 import 'localtime.dart';
 import 'weekday.dart';
 
+/// TODO: This repeats a lot that's in [LocalDateTime].
+///
 /// Contains a time of day. Think of this as exactly what you'd normally see
 /// on a wall clock. It has no concept of the current date, leap seconds or
 /// anything else.

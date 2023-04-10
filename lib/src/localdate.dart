@@ -5,6 +5,8 @@ import 'localdate.dart';
 import 'localtime.dart';
 import 'weekday.dart';
 
+/// TODO: This repeats a lot that's in [LocalDateTime].
+///
 /// Contains a local date on the proleptic Gregorian calendar with no timezone.
 class LocalDate {
   static const int _daysPerWeek = 7;
