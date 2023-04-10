@@ -24,16 +24,18 @@ void main() {
   });
 
   group('Comparison operator', () {
-    test('==', () {
+    test('== (and hash equality)', () {
       var d1 = LocalDate(2000, 1, 2);
       var d2 = LocalDate(2000, 1, 2);
-      expect(d1 == d2, true);
+      expect(d1, d2);
+      expect(d1.hashCode, d2.hashCode, reason: 'Hash mismatch');
     });
 
-    test('!=', () {
+    test('!= (and hash inequality)', () {
       var d1 = LocalDate(2000, 1, 2);
       var d2 = LocalDate(20001, 1, 3);
-      expect(d1 != d2, true);
+      expect(d1, isNot(equals(d2)));
+      expect(d1.hashCode, isNot(equals(d2.hashCode)), reason: 'Hashes equal');
     });
 
     test('>', () {

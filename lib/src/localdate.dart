@@ -81,6 +81,9 @@ class LocalDate {
   bool operator ==(Object other) =>
       other is LocalDate && _julianDays == other._julianDays;
 
+  @override
+  int get hashCode => _julianDays.hashCode;
+
   bool operator >(LocalDate other) => _julianDays > other._julianDays;
 
   bool operator >=(LocalDate other) => _julianDays >= other._julianDays;

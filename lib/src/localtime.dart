@@ -67,6 +67,9 @@ class LocalTime {
       other is LocalTime &&
       _microsecondsSinceMidnight == other._microsecondsSinceMidnight;
 
+  @override
+  int get hashCode => _microsecondsSinceMidnight.hashCode;
+
   bool operator >(LocalTime other) =>
       _microsecondsSinceMidnight > other._microsecondsSinceMidnight;
 

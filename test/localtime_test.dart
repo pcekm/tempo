@@ -32,16 +32,18 @@ void main() {
   });
 
   group('Comparison operator', () {
-    test('==', () {
+    test('== (and hash equality)', () {
       var t1 = LocalTime(3, 4, 5, 6, 7);
       var t2 = LocalTime(3, 4, 5, 6, 7);
-      expect(t1 == t2, true);
+      expect(t1, t2);
+      expect(t1.hashCode, t2.hashCode, reason: 'Hash mismatch');
     });
 
-    test('!=', () {
+    test('!= (and hash inequality)', () {
       var t1 = LocalTime(3, 4, 5, 6, 7);
       var t2 = LocalTime(3, 4, 5, 6, 8);
-      expect(t1 != t2, true);
+      expect(t1, isNot(equals(t2)));
+      expect(t1.hashCode, isNot(equals(t2.hashCode)), reason: 'Hashes match');
     });
 
     test('>', () {

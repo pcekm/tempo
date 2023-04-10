@@ -136,6 +136,9 @@ class LocalDateTime {
       _julianDays == other._julianDays &&
       _microsecondsSinceMidnight == other._microsecondsSinceMidnight;
 
+  @override
+  int get hashCode => Object.hash(_julianDays, _microsecondsSinceMidnight);
+
   bool operator >(LocalDateTime other) =>
       _julianDays > other._julianDays ||
       (_julianDays == other._julianDays &&
