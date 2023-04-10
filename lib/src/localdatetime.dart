@@ -11,17 +11,11 @@ class LocalDateTime {
   static const int _milli = 1000;
   static const int _micro = 1000000;
 
-  static const int _secsPerDay = 86400;
   static const int _secsPerMinute = 60;
-  static const int _minsPerHour = 60;
   static const int _secsPerHour = 3600;
-  static const int _hoursPerDay = 24;
 
-  static const int _daysPerWeek = 7;
-
-  // Internally, dates are represented in days since 12:00 January 1, 4713 BC
-  // on the proleptic Julian calendar. Because this is externally meaningless
-  // without a time zone, these values need to be private.
+  // The number of days since 12:00 January 1, 4713 BC on the proleptic Julian
+  // calendar.
   final int _julianDays;
 
   // For simplicity, this class assumes _julianDays implies no time of day.
@@ -40,7 +34,12 @@ class LocalDateTime {
       int second = 0,
       int millisecond = 0,
       int microsecond = 0])
+
       // See https://en.wikipedia.org/wiki/Julian_day
+      //
+      // Unfortunately, these calculations are repeated in LocalDate
+      // and LocalTime. There's currently no getting around this if we
+      // want this to be a const constructor.
       : _julianDays = ((1461 * (year + 4800 + (month - 14) ~/ 12)) ~/ 4 +
             (367 * (month - 2 - 12 * ((month - 14) ~/ 12))) ~/ 12 -
             (3 * ((year + 4900 + (month - 14) ~/ 12) ~/ 100)) ~/ 4 +
@@ -52,16 +51,15 @@ class LocalDateTime {
             millisecond * _milli +
             microsecond;
 
-  const LocalDateTime._(this._julianDays, this._microsecondsSinceMidnight);
-
   /// The earliest date that can be properly represented by this class.
-  static LocalDateTime minimum = LocalDateTime._(0, 0);
+  static LocalDateTime minimum =
+      LocalDateTime.of(LocalDate.minimum, LocalTime.minimum);
 
   /// The latest date that can be _safely_ represented by this class across
   /// web and native platforms. Native platforms with 64-bit ints will be able
   /// to exceed this by quite a bit.
-  static LocalDateTime safeMaximum = LocalDateTime._(
-      9007199254740992, (_secsPerDay - 1) * _micro + _micro - 1);
+  static LocalDateTime safeMaximum =
+      LocalDateTime.of(LocalDate.safeMaximum, LocalTime.maximum);
 
   /// Constructs a [LocalDateTime] with the current date and time in the
   /// current time zone.
@@ -80,33 +78,27 @@ class LocalDateTime {
             dateTime.millisecond,
             dateTime.microsecond);
 
-  /// Constructs a [LocalDateTime] from a [LocalDate] and a [LocalTime].
-  LocalDateTime.fromLocals(LocalDate date,
-      [LocalTime time = const LocalTime(0)])
-      : this(date.year, date.month, date.day, time.hour, time.minute,
-            time.second, time.millisecond, time.microsecond);
+  /// Constructs a [LocalDateTime] from a [LocalDate] and an optional
+  /// [LocalTime].
+  LocalDateTime.of(LocalDate date, [LocalTime time = const LocalTime(0)])
+      : _julianDays = date.julianDays,
+        _microsecondsSinceMidnight = time.microsecondsSinceMidnight;
 
-  LocalDate get date {
-    var parts = julianDaysToGregorian(_julianDays);
-    return LocalDate(parts.item1, parts.item2, parts.item3);
-  }
+  LocalDate get date => LocalDate.ofJulianDays(_julianDays);
 
   int get year => date.year;
   int get month => date.month;
   int get day => date.day;
 
-  LocalTime get time =>
-      LocalTime(hour, minute, second, millisecond, microsecond);
+  Weekday get weekday => date.weekday;
 
-  int get hour =>
-      (_microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
-  int get minute =>
-      (_microsecondsSinceMidnight ~/ (_secsPerMinute * _micro)) % _minsPerHour;
-  int get second => (_microsecondsSinceMidnight ~/ _micro) % _secsPerMinute;
-  int get millisecond => (_microsecondsSinceMidnight ~/ _milli) % 1000;
-  int get microsecond => _microsecondsSinceMidnight % 1000;
+  LocalTime get time => LocalTime.ofMicroseconds(_microsecondsSinceMidnight);
 
-  Weekday get weekday => Weekday.values[_julianDays % _daysPerWeek + 1];
+  int get hour => time.hour;
+  int get minute => time.minute;
+  int get second => time.second;
+  int get millisecond => time.millisecond;
+  int get microsecond => time.microsecond;
 
   @override
   bool operator ==(Object other) =>
@@ -138,10 +130,5 @@ class LocalDateTime {
           _microsecondsSinceMidnight <= other._microsecondsSinceMidnight);
 
   @override
-  String toString() {
-    var format =
-        "%${(year < 1 || year > 9999) ? '+05' : '04'}d-%02d-%02dT%02d:%02d:%02d.%03d%03d";
-    return sprintf(format,
-        [year, month, day, hour, minute, second, millisecond, microsecond]);
-  }
+  String toString() => '${date}T$time';
 }

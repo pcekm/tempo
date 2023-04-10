@@ -27,9 +27,8 @@ void main() {
       expect(d.microsecond, 7, reason: 'Microsecond mismatch');
     });
 
-    test('fromLocals()', () {
-      var d = LocalDateTime.fromLocals(
-          LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6, 7));
+    test('of()', () {
+      var d = LocalDateTime.of(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6, 7));
       expect(d.year, 2000, reason: 'Year mismatch');
       expect(d.month, 1, reason: 'Month mismatch');
       expect(d.day, 2, reason: 'Day mismatch');

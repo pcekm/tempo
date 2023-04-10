@@ -1,7 +1,5 @@
 import 'package:sprintf/sprintf.dart';
 
-/// TODO: This repeats a lot that's in [LocalDateTime].
-///
 /// Contains a time of day. Think of this as exactly what you'd normally see
 /// on a wall clock. It has no concept of the current date, leap seconds or
 /// anything else.
@@ -15,7 +13,7 @@ class LocalTime {
   static const int _secsPerHour = 3600;
   static const int _hoursPerDay = 24;
 
-  final int _microsecondsSinceMidnight;
+  final int microsecondsSinceMidnight;
 
   const LocalTime(
       [int hour = 0,
@@ -24,22 +22,23 @@ class LocalTime {
       int millisecond = 0,
       int microsecond = 0])
       // See https://en.wikipedia.org/wiki/Julian_day
-      : _microsecondsSinceMidnight = (hour * _secsPerHour * _micro +
+      : microsecondsSinceMidnight = (hour * _secsPerHour * _micro +
                 minute * _secsPerMinute * _micro +
                 second * _micro +
                 millisecond * _milli +
                 microsecond) %
             (_secsPerDay * _micro);
 
-  const LocalTime._(this._microsecondsSinceMidnight);
+  /// Creates a [LocalTime] using the number of microseconds since midnight.
+  const LocalTime.ofMicroseconds(this.microsecondsSinceMidnight);
 
   /// The start of the day. 00:00
-  static const LocalTime minimum = LocalTime._(0);
+  static const LocalTime minimum = LocalTime.ofMicroseconds(0);
 
   /// The very last moment of the day as precisely as this class can
   /// represent it: 23:59.999999
   static const LocalTime maximum =
-      LocalTime._((_secsPerDay - 1) * _micro + _micro - 1);
+      LocalTime.ofMicroseconds((_secsPerDay - 1) * _micro + _micro - 1);
 
   /// Constructs a [LocalTime] with the currenttime in the current time zone.
   LocalTime.now() : this.fromDateTime(DateTime.now());
@@ -51,32 +50,32 @@ class LocalTime {
             dateTime.millisecond, dateTime.microsecond);
 
   int get hour =>
-      (_microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
+      (microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
   int get minute =>
-      (_microsecondsSinceMidnight ~/ (_secsPerMinute * _micro)) % _minsPerHour;
-  int get second => (_microsecondsSinceMidnight ~/ _micro) % _secsPerMinute;
-  int get millisecond => (_microsecondsSinceMidnight ~/ _milli) % 1000;
-  int get microsecond => _microsecondsSinceMidnight % 1000;
+      (microsecondsSinceMidnight ~/ (_secsPerMinute * _micro)) % _minsPerHour;
+  int get second => (microsecondsSinceMidnight ~/ _micro) % _secsPerMinute;
+  int get millisecond => (microsecondsSinceMidnight ~/ _milli) % 1000;
+  int get microsecond => microsecondsSinceMidnight % 1000;
 
   @override
   bool operator ==(Object other) =>
       other is LocalTime &&
-      _microsecondsSinceMidnight == other._microsecondsSinceMidnight;
+      microsecondsSinceMidnight == other.microsecondsSinceMidnight;
 
   @override
-  int get hashCode => _microsecondsSinceMidnight.hashCode;
+  int get hashCode => microsecondsSinceMidnight.hashCode;
 
   bool operator >(LocalTime other) =>
-      _microsecondsSinceMidnight > other._microsecondsSinceMidnight;
+      microsecondsSinceMidnight > other.microsecondsSinceMidnight;
 
   bool operator >=(LocalTime other) =>
-      _microsecondsSinceMidnight >= other._microsecondsSinceMidnight;
+      microsecondsSinceMidnight >= other.microsecondsSinceMidnight;
 
   bool operator <(LocalTime other) =>
-      _microsecondsSinceMidnight < other._microsecondsSinceMidnight;
+      microsecondsSinceMidnight < other.microsecondsSinceMidnight;
 
   bool operator <=(LocalTime other) =>
-      _microsecondsSinceMidnight <= other._microsecondsSinceMidnight;
+      microsecondsSinceMidnight <= other.microsecondsSinceMidnight;
 
   @override
   String toString() => sprintf('%02d:%02d:%02d.%03d%03d',
