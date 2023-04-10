@@ -1,8 +1,5 @@
 import 'package:sprintf/sprintf.dart';
 
-import 'localdate.dart';
-import 'localtime.dart';
-import 'weekday.dart';
 
 /// TODO: This repeats a lot that's in [LocalDateTime].
 ///

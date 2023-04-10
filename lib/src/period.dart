@@ -14,6 +14,7 @@ class Period {
   /// are equal. Because "year" and "month" are flexible concepts—some years
   /// and months are different than others (leap years, Februarys), comparing
   /// them to days would be ambiguous.
+  @override
   bool operator ==(Object other) =>
       other is Period &&
       years == other.years &&

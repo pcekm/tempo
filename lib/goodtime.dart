@@ -3,7 +3,6 @@
 /// More dartdocs go here.
 library goodtime;
 
-export 'src/goodtime_base.dart';
 export 'src/localtime.dart';
 export 'src/localdate.dart';
 export 'src/localdatetime.dart';

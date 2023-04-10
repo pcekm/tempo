@@ -113,12 +113,12 @@ class LocalDateTime {
     return LocalDate(Y, M, D);
   }
 
-  int get year => this.date.year;
-  int get month => this.date.month;
-  int get day => this.date.day;
+  int get year => date.year;
+  int get month => date.month;
+  int get day => date.day;
 
   LocalTime get time => LocalTime(
-      this.hour, this.minute, this.second, this.millisecond, this.microsecond);
+      hour, minute, second, millisecond, microsecond);
 
   int get hour =>
       (_microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;

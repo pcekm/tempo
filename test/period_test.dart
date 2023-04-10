@@ -10,7 +10,7 @@ void main() {
   });
 
   group('Equality and hashCode:', () {
-    <dynamic>[
+    for (var c in <dynamic>[
       [
         Period(years: 1, months: 2, days: 3),
         Period(years: 1, months: 2, days: 3),
@@ -27,11 +27,11 @@ void main() {
       [Period(years: 1), Period(years: 2), false],
       [Period(months: 1), Period(months: 2), false],
       [Period(days: 1), Period(days: 2), false],
-    ].forEach((c) {
+    ]) {
       test('${c[0]} ==? ${c[1]}', () {
         expect(c[0] == c[1], c[2], reason: 'Equality');
         expect(c[0].hashCode == c[1].hashCode, c[2], reason: 'Hash codes');
       });
-    });
+    }
   });
 }
