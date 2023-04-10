@@ -12,8 +12,8 @@ class Period {
 
   /// Periods compare equal if and only if each of [years], [months] and [days]
   /// are equal. Because "year" and "month" are flexible concepts—some years
-  /// and months are different than others (leap years, Februarys), any
-  /// attempt at equating them would be ambiguous.
+  /// and months are different than others (leap years, Februarys), comparing
+  /// them to days would be ambiguous.
   bool operator ==(Object other) =>
       other is Period &&
       years == other.years &&
