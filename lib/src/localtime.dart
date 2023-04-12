@@ -17,13 +17,15 @@ class LocalTime {
 
   /// Constructs a new [LocalTime]. If the provided values are bigger than
   /// expected (e.g. minute = 61), the residues will increment the overall time
-  /// accordingly. Throws [RangeError] if the result overflows a 24-hour
-  /// period.
+  /// accordingly. Much like a real clock, this will wrap around if the
+  /// total is longer than a day. It will also wrap in the other direction
+  /// if the result is negative.
   ///
   /// ```dart
-  /// LocalTime(12, 60, 0) == LocalTime(13, 1, 0);
+  /// LocalTime(12, 60, 0) == LocalTime(13, 0, 0);
   /// LocalTime(12, 1, 60) == LocalTime(12, 2, 0);
-  /// LocalTime(12, 61, 0)  // Throws error
+  /// LocalTime(23, 60, 0) == LocalTime(0, 0, 0);
+  /// LocalTime(0, 0, -1) == LocalTime(23, 59, 59);
   /// ```
   LocalTime(
       [int hour = 0,
@@ -31,27 +33,25 @@ class LocalTime {
       int second = 0,
       int millisecond = 0,
       int microsecond = 0])
-      : microsecondsSinceMidnight = hour * _secsPerHour * _micro +
-            minute * _secsPerMinute * _micro +
-            second * _micro +
-            millisecond * _milli +
-            microsecond {
-    if (this > maximum || this < minimum) {
-      throw RangeError(
-          'LocalTime($hour, $minute, $second, $millisecond, $microsecond) is outside of a normal day.');
-    }
-  }
+      : microsecondsSinceMidnight = (hour * _secsPerHour * _micro +
+                minute * _secsPerMinute * _micro +
+                second * _micro +
+                millisecond * _milli +
+                microsecond) %
+            (_secsPerDay * _micro);
 
   /// Creates a [LocalTime] using the number of microseconds since midnight.
-  LocalTime.ofMicroseconds(this.microsecondsSinceMidnight);
+  /// This is just a convenience function for
+  /// `LocalTime(0, 0, 0, 0, microseconds)`.
+  LocalTime.fromMicroseconds(int microseconds) : this(0, 0, 0, 0, microseconds);
 
   /// The start of the day. 00:00
-  static final LocalTime minimum = LocalTime.ofMicroseconds(0);
+  static final LocalTime minimum = LocalTime.fromMicroseconds(0);
 
   /// The very last moment of the day as precisely as this class can
   /// represent it: 23:59.999999
   static final LocalTime maximum =
-      LocalTime.ofMicroseconds((_secsPerDay - 1) * _micro + _micro - 1);
+      LocalTime.fromMicroseconds((_secsPerDay - 1) * _micro + _micro - 1);
 
   /// Constructs a [LocalTime] with the currenttime in the current time zone.
   LocalTime.now() : this.fromDateTime(DateTime.now());
@@ -70,13 +70,14 @@ class LocalTime {
   int get millisecond => (microsecondsSinceMidnight ~/ _milli) % 1000;
   int get microsecond => microsecondsSinceMidnight % 1000;
 
-  @override
-  bool operator ==(Object other) =>
-      other is LocalTime &&
-      microsecondsSinceMidnight == other.microsecondsSinceMidnight;
+  /// Finds the duration between two times. The result will be negative if
+  /// [other] is earlier than this.
+  Duration until(LocalTime other) => Duration(
+      microseconds:
+          other.microsecondsSinceMidnight - microsecondsSinceMidnight);
 
-  @override
-  int get hashCode => microsecondsSinceMidnight.hashCode;
+  LocalTime operator +(Duration duration) => LocalTime.fromMicroseconds(
+      microsecondsSinceMidnight + duration.inMicroseconds);
 
   bool operator >(LocalTime other) =>
       microsecondsSinceMidnight > other.microsecondsSinceMidnight;
@@ -89,6 +90,14 @@ class LocalTime {
 
   bool operator <=(LocalTime other) =>
       microsecondsSinceMidnight <= other.microsecondsSinceMidnight;
+
+  @override
+  bool operator ==(Object other) =>
+      other is LocalTime &&
+      microsecondsSinceMidnight == other.microsecondsSinceMidnight;
+
+  @override
+  int get hashCode => microsecondsSinceMidnight.hashCode;
 
   @override
   String toString() => sprintf('%02d:%02d:%02d.%03d%03d',

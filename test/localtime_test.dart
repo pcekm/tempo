@@ -12,9 +12,16 @@ void main() {
       expect(t.microsecond, 7, reason: 'Microsecond mismatch');
     });
 
-    test('Default - invalid inputs', () {
-      expect(() => LocalTime(23, 59, 59, 999, 1000), throwsRangeError);
-      expect(() => LocalTime(0, 0, 0, 0, -1), throwsRangeError);
+    test('Default examples', () {
+      expect(LocalTime(12, 60, 0), LocalTime(13, 0, 0));
+      expect(LocalTime(12, 1, 60), LocalTime(12, 2, 0));
+      expect(LocalTime(23, 60, 0), LocalTime(0, 0, 0));
+      expect(LocalTime(0, 0, -1), LocalTime(23, 59, 59));
+    });
+
+    test('wrapping', () {
+      expect(LocalTime(23, 59, 59, 999, 1000), LocalTime());
+      expect(LocalTime(0, 0, 0, 0, -1), LocalTime(23, 59, 59, 999, 999));
     });
 
     test('fromDateTime()', () {
@@ -34,6 +41,38 @@ void main() {
       expect(t.millisecond, greaterThanOrEqualTo(0));
       expect(t.microsecond, greaterThanOrEqualTo(0));
     });
+  });
+
+  test('until()', () {
+    var t = LocalTime(12);
+    expect(t.until(t), Duration());
+    expect(t.until(LocalTime(13)), Duration(hours: 1));
+    expect(t.until(LocalTime(11)), Duration(hours: -1));
+    expect(t.until(LocalTime(12, 0, 1)), Duration(seconds: 1));
+    expect(t.until(LocalTime(11, 59, 59)), Duration(seconds: -1));
+    expect(t.until(LocalTime(12, 0, 0, 1)), Duration(milliseconds: 1));
+    expect(t.until(LocalTime(11, 59, 59, 999)), Duration(milliseconds: -1));
+    expect(t.until(LocalTime(12, 0, 0, 0, 1)), Duration(microseconds: 1));
+    expect(
+        t.until(LocalTime(11, 59, 59, 999, 999)), Duration(microseconds: -1));
+  });
+
+  test('adding Duration', () {
+    var t = LocalTime(12);
+    expect(t + Duration(hours: 1), LocalTime(13));
+    expect(t + Duration(hours: -1), LocalTime(11));
+    expect(t + Duration(seconds: 1), LocalTime(12, 0, 1));
+    expect(t + Duration(seconds: -1), LocalTime(11, 59, 59));
+    expect(t + Duration(milliseconds: 1), LocalTime(12, 0, 0, 1));
+    expect(t + Duration(milliseconds: -1), LocalTime(11, 59, 59, 999));
+    expect(t + Duration(microseconds: 1), LocalTime(12, 0, 0, 0, 1));
+    expect(t + Duration(microseconds: -1), LocalTime(11, 59, 59, 999, 999));
+    expect(t + Duration(days: 1), t);
+    expect(t + Duration(days: -1), t);
+    expect(t + Duration(days: 1, hours: 1), LocalTime(13));
+    expect(t + Duration(days: -1, hours: 1), LocalTime(13));
+    expect(t + Duration(days: 1, hours: -1), LocalTime(11));
+    expect(t + Duration(days: -1, hours: -1), LocalTime(11));
   });
 
   group('Comparison operator', () {

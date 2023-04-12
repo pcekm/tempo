@@ -94,7 +94,7 @@ class LocalDateTime {
   /// 1 to 366.
   int get ordinalDay => LocalDate.fromJulianDays(_julianDays).ordinalDay;
 
-  LocalTime get time => LocalTime.ofMicroseconds(_microsecondsSinceMidnight);
+  LocalTime get time => LocalTime.fromMicroseconds(_microsecondsSinceMidnight);
 
   int get hour => time.hour;
   int get minute => time.minute;
