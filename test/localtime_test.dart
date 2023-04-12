@@ -12,6 +12,11 @@ void main() {
       expect(t.microsecond, 7, reason: 'Microsecond mismatch');
     });
 
+    test('Default - invalid inputs', () {
+      expect(() => LocalTime(23, 59, 59, 999, 1000), throwsRangeError);
+      expect(() => LocalTime(0, 0, 0, 0, -1), throwsRangeError);
+    });
+
     test('fromDateTime()', () {
       var t = LocalTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
       expect(t.hour, 3, reason: 'Hour mismatch');

@@ -15,29 +15,42 @@ class LocalTime {
 
   final int microsecondsSinceMidnight;
 
-  const LocalTime(
+  /// Constructs a new [LocalTime]. If the provided values are bigger than
+  /// expected (e.g. minute = 61), the residues will increment the overall time
+  /// accordingly. Throws [RangeError] if the result overflows a 24-hour
+  /// period.
+  ///
+  /// ```dart
+  /// LocalTime(12, 60, 0) == LocalTime(13, 1, 0);
+  /// LocalTime(12, 1, 60) == LocalTime(12, 2, 0);
+  /// LocalTime(12, 61, 0)  // Throws error
+  /// ```
+  LocalTime(
       [int hour = 0,
       int minute = 0,
       int second = 0,
       int millisecond = 0,
       int microsecond = 0])
-      // See https://en.wikipedia.org/wiki/Julian_day
-      : microsecondsSinceMidnight = (hour * _secsPerHour * _micro +
-                minute * _secsPerMinute * _micro +
-                second * _micro +
-                millisecond * _milli +
-                microsecond) %
-            (_secsPerDay * _micro);
+      : microsecondsSinceMidnight = hour * _secsPerHour * _micro +
+            minute * _secsPerMinute * _micro +
+            second * _micro +
+            millisecond * _milli +
+            microsecond {
+    if (this > maximum || this < minimum) {
+      throw RangeError(
+          'LocalTime($hour, $minute, $second, $millisecond, $microsecond) is outside of a normal day.');
+    }
+  }
 
   /// Creates a [LocalTime] using the number of microseconds since midnight.
-  const LocalTime.ofMicroseconds(this.microsecondsSinceMidnight);
+  LocalTime.ofMicroseconds(this.microsecondsSinceMidnight);
 
   /// The start of the day. 00:00
-  static const LocalTime minimum = LocalTime.ofMicroseconds(0);
+  static final LocalTime minimum = LocalTime.ofMicroseconds(0);
 
   /// The very last moment of the day as precisely as this class can
   /// represent it: 23:59.999999
-  static const LocalTime maximum =
+  static final LocalTime maximum =
       LocalTime.ofMicroseconds((_secsPerDay - 1) * _micro + _micro - 1);
 
   /// Constructs a [LocalTime] with the currenttime in the current time zone.
