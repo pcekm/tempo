@@ -1,8 +1,5 @@
-import 'package:sprintf/sprintf.dart';
-
 import 'localdate.dart';
 import 'localtime.dart';
-import 'util.dart';
 import 'weekday.dart';
 
 /// Contains a date and time with no time zone on the proleptic Gregorian
@@ -84,7 +81,7 @@ class LocalDateTime {
       : _julianDays = date.julianDays,
         _microsecondsSinceMidnight = time.microsecondsSinceMidnight;
 
-  LocalDate get date => LocalDate.ofJulianDays(_julianDays);
+  LocalDate get date => LocalDate.fromJulianDays(_julianDays);
 
   int get year => date.year;
   int get month => date.month;
@@ -94,7 +91,7 @@ class LocalDateTime {
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
-  int get ordinalDay => LocalDate.ofJulianDays(_julianDays).ordinalDay;
+  int get ordinalDay => LocalDate.fromJulianDays(_julianDays).ordinalDay;
 
   LocalTime get time => LocalTime.ofMicroseconds(_microsecondsSinceMidnight);
 
