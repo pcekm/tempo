@@ -114,7 +114,7 @@ class LocalDate {
     var months = d2._absoluteMonth - d1._absoluteMonth;
     if (d1.day <= d2.day) {
       return Period(months: sign * months, days: sign * (d2.day - d1.day))
-          .normalized();
+          .normalize();
     } else {
       --months;
       var advanced = d1 + Period(months: months);
@@ -124,7 +124,7 @@ class LocalDate {
                   (daysInMonth(advanced.year, advanced.month) -
                       advanced.day +
                       d2.day))
-          .normalized();
+          .normalize();
     }
   }
 

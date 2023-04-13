@@ -33,11 +33,11 @@ class Period {
   /// not attempt to convert days to months or years, which would be ambiguous.
   ///
   /// ```dart
-  /// Period(months: 25).normalized() == Period(years: 2, months: 1);
-  /// Period(months: 12, days: 5).normalized() == Period(years: 1, days: 5);
-  /// Period(days: 35).normalized() == Period(days: 35);  // unchanged
+  /// Period(months: 25).normalize() == Period(years: 2, months: 1);
+  /// Period(months: 12, days: 5).normalize() == Period(years: 1, days: 5);
+  /// Period(days: 35).normalize() == Period(days: 35);  // unchanged
   /// ```
-  Period normalized() => Period(
+  Period normalize() => Period(
       years: years + months ~/ 12, months: months.remainder(12), days: days);
 
   Period operator -() {

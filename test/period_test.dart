@@ -31,11 +31,11 @@ void main() {
     });
   });
 
-  test('normalized', () {
-    expect(Period(years: 1, months: 13, days: 3).normalized(),
+  test('normalize()', () {
+    expect(Period(years: 1, months: 13, days: 3).normalize(),
         Period(years: 2, months: 1, days: 3));
-    expect(Period(days: 35).normalized(), Period(days: 35));
-    expect(Period(months: 11).normalized(), Period(months: 11));
+    expect(Period(days: 35).normalize(), Period(days: 35));
+    expect(Period(months: 11).normalize(), Period(months: 11));
   });
 
   test('unary-', () {
