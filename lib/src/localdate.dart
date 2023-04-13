@@ -18,30 +18,30 @@ class LocalDate {
     _validate();
   }
 
-  factory LocalDate.fromJulianDays(int days) {
+  factory LocalDate._fromJulianDays(int days) {
     var parts = julianDaysToGregorian(days);
     return LocalDate(parts.item1, parts.item2, parts.item3);
   }
 
   /// The earliest date that can be properly represented by this class.
-  static final LocalDate minimum = LocalDate.fromJulianDays(0);
+  static final LocalDate minimum = LocalDate._fromJulianDays(0);
 
   /// The latest date that can be _safely_ represented by this class across
   /// web and native platforms. Native platforms with 64-bit ints will be able
   /// to exceed this by quite a bit.
   static final LocalDate safeMaximum =
-      LocalDate.fromJulianDays(9007199254740992);
+      LocalDate._fromJulianDays(9007199254740992);
 
-  /// Constructs a [LocalDate] with the current date and time in the
+  /// Creates a [LocalDate] with the current date and time in the
   /// current time zone.
   LocalDate.now() : this.fromDateTime(DateTime.now());
 
-  /// Constructs a [LocalDate] from a standard Dart [DateTime].
+  /// Creates a [LocalDate] from a standard Dart [DateTime].
   /// The timezone (if any) of [dateTime] is ignored.
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);
 
-  /// Constructs a [LocalDate] from an ISO 8601 date string. Any non-date
+  /// Parses a [LocalDate] from an ISO 8601 date string. Any non-date
   /// parts of the string will be silently discarded. Uses [DateTime.parse].
   factory LocalDate.parse(String dateString) {
     var dateTime = DateTime.parse(dateString);
@@ -53,7 +53,7 @@ class LocalDate {
   ///
   /// ```dart
   /// var date = LocalDate(2000, 1, 31);
-  /// date.replace(month: 4) == LocalDate(2001, 2, 30);
+  /// date.replace(month: 4) == LocalDate(2001, 4, 30);
   /// ```
   LocalDate replace({int? year, int? month, int? day}) {
     year ??= this.year;
@@ -65,16 +65,16 @@ class LocalDate {
 
   /// The number of days since 12:00 January 1, 4713 BC on the proleptic Julian
   /// calendar.
-  int get julianDays => gregorianToJulianDay(year, month, day);
+  int get _julianDays => gregorianToJulianDay(year, month, day);
 
   /// True if this date falls on a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
-  Weekday get weekday => Weekday.values[julianDays % _daysPerWeek + 1];
+  Weekday get weekday => Weekday.values[_julianDays % _daysPerWeek + 1];
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
-  int get ordinalDay => julianDays - LocalDate(year).julianDays + 1;
+  int get ordinalDay => _julianDays - LocalDate(year)._julianDays + 1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
@@ -155,23 +155,23 @@ class LocalDate {
     }
     m = (m - 1) % 12 + 1;
     var d = LocalDate(y, m, min(day, daysInMonth(y, m)));
-    return LocalDate.fromJulianDays(d.julianDays + p.days);
+    return LocalDate._fromJulianDays(d._julianDays + p.days);
   }
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate && julianDays == other.julianDays;
+      other is LocalDate && _julianDays == other._julianDays;
 
   @override
-  int get hashCode => julianDays.hashCode;
+  int get hashCode => _julianDays.hashCode;
 
-  bool operator >(LocalDate other) => julianDays > other.julianDays;
+  bool operator >(LocalDate other) => _julianDays > other._julianDays;
 
-  bool operator >=(LocalDate other) => julianDays >= other.julianDays;
+  bool operator >=(LocalDate other) => _julianDays >= other._julianDays;
 
-  bool operator <(LocalDate other) => julianDays < other.julianDays;
+  bool operator <(LocalDate other) => _julianDays < other._julianDays;
 
-  bool operator <=(LocalDate other) => julianDays <= other.julianDays;
+  bool operator <=(LocalDate other) => _julianDays <= other._julianDays;
 
   /// Returns the date in ISO 8601 format.
   @override
