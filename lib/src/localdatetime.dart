@@ -105,6 +105,34 @@ class LocalDateTime {
   int get millisecond => time.millisecond;
   int get microsecond => time.microsecond;
 
+  /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.
+  ///
+  /// If [amount] is a Period, this acts on the date parts in exactly the same
+  /// way as [LocalDate.operator+()]. If [amount] is a Duration, it acts
+  /// on the time parts exactly like [LocalTime.operator+()] and increments
+  /// or decrements the date if the amount is at least 1 day or negative.
+  ///
+  /// ```dart
+  /// var d= LocalDateTime(2000);
+  /// d + Period(days: 1) == LocalDateTime(2000, 1, 2);
+  /// d - Period(days: -1) == LocalDateTime(1999, 12, 31);
+  /// d + Duration(seconds: 1) == LocalDateTime(2000, 1, 1, 0, 0, 1);
+  /// d + Duration(days: 1, seconds: 1) == LocalDateTime(2000, 1, 2, 0, 0, 1);
+  /// d + Duration(days: -1, seconds: -1) == LocalDateTime(1999, 12, 30, 23, 59, 59);
+  /// ```
+  LocalDateTime operator +(Object amount) {
+    if (amount is Period) {
+      return LocalDateTime.combine(date + amount, time);
+    }
+    if (amount is Duration) {
+      var days = amount.inDays - (amount.inMicroseconds < 0 ? 1 : 0);
+      return LocalDateTime.combine(date + Period(days: days), time + amount);
+    } else {
+      throw ArgumentError(
+          'Invalid type added to LocalDateTime: ${amount.runtimeType}');
+    }
+  }
+
   bool operator >(LocalDateTime other) =>
       date > other.date || (date == other.date && time > other.time);
 
