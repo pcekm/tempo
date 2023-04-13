@@ -86,19 +86,21 @@ class LocalDate {
   /// The final result is normalized into years, months and days—all positive
   /// or all negative (if [other] is earlier than this).
   ///
+  /// To count the number of days between two dates, use [durationUntil()].
+  ///
   /// ```dart
-  /// LocalDate(2000, 1, 1).until(LocalDate(2000, 3, 2)) ==
+  /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
   ///     Period(months: 2, days: 1);
-  /// LocalDate(2000, 3, 2).until(LocalDate(2000, 1, 1)) ==
+  /// LocalDate(2000, 3, 2).periodUntil(LocalDate(2000, 1, 1)) ==
   ///     Period(months: -2, days: -1);
-  /// LocalDate(2000, 1, 2).until(LocalDate(2000, 3, 1)) ==
+  /// LocalDate(2000, 1, 2).periodUntil(LocalDate(2000, 3, 1)) ==
   ///     Period(months: 1, days: 28);
-  /// LocalDate(2001, 1, 2).until(LocalDate(2001, 3, 1)) ==
+  /// LocalDate(2001, 1, 2).periodUntil(LocalDate(2001, 3, 1)) ==
   ///     Period(months: 1, days: 27);
-  /// LocalDate(2000, 1, 1).until(LocalDate(2010, 2, 3)) ==
+  /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  Period until(LocalDate other) {
+  Period periodUntil(LocalDate other) {
     late int sign;
     late LocalDate d1;
     late LocalDate d2;
@@ -126,6 +128,15 @@ class LocalDate {
                       d2.day))
           .normalize();
     }
+  }
+
+  /// Returns the [Duration] between this and another date. The result will
+  /// always be an integer number of days.
+  ///
+  /// To find the number of years, months and days between two dates, use
+  /// [periodUntil()].
+  Duration durationUntil(LocalDate other) {
+    return Duration(days: other._julianDays - _julianDays);
   }
 
   /// Adds a [Period] of time.

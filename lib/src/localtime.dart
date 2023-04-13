@@ -72,7 +72,7 @@ class LocalTime {
 
   /// Finds the duration between two times. The result will be negative if
   /// [other] is earlier than this.
-  Duration until(LocalTime other) => Duration(
+  Duration durationUntil(LocalTime other) => Duration(
       microseconds:
           other.microsecondsSinceMidnight - microsecondsSinceMidnight);
 

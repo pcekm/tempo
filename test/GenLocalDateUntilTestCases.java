@@ -2,9 +2,9 @@ import java.time.LocalDate;
 import java.time.Period;
 
 /**
- * Generates a file full of test cases for LocalDate.until(). This function
- * is fiddly enough that it's worth thoroughly testing it against a totally
- * different implementation.
+ * Generates a file full of test cases for LocalDate.periodUntil(). This
+ * function is fiddly enough that it's worth thoroughly testing it against a
+ * totally different implementation.
  *
  * To regenerate, run:
  *

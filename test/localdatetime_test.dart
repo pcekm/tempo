@@ -105,6 +105,15 @@ void main() {
     });
   });
 
+  test('durationUntil()', () {
+    expect(
+        LocalDateTime(2000).durationUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
+        Duration(days: 366, seconds: 1));
+    expect(
+        LocalDateTime(2000).durationUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
+        -Duration(days: 364, hours: 23, minutes: 59, seconds: 59));
+  });
+
   group('addition operator:', () {
     test('Duration', () {
       var d = LocalDateTime(2000);

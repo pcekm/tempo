@@ -105,6 +105,11 @@ class LocalDateTime {
   int get millisecond => time.millisecond;
   int get microsecond => time.microsecond;
 
+  /// Finds the duration between this and another [LocalDate].
+  Duration durationUntil(LocalDateTime other) {
+    return date.durationUntil(other.date) + time.durationUntil(other.time);
+  }
+
   /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.
   ///
   /// If [amount] is a Period, this acts on the date parts in exactly the same

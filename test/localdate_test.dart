@@ -215,145 +215,145 @@ void main() {
     });
   });
 
-  group('until():', () {
+  group('periodUntil():', () {
     test('simple positive cases', () {
-      expect(LocalDate(2023, 4, 10).until(LocalDate(2023, 4, 10)), Period());
-      expect(LocalDate(2022, 4, 10).until(LocalDate(2023, 4, 10)),
+      expect(LocalDate(2023, 4, 10).periodUntil(LocalDate(2023, 4, 10)), Period());
+      expect(LocalDate(2022, 4, 10).periodUntil(LocalDate(2023, 4, 10)),
           Period(years: 1));
-      expect(LocalDate(2023, 3, 10).until(LocalDate(2023, 4, 10)),
+      expect(LocalDate(2023, 3, 10).periodUntil(LocalDate(2023, 4, 10)),
           Period(months: 1));
       expect(
-          LocalDate(2023, 4, 9).until(LocalDate(2023, 4, 10)), Period(days: 1));
+          LocalDate(2023, 4, 9).periodUntil(LocalDate(2023, 4, 10)), Period(days: 1));
     });
 
     test('simple negative cases', () {
-      expect(LocalDate(2023, 4, 10).until(LocalDate(2022, 4, 10)),
+      expect(LocalDate(2023, 4, 10).periodUntil(LocalDate(2022, 4, 10)),
           Period(years: -1));
-      expect(LocalDate(2023, 4, 10).until(LocalDate(2023, 3, 10)),
+      expect(LocalDate(2023, 4, 10).periodUntil(LocalDate(2023, 3, 10)),
           Period(months: -1));
-      expect(LocalDate(2023, 4, 10).until(LocalDate(2023, 4, 9)),
+      expect(LocalDate(2023, 4, 10).periodUntil(LocalDate(2023, 4, 9)),
           Period(days: -1));
     });
 
     test('months and days', () {
-      expect(LocalDate(2000, 1, 1).until(LocalDate(2000, 3, 2)),
+      expect(LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)),
           Period(months: 2, days: 1));
-      expect(LocalDate(2000, 3, 2).until(LocalDate(2000, 1, 1)),
+      expect(LocalDate(2000, 3, 2).periodUntil(LocalDate(2000, 1, 1)),
           Period(months: -2, days: -1));
     });
 
     test('year boundaries', () {
-      expect(LocalDate(2022, 12, 31).until(LocalDate(2023, 1, 1)),
+      expect(LocalDate(2022, 12, 31).periodUntil(LocalDate(2023, 1, 1)),
           Period(days: 1));
-      expect(LocalDate(2023, 1, 1).until(LocalDate(2022, 12, 31)),
+      expect(LocalDate(2023, 1, 1).periodUntil(LocalDate(2022, 12, 31)),
           Period(days: -1));
     });
 
     test('ragged month ends, shorter second', () {
-      expect(LocalDate(2023, 5, 31).until(LocalDate(2023, 6, 30)),
+      expect(LocalDate(2023, 5, 31).periodUntil(LocalDate(2023, 6, 30)),
           Period(days: 30));
-      expect(LocalDate(2023, 6, 30).until(LocalDate(2023, 5, 31)),
+      expect(LocalDate(2023, 6, 30).periodUntil(LocalDate(2023, 5, 31)),
           Period(days: -30));
     });
 
     test('ragged month ends, shorter first', () {
-      expect(LocalDate(2023, 6, 30).until(LocalDate(2023, 7, 31)),
+      expect(LocalDate(2023, 6, 30).periodUntil(LocalDate(2023, 7, 31)),
           Period(months: 1, days: 1));
-      expect(LocalDate(2023, 7, 31).until(LocalDate(2023, 6, 30)),
+      expect(LocalDate(2023, 7, 31).periodUntil(LocalDate(2023, 6, 30)),
           Period(months: -1, days: -1));
     });
 
     test('days between mid shorter to mid longer month', () {
-      expect(LocalDate(2022, 6, 10).until(LocalDate(2023, 12, 13)),
+      expect(LocalDate(2022, 6, 10).periodUntil(LocalDate(2023, 12, 13)),
           Period(years: 1, months: 6, days: 3));
-      expect(LocalDate(2022, 6, 10).until(LocalDate(2023, 3, 13)),
+      expect(LocalDate(2022, 6, 10).periodUntil(LocalDate(2023, 3, 13)),
           Period(months: 9, days: 3));
-      expect(LocalDate(2022, 2, 10).until(LocalDate(2023, 3, 13)),
+      expect(LocalDate(2022, 2, 10).periodUntil(LocalDate(2023, 3, 13)),
           Period(years: 1, months: 1, days: 3));
-      expect(LocalDate(2022, 2, 10).until(LocalDate(2023, 3, 29)),
+      expect(LocalDate(2022, 2, 10).periodUntil(LocalDate(2023, 3, 29)),
           Period(years: 1, months: 1, days: 19));
-      expect(LocalDate(2023, 12, 13).until(LocalDate(2022, 6, 10)),
+      expect(LocalDate(2023, 12, 13).periodUntil(LocalDate(2022, 6, 10)),
           Period(years: -1, months: -6, days: -3));
-      expect(LocalDate(2023, 3, 13).until(LocalDate(2022, 6, 10)),
+      expect(LocalDate(2023, 3, 13).periodUntil(LocalDate(2022, 6, 10)),
           Period(months: -9, days: -3));
-      expect(LocalDate(2023, 3, 13).until(LocalDate(2022, 2, 10)),
+      expect(LocalDate(2023, 3, 13).periodUntil(LocalDate(2022, 2, 10)),
           Period(years: -1, months: -1, days: -3));
-      expect(LocalDate(2023, 3, 29).until(LocalDate(2022, 2, 10)),
+      expect(LocalDate(2023, 3, 29).periodUntil(LocalDate(2022, 2, 10)),
           Period(years: -1, months: -1, days: -19));
     });
 
     test('days between mid longer to mid shorter month', () {
-      expect(LocalDate(2022, 7, 10).until(LocalDate(2023, 11, 13)),
+      expect(LocalDate(2022, 7, 10).periodUntil(LocalDate(2023, 11, 13)),
           Period(years: 1, months: 4, days: 3));
-      expect(LocalDate(2022, 7, 10).until(LocalDate(2023, 6, 13)),
+      expect(LocalDate(2022, 7, 10).periodUntil(LocalDate(2023, 6, 13)),
           Period(months: 11, days: 3));
-      expect(LocalDate(2022, 7, 10).until(LocalDate(2023, 2, 13)),
+      expect(LocalDate(2022, 7, 10).periodUntil(LocalDate(2023, 2, 13)),
           Period(months: 7, days: 3));
-      expect(LocalDate(2022, 7, 28).until(LocalDate(2023, 2, 13)),
+      expect(LocalDate(2022, 7, 28).periodUntil(LocalDate(2023, 2, 13)),
           Period(months: 6, days: 16));
-      expect(LocalDate(2023, 11, 13).until(LocalDate(2022, 7, 10)),
+      expect(LocalDate(2023, 11, 13).periodUntil(LocalDate(2022, 7, 10)),
           Period(years: -1, months: -4, days: -3));
-      expect(LocalDate(2023, 6, 13).until(LocalDate(2022, 7, 10)),
+      expect(LocalDate(2023, 6, 13).periodUntil(LocalDate(2022, 7, 10)),
           Period(months: -11, days: -3));
-      expect(LocalDate(2023, 2, 13).until(LocalDate(2022, 7, 10)),
+      expect(LocalDate(2023, 2, 13).periodUntil(LocalDate(2022, 7, 10)),
           Period(months: -7, days: -3));
-      expect(LocalDate(2023, 2, 13).until(LocalDate(2022, 7, 28)),
+      expect(LocalDate(2023, 2, 13).periodUntil(LocalDate(2022, 7, 28)),
           Period(months: -6, days: -16));
     });
 
     test('leap years', () {
-      expect(LocalDate(2000, 1, 31).until(LocalDate(2000, 2, 29)),
+      expect(LocalDate(2000, 1, 31).periodUntil(LocalDate(2000, 2, 29)),
           Period(days: 29));
-      expect(LocalDate(2000, 2, 29).until(LocalDate(2000, 1, 31)),
+      expect(LocalDate(2000, 2, 29).periodUntil(LocalDate(2000, 1, 31)),
           Period(days: -29));
       expect(
-          LocalDate(2000, 2, 29).until(LocalDate(2000, 3, 1)), Period(days: 1));
-      expect(LocalDate(2000, 3, 1).until(LocalDate(2000, 2, 29)),
+          LocalDate(2000, 2, 29).periodUntil(LocalDate(2000, 3, 1)), Period(days: 1));
+      expect(LocalDate(2000, 3, 1).periodUntil(LocalDate(2000, 2, 29)),
           Period(days: -1));
     });
 
     // Regression test of a really weird bug that was extremely hard to
     // reproduce.
     test('weird regression', () {
-      expect(LocalDate(1985, 4, 20).until(LocalDate(1986, 2, 9)),
+      expect(LocalDate(1985, 4, 20).periodUntil(LocalDate(1986, 2, 9)),
           Period(months: 9, days: 20));
-      expect(LocalDate(1999, 1, 2).until(LocalDate(1999, 3, 1)),
+      expect(LocalDate(1999, 1, 2).periodUntil(LocalDate(1999, 3, 1)),
           Period(months: 1, days: 27));
     });
 
     test('long period', () {
-      expect(LocalDate(1910, 4, 20).until(LocalDate(1986, 2, 9)),
+      expect(LocalDate(1910, 4, 20).periodUntil(LocalDate(1986, 2, 9)),
           Period(years: 75, months: 9, days: 20));
-      expect(LocalDate(1986, 2, 9).until(LocalDate(1910, 4, 20)),
+      expect(LocalDate(1986, 2, 9).periodUntil(LocalDate(1910, 4, 20)),
           Period(years: -75, months: -9, days: -20));
     });
 
     test('doc examples', () {
       expect(
-          LocalDate(2000, 1, 1).until(LocalDate(2000, 3, 2)) ==
+          LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
               Period(months: 2, days: 1),
           true);
       expect(
-          LocalDate(2000, 3, 2).until(LocalDate(2000, 1, 1)) ==
+          LocalDate(2000, 3, 2).periodUntil(LocalDate(2000, 1, 1)) ==
               Period(months: -2, days: -1),
           true);
       expect(
-          LocalDate(2000, 1, 2).until(LocalDate(2000, 3, 1)) ==
+          LocalDate(2000, 1, 2).periodUntil(LocalDate(2000, 3, 1)) ==
               Period(months: 1, days: 28),
           true);
       expect(
-          LocalDate(2001, 1, 2).until(LocalDate(2001, 3, 1)) ==
+          LocalDate(2001, 1, 2).periodUntil(LocalDate(2001, 3, 1)) ==
               Period(months: 1, days: 27),
           true);
       expect(
-          LocalDate(2000, 1, 1).until(LocalDate(2010, 2, 3)) ==
+          LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
               Period(years: 10, months: 1, days: 2),
           true);
     });
 
     // This is excluded by default. To run it use 'dart test -P all'
     test('golden file', () {
-      var file = File('test/localdate_until_testcases.txt');
+      var file = File('test/localdate_period_until_testcases.txt');
       for (var line in file.readAsLinesSync()) {
         var parts = line.split(' ');
         var d1 = LocalDate.parse(parts[0]);
@@ -362,9 +362,16 @@ void main() {
         if (d1 == d2) {
           continue;
         }
-        expect(d1.until(d2), want, reason: '$d1 until $d2');
-        expect(d2.until(d1), -want, reason: '$d2 until $d1');
+        expect(d1.periodUntil(d2), want, reason: '$d1 until $d2');
+        expect(d2.periodUntil(d1), -want, reason: '$d2 until $d1');
       }
     }, tags: ['slow']);
+  });
+
+  test('durationUntil()', () {
+    expect(LocalDate(2000).durationUntil(LocalDate(2001)), Duration(days: 366));
+    expect(LocalDate(2001).durationUntil(LocalDate(2002)), Duration(days: 365));
+    expect(LocalDate(2000).durationUntil(LocalDate(1999, 12, 1)),
+        Duration(days: -31));
   });
 }
