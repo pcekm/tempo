@@ -99,6 +99,7 @@ class LocalTime {
   @override
   int get hashCode => microsecondsSinceMidnight.hashCode;
 
+  /// Returns the time in ISO 8601 format.
   @override
   String toString() => sprintf('%02d:%02d:%02d.%03d%03d',
       [hour, minute, second, millisecond, microsecond]);

@@ -15,6 +15,29 @@ void main() {
       expect(d.microsecond, 7, reason: 'Microsecond mismatch');
     });
 
+    test('wrapping times', () {
+      expect(LocalDateTime(2000, 1, 1, 49), LocalDateTime(2000, 1, 3, 1));
+      expect(LocalDateTime(2000, 1, 1, 25), LocalDateTime(2000, 1, 2, 1));
+      expect(LocalDateTime(2000, 1, 1, 24, 1), LocalDateTime(2000, 1, 2, 0, 1));
+      expect(LocalDateTime(2000, 1, 1, 24, 0, 1),
+          LocalDateTime(2000, 1, 2, 0, 0, 1));
+      expect(LocalDateTime(2000, 1, 1, 24, 0, 0, 1),
+          LocalDateTime(2000, 1, 2, 0, 0, 0, 1));
+      expect(LocalDateTime(2000, 1, 1, 24, 0, 0, 0, 1),
+          LocalDateTime(2000, 1, 2, 0, 0, 0, 0, 1));
+
+      expect(LocalDateTime(2000, 1, 1, 0, 0, 0, 0, -1),
+          LocalDateTime(1999, 12, 31, 23, 59, 59, 999, 999));
+      expect(LocalDateTime(2000, 1, 1, 0, 0, 0, -1),
+          LocalDateTime(1999, 12, 31, 23, 59, 59, 999));
+      expect(LocalDateTime(2000, 1, 1, 0, 0, -1),
+          LocalDateTime(1999, 12, 31, 23, 59, 59));
+      expect(LocalDateTime(2000, 1, 1, 0, -1),
+          LocalDateTime(1999, 12, 31, 23, 59));
+      expect(LocalDateTime(2000, 1, 1, -1), LocalDateTime(1999, 12, 31, 23));
+      expect(LocalDateTime(2000, 1, 1, -24), LocalDateTime(1999, 12, 30));
+    });
+
     test('fromDateTime()', () {
       var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
       expect(d.year, 2000, reason: 'Year mismatch');
@@ -27,8 +50,9 @@ void main() {
       expect(d.microsecond, 7, reason: 'Microsecond mismatch');
     });
 
-    test('of()', () {
-      var d = LocalDateTime.of(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6, 7));
+    test('combine()', () {
+      var d = LocalDateTime.combine(
+          LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6, 7));
       expect(d.year, 2000, reason: 'Year mismatch');
       expect(d.month, 1, reason: 'Month mismatch');
       expect(d.day, 2, reason: 'Day mismatch');
