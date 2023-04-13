@@ -351,6 +351,7 @@ void main() {
           true);
     });
 
+    // This is excluded by default. To run it use 'dart test -P all'
     test('golden file', () {
       var file = File('test/localdate_until_testcases.txt');
       for (var line in file.readAsLinesSync()) {
@@ -364,6 +365,6 @@ void main() {
         expect(d1.until(d2), want, reason: '$d1 until $d2');
         expect(d2.until(d1), -want, reason: '$d2 until $d1');
       }
-    });
+    }, tags: ['slow']);
   });
 }

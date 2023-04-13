@@ -1,0 +1,10 @@
+exclude_tags: slow
+
+tags:
+  # Tests that are too slow for regular use.
+  slow:
+
+presets:
+  # Run all tests, even slow ones.
+  all:
+    exclude_tags: none
