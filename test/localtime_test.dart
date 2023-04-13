@@ -51,10 +51,12 @@ void main() {
     expect(t.durationUntil(LocalTime(12, 0, 1)), Duration(seconds: 1));
     expect(t.durationUntil(LocalTime(11, 59, 59)), Duration(seconds: -1));
     expect(t.durationUntil(LocalTime(12, 0, 0, 1)), Duration(milliseconds: 1));
-    expect(t.durationUntil(LocalTime(11, 59, 59, 999)), Duration(milliseconds: -1));
-    expect(t.durationUntil(LocalTime(12, 0, 0, 0, 1)), Duration(microseconds: 1));
+    expect(t.durationUntil(LocalTime(11, 59, 59, 999)),
+        Duration(milliseconds: -1));
     expect(
-        t.durationUntil(LocalTime(11, 59, 59, 999, 999)), Duration(microseconds: -1));
+        t.durationUntil(LocalTime(12, 0, 0, 0, 1)), Duration(microseconds: 1));
+    expect(t.durationUntil(LocalTime(11, 59, 59, 999, 999)),
+        Duration(microseconds: -1));
   });
 
   test('adding Duration', () {

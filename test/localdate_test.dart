@@ -173,57 +173,67 @@ void main() {
     expect(LocalDate(2000).isLeapYear, true, reason: 'year = 2000');
   });
 
-  group('Period addition:', () {
-    test('single fields', () {
-      var d = LocalDate(2001, 2, 3);
-      expect(d + Period(days: 1), LocalDate(2001, 2, 4));
-      expect(d + Period(days: 28), LocalDate(2001, 3, 3));
-      expect(d + Period(months: 1), LocalDate(2001, 3, 3));
-      expect(d + Period(months: 12), LocalDate(2002, 2, 3));
-      expect(d + Period(years: 4), LocalDate(2005, 2, 3));
+  group('Addition:', () {
+    test('Duration', () {
+      expect(LocalDate(2000) + Duration(days: 1), LocalDate(2000, 1, 2));
+      expect(LocalDate(2000) + Duration(days: -1), LocalDate(1999, 12, 31));
+      expect(LocalDate(2000) + Duration(hours: 23), LocalDate(2000));
+      expect(LocalDate(2000) + Duration(hours: -23), LocalDate(2000));
     });
 
-    test('negative single fields', () {
-      var d = LocalDate(2001, 2, 3);
-      expect(d + Period(days: -1), LocalDate(2001, 2, 2));
-      expect(d + Period(days: -3), LocalDate(2001, 1, 31));
-      expect(d + Period(months: -1), LocalDate(2001, 1, 3));
-      expect(d + Period(months: -12), LocalDate(2000, 2, 3));
-      expect(d + Period(years: -4), LocalDate(1997, 2, 3));
-    });
+    group('Period:', () {
+      test('single fields', () {
+        var d = LocalDate(2001, 2, 3);
+        expect(d + Period(days: 1), LocalDate(2001, 2, 4));
+        expect(d + Period(days: 28), LocalDate(2001, 3, 3));
+        expect(d + Period(months: 1), LocalDate(2001, 3, 3));
+        expect(d + Period(months: 12), LocalDate(2002, 2, 3));
+        expect(d + Period(years: 4), LocalDate(2005, 2, 3));
+      });
 
-    test('order of operations', () {
-      expect(LocalDate(2023, 1, 31) + Period(months: 1, days: 1),
-          LocalDate(2023, 3, 1));
-    });
+      test('negative single fields', () {
+        var d = LocalDate(2001, 2, 3);
+        expect(d + Period(days: -1), LocalDate(2001, 2, 2));
+        expect(d + Period(days: -3), LocalDate(2001, 1, 31));
+        expect(d + Period(months: -1), LocalDate(2001, 1, 3));
+        expect(d + Period(months: -12), LocalDate(2000, 2, 3));
+        expect(d + Period(years: -4), LocalDate(1997, 2, 3));
+      });
 
-    test('months increment year', () {
-      var d = LocalDate(2000, 12, 1);
-      expect(d + Period(months: 1), LocalDate(2001, 1, 1));
-    });
+      test('order of operations', () {
+        expect(LocalDate(2023, 1, 31) + Period(months: 1, days: 1),
+            LocalDate(2023, 3, 1));
+      });
 
-    test('months decrement year', () {
-      var d = LocalDate(2001, 1, 1);
-      expect(d + Period(months: -1), LocalDate(2000, 12, 1));
-    });
+      test('months increment year', () {
+        var d = LocalDate(2000, 12, 1);
+        expect(d + Period(months: 1), LocalDate(2001, 1, 1));
+      });
 
-    test('month clamping', () {
-      var d = LocalDate(1999, 1, 31);
-      expect(d + Period(months: 1), LocalDate(1999, 2, 28));
-      expect(d + Period(months: -2), LocalDate(1998, 11, 30));
-      expect(d + Period(years: 1, months: 1), LocalDate(2000, 2, 29));
+      test('months decrement year', () {
+        var d = LocalDate(2001, 1, 1);
+        expect(d + Period(months: -1), LocalDate(2000, 12, 1));
+      });
+
+      test('month clamping', () {
+        var d = LocalDate(1999, 1, 31);
+        expect(d + Period(months: 1), LocalDate(1999, 2, 28));
+        expect(d + Period(months: -2), LocalDate(1998, 11, 30));
+        expect(d + Period(years: 1, months: 1), LocalDate(2000, 2, 29));
+      });
     });
   });
 
   group('periodUntil():', () {
     test('simple positive cases', () {
-      expect(LocalDate(2023, 4, 10).periodUntil(LocalDate(2023, 4, 10)), Period());
+      expect(
+          LocalDate(2023, 4, 10).periodUntil(LocalDate(2023, 4, 10)), Period());
       expect(LocalDate(2022, 4, 10).periodUntil(LocalDate(2023, 4, 10)),
           Period(years: 1));
       expect(LocalDate(2023, 3, 10).periodUntil(LocalDate(2023, 4, 10)),
           Period(months: 1));
-      expect(
-          LocalDate(2023, 4, 9).periodUntil(LocalDate(2023, 4, 10)), Period(days: 1));
+      expect(LocalDate(2023, 4, 9).periodUntil(LocalDate(2023, 4, 10)),
+          Period(days: 1));
     });
 
     test('simple negative cases', () {
@@ -306,14 +316,13 @@ void main() {
           Period(days: 29));
       expect(LocalDate(2000, 2, 29).periodUntil(LocalDate(2000, 1, 31)),
           Period(days: -29));
-      expect(
-          LocalDate(2000, 2, 29).periodUntil(LocalDate(2000, 3, 1)), Period(days: 1));
+      expect(LocalDate(2000, 2, 29).periodUntil(LocalDate(2000, 3, 1)),
+          Period(days: 1));
       expect(LocalDate(2000, 3, 1).periodUntil(LocalDate(2000, 2, 29)),
           Period(days: -1));
     });
 
-    // Regression test of a really weird bug that was extremely hard to
-    // reproduce.
+    // Regression test of a weird bug that was rather hard to trigger.
     test('weird regression', () {
       expect(LocalDate(1985, 4, 20).periodUntil(LocalDate(1986, 2, 9)),
           Period(months: 9, days: 20));

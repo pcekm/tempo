@@ -76,6 +76,7 @@ class LocalTime {
       microseconds:
           other.microsecondsSinceMidnight - microsecondsSinceMidnight);
 
+  /// Adds a [Duration] modulo 1 day.
   LocalTime operator +(Duration duration) => LocalTime.fromMicroseconds(
       microsecondsSinceMidnight + duration.inMicroseconds);
 

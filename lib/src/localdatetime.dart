@@ -105,9 +105,16 @@ class LocalDateTime {
   int get millisecond => time.millisecond;
   int get microsecond => time.microsecond;
 
-  /// Finds the duration between this and another [LocalDate].
-  Duration durationUntil(LocalDateTime other) {
-    return date.durationUntil(other.date) + time.durationUntil(other.time);
+  /// Finds the duration between [this] and [other].
+  Duration durationUntil(Object other) {
+    if (other is LocalDateTime) {
+      return date.durationUntil(other.date) + time.durationUntil(other.time);
+    } else if (other is LocalDate) {
+      return date.durationUntil(other);
+    } else {
+      throw ArgumentError(
+          'Invalid type for durationUntil: ${other.runtimeType}');
+    }
   }
 
   /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.

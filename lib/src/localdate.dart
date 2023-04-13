@@ -139,23 +139,53 @@ class LocalDate {
     return Duration(days: other._julianDays - _julianDays);
   }
 
-  /// Adds a [Period] of time.
+  /// Adds a [Duration] or [Period]. The behavior depends on the type.
   ///
-  /// This increments (or decrements) the date by a specific number of months
+  /// ## Duration
+  ///
+  /// The date is incremented or decremented by the number of whole days
+  /// spanned by the Duration. Durations of less than one whole day have no
+  /// effect.
+  ///
+  /// ```dart
+  /// LocalDate(2000) + Duration(days: 1) == LocalDate(2000, 1, 2);
+  /// LocalDate(2000) + Duration(days: -1) == LocalDate(1999, 12, 31);
+  /// LocalDate(2000) + Duration(hours: 23) == LocalDate(2000);
+  /// LocalDate(2000) + Duration(hours: -23) == LocalDate(2000);
+  /// ```
+  ///
+  /// ## Period
+  ///
+  /// Increments (or decrements) the date by a specific number of months
   /// or years while—as much as possible—keeping the day the same. When this
   /// is not possible the result will be the last day of the month. For
   /// example, adding one month to `2023-01-31` gives `2023-01-28`.
   ///
-  /// This increments (or decrements) by the days part of the period increments
-  /// (or decrements) the date last. Doing so could be surprising if the
-  /// month/year operation landed on a shorter month. For example:
+  /// The days part is applied last. For example, adding one month and one day
+  /// to `2023-01-31` first adds one month to get `2023-02-28` and then
+  /// adds one day for a final result of `2023-03-01`.
   ///
   /// ```dart
-  /// var date = LocalDate(2023, 1, 31);
-  /// var period = Period(months: 1, days: 1);
-  /// date + period == LocalDate(2023, 3, 1);
+  /// LocalDate(2023, 1, 31) + Period(months: 1, days: 1) ==
+  ///     LocalDate(2023, 3, 1);
+  /// LocalDate(2023, 3, 31) + Period(months: -1, days: -1) ==
+  ///     LocalDate(2023, 2, 27);
   /// ```
-  LocalDate operator +(Period p) {
+  LocalDate operator +(Object other) {
+    if (other is Duration) {
+      return _addDuration(other);
+    } else if (other is Period) {
+      return _addPeriod(other);
+    } else {
+      throw ArgumentError(
+          'Invalid type for LocalDate addition: ${other.runtimeType}');
+    }
+  }
+
+  LocalDate _addDuration(Duration d) =>
+      LocalDate._fromJulianDays(_julianDays + d.inDays);
+
+  LocalDate _addPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
     var months = p.months.remainder(12);
     var m = month + months;

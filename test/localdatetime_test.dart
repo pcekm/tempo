@@ -105,13 +105,27 @@ void main() {
     });
   });
 
-  test('durationUntil()', () {
-    expect(
-        LocalDateTime(2000).durationUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
-        Duration(days: 366, seconds: 1));
-    expect(
-        LocalDateTime(2000).durationUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
-        -Duration(days: 364, hours: 23, minutes: 59, seconds: 59));
+  group('durationUntil():', () {
+    test('LocalDateTime', () {
+      expect(
+          LocalDateTime(2000).durationUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
+          Duration(days: 366, seconds: 1));
+      expect(
+          LocalDateTime(2000).durationUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
+          -Duration(days: 364, hours: 23, minutes: 59, seconds: 59));
+    });
+
+    test('LocalDate', () {
+      expect(LocalDateTime(2000).durationUntil(LocalDate(2001, 1, 1)),
+          Duration(days: 366));
+      expect(LocalDateTime(2000).durationUntil(LocalDate(1999, 12, 31)),
+          Duration(days: -1));
+    });
+
+    test('LocalTime error', () {
+      expect(() => LocalDateTime(2000).durationUntil(LocalTime()),
+          throwsArgumentError);
+    });
   });
 
   group('addition operator:', () {
