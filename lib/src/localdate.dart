@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:sprintf/sprintf.dart';
 
+import 'interfaces.dart';
 import 'period.dart';
 import 'util.dart';
 import 'weekday.dart';
 
 /// Contains a local date on the proleptic Gregorian calendar with no timezone.
-class LocalDate {
+class LocalDate implements HasDate {
   static const int _daysPerWeek = 7;
 
   final int year;
@@ -18,19 +19,10 @@ class LocalDate {
     _validate();
   }
 
-  factory LocalDate._fromJulianDays(int days) {
-    var parts = julianDaysToGregorian(days);
+  factory LocalDate._fromRataDieSeconds(int rataDieSeconds) {
+    var parts = rataDieSecondsToGregorian(rataDieSeconds);
     return LocalDate(parts.item1, parts.item2, parts.item3);
   }
-
-  /// The earliest date that can be properly represented by this class.
-  static final LocalDate minimum = LocalDate._fromJulianDays(0);
-
-  /// The latest date that can be _safely_ represented by this class across
-  /// web and native platforms. Native platforms with 64-bit ints will be able
-  /// to exceed this by quite a bit.
-  static final LocalDate safeMaximum =
-      LocalDate._fromJulianDays(9007199254740992);
 
   /// Creates a [LocalDate] with the current date and time in the
   /// current time zone.
@@ -63,28 +55,30 @@ class LocalDate {
     return LocalDate(year, month, day);
   }
 
-  /// The number of days since 12:00 January 1, 4713 BC on the proleptic Julian
-  /// calendar.
-  int get _julianDays => gregorianToJulianDay(year, month, day);
+  int get rataDieSeconds => gregorianToRataDieSeconds(year, month, day);
 
   /// True if this date falls on a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
-  Weekday get weekday => Weekday.values[_julianDays % _daysPerWeek + 1];
+  Weekday get weekday => Weekday
+      .values[(epochSecondsToDay(rataDieSeconds) - 1) % _daysPerWeek + 1];
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
-  int get ordinalDay => _julianDays - LocalDate(year)._julianDays + 1;
+  int get ordinalDay =>
+      epochSecondsToDay(rataDieSeconds) -
+      epochSecondsToDay(LocalDate(year).rataDieSeconds) +
+      1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
-  int get _absoluteMonth => 12 * year + month - 1;
+  static int _absoluteMonth(LocalDate date) => 12 * date.year + date.month - 1;
 
   /// Finds the [Period] between this date and another. It first finds the
   /// number of months by advancing the smaller date until it is within 1
   /// month of the larger. Then it finds the number of days between them.
   /// The final result is normalized into years, months and days—all positive
-  /// or all negative (if [other] is earlier than this).
+  /// or all negative.
   ///
   /// To count the number of days between two dates, use [durationUntil()].
   ///
@@ -113,7 +107,7 @@ class LocalDate {
       d1 = other;
       d2 = this;
     }
-    var months = d2._absoluteMonth - d1._absoluteMonth;
+    var months = _absoluteMonth(d2) - _absoluteMonth(d1);
     if (d1.day <= d2.day) {
       return Period(months: sign * months, days: sign * (d2.day - d1.day))
           .normalize();
@@ -135,23 +129,25 @@ class LocalDate {
   ///
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
-  Duration durationUntil(LocalDate other) {
-    return Duration(days: other._julianDays - _julianDays);
+  Duration durationUntil(HasRataDie other) {
+    return Duration(seconds: other.rataDieSeconds - rataDieSeconds);
   }
 
   /// Adds a [Duration] or [Period]. The behavior depends on the type.
   ///
   /// ## Duration
   ///
-  /// The date is incremented or decremented by the number of whole days
-  /// spanned by the Duration. Durations of less than one whole day have no
-  /// effect.
+  /// The date is incremented or decremented by the number of days in the
+  /// duration. Fractional results are rounded down.
+  ///
+  /// Note: Any duration of less than one second is treated as zero. This
+  /// behavior may change in the future, so please don't depend on it.
   ///
   /// ```dart
   /// LocalDate(2000) + Duration(days: 1) == LocalDate(2000, 1, 2);
   /// LocalDate(2000) + Duration(days: -1) == LocalDate(1999, 12, 31);
   /// LocalDate(2000) + Duration(hours: 23) == LocalDate(2000);
-  /// LocalDate(2000) + Duration(hours: -23) == LocalDate(2000);
+  /// LocalDate(2000) + Duration(hours: -23) == LocalDate(1999, 12, 31);
   /// ```
   ///
   /// ## Period
@@ -183,7 +179,7 @@ class LocalDate {
   }
 
   LocalDate _addDuration(Duration d) =>
-      LocalDate._fromJulianDays(_julianDays + d.inDays);
+      LocalDate._fromRataDieSeconds(rataDieSeconds + d.inSeconds);
 
   LocalDate _addPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
@@ -196,23 +192,31 @@ class LocalDate {
     }
     m = (m - 1) % 12 + 1;
     var d = LocalDate(y, m, min(day, daysInMonth(y, m)));
-    return LocalDate._fromJulianDays(d._julianDays + p.days);
+    return LocalDate._fromRataDieSeconds(d.rataDieSeconds + p.days * 86400);
   }
+
+  int _compare(Object other) {
+    if (!(other is LocalDate)) {
+      throw ArgumentError(
+          'Inavalid type for LocalDate comparison: ${other.runtimeType}');
+    }
+    return Comparable.compare(rataDieSeconds, other.rataDieSeconds);
+  }
+
+  bool operator >(Object other) => _compare(other) > 0;
+
+  bool operator >=(Object other) => _compare(other) >= 0;
+
+  bool operator <(Object other) => _compare(other) < 0;
+
+  bool operator <=(Object other) => _compare(other) <= 0;
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate && _julianDays == other._julianDays;
+      other is LocalDate && rataDieSeconds == other.rataDieSeconds;
 
   @override
-  int get hashCode => _julianDays.hashCode;
-
-  bool operator >(LocalDate other) => _julianDays > other._julianDays;
-
-  bool operator >=(LocalDate other) => _julianDays >= other._julianDays;
-
-  bool operator <(LocalDate other) => _julianDays < other._julianDays;
-
-  bool operator <=(LocalDate other) => _julianDays <= other._julianDays;
+  int get hashCode => rataDieSeconds.hashCode;
 
   /// Returns the date in ISO 8601 format.
   @override

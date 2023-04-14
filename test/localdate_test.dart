@@ -154,11 +154,6 @@ void main() {
     expect(LocalDate(10000).toString(), '+10000-01-01');
   });
 
-  test('minimum and maximum', () {
-    expect(LocalDate.minimum.toString(), '-4713-11-24');
-    expect(LocalDate.safeMaximum.toString(), '+24660873948184-12-03');
-  });
-
   test('ordinalDay', () {
     expect(LocalDate(2023, 4, 10).ordinalDay, 100);
     expect(LocalDate(2023, 1, 1).ordinalDay, 1);
@@ -178,7 +173,8 @@ void main() {
       expect(LocalDate(2000) + Duration(days: 1), LocalDate(2000, 1, 2));
       expect(LocalDate(2000) + Duration(days: -1), LocalDate(1999, 12, 31));
       expect(LocalDate(2000) + Duration(hours: 23), LocalDate(2000));
-      expect(LocalDate(2000) + Duration(hours: -23), LocalDate(2000));
+      expect(LocalDate(2000) + Duration(hours: -23), LocalDate(1999, 12, 31));
+      expect(LocalDate(2000) + Duration(seconds: -1), LocalDate(1999, 12, 31));
     });
 
     group('Period:', () {

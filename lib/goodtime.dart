@@ -8,5 +8,3 @@ export 'src/localdate.dart';
 export 'src/localdatetime.dart';
 export 'src/period.dart';
 export 'src/weekday.dart';
-
-// TODO: Export any libraries intended for clients of this package.

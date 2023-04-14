@@ -69,12 +69,6 @@ void main() {
     });
   });
 
-  test('minimum and maximum', () {
-    expect(LocalDateTime.minimum.toString(), '-4713-11-24T00:00:00.000000');
-    expect(LocalDateTime.safeMaximum.toString(),
-        '+24660873948184-12-03T23:59:59.999999');
-  });
-
   group('weekday', () {
     // In the current implementation, morning and afternoon aren't treated
     // any differently. But in case some future me decides to switch to

@@ -124,9 +124,4 @@ void main() {
   test('toString()', () {
     expect(LocalTime(1, 2, 3, 4, 5).toString(), '01:02:03.004005');
   });
-
-  test('minimum and maximum', () {
-    expect(LocalTime.minimum.toString(), '00:00:00.000000');
-    expect(LocalTime.maximum.toString(), '23:59:59.999999');
-  });
 }

@@ -45,14 +45,6 @@ class LocalTime {
   /// `LocalTime(0, 0, 0, 0, microseconds)`.
   LocalTime.fromMicroseconds(int microseconds) : this(0, 0, 0, 0, microseconds);
 
-  /// The start of the day. 00:00
-  static final LocalTime minimum = LocalTime.fromMicroseconds(0);
-
-  /// The very last moment of the day as precisely as this class can
-  /// represent it: 23:59.999999
-  static final LocalTime maximum =
-      LocalTime.fromMicroseconds((_secsPerDay - 1) * _micro + _micro - 1);
-
   /// Constructs a [LocalTime] with the currenttime in the current time zone.
   LocalTime.now() : this.fromDateTime(DateTime.now());
 

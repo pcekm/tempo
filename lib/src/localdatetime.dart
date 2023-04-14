@@ -1,3 +1,4 @@
+import 'interfaces.dart';
 import 'localdate.dart';
 import 'localtime.dart';
 import 'period.dart';
@@ -63,16 +64,6 @@ class LocalDateTime {
   /// [LocalTime].
   LocalDateTime.combine(this.date, [LocalTime? time])
       : time = time ?? LocalTime();
-
-  /// The earliest date that can be properly represented by this class.
-  static final LocalDateTime minimum =
-      LocalDateTime.combine(LocalDate.minimum, LocalTime.minimum);
-
-  /// The latest date that can be _safely_ represented by this class across
-  /// web and native platforms. Native platforms with 64-bit ints will be able
-  /// to exceed this by quite a bit.
-  static final LocalDateTime safeMaximum =
-      LocalDateTime.combine(LocalDate.safeMaximum, LocalTime.maximum);
 
   // The amount to adjust a date if the time parameters wrap backwards
   // or forwards.

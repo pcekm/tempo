@@ -1,6 +1,12 @@
+/// Low-level functions for manipulating dates and times.
+
 import 'package:tuple/tuple.dart';
 
-const List<int> _daysInMonthLookup = [
+const int _secsPerDay = 86400;
+const int _secsInHalfDay = _secsPerDay ~/ 2;
+const int _rataDieAdjustmentSecs = 1721424 * _secsPerDay + _secsInHalfDay;
+
+const List<int> _daysInMonthTable = [
   0,
   31, // Jan
   29, // Feb; non-leap years are a special case
@@ -16,50 +22,111 @@ const List<int> _daysInMonthLookup = [
   31, // Dec
 ];
 
+const List<int> _julianMonthTable = [
+  0,
+  31,
+  61,
+  92,
+  122,
+  153,
+  184,
+  214,
+  245,
+  275,
+  306,
+  337,
+];
+
 /// Determines if a year is a leap year.
 bool checkLeapYear(int year) =>
     year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
 
 /// Returns the days in a given month.
 int daysInMonth(int year, int month) {
-  return _daysInMonthLookup[month] -
+  return _daysInMonthTable[month] -
       (month == 2 && !checkLeapYear(year) ? 1 : 0);
 }
 
-/// Converts Julian Day to Year, Month, Day.
-Tuple3<int, int, int> julianDaysToGregorian(int julianDays) {
-  // Source: https://en.wikipedia.org/wiki/Julian_day
-  const int y = 4716;
-  const int j = 1401;
-  const int m = 2;
-  const int n = 12;
-  const int r = 4;
-  const int p = 1461;
-  const int v = 3;
-  const int u = 5;
-  const int s = 153;
-  const int w = 2;
-  const int B = 274277;
-  const int C = -38;
-
-  final int f =
-      julianDays + j + (((4 * julianDays + B) ~/ 146097) * 3) ~/ 4 + C;
-  final int e = r * f + v;
-  final int g = (e % p) ~/ r;
-  final int h = u * g + w;
-
-  final int D = (h % s) ~/ u + 1;
-  final int M = (h ~/ s + m) % n + 1;
-  final int Y = e ~/ p - y + (n + m - M) ~/ n;
-
-  return Tuple3<int, int, int>(Y, M, D);
+Tuple3<int, int, int> _secondsToHms(int seconds) {
+  return Tuple3<int, int, int>(
+      seconds ~/ 3600, (seconds ~/ 60) % 60, seconds % 60);
 }
 
-/// Converts Gregorian year, month, day to a Julian Day Number.
-gregorianToJulianDay(int year, int month, int day) {
-  return ((1461 * (year + 4800 + (month - 14) ~/ 12)) ~/ 4 +
-      (367 * (month - 2 - 12 * ((month - 14) ~/ 12))) ~/ 12 -
-      (3 * ((year + 4900 + (month - 14) ~/ 12) ~/ 100)) ~/ 4 +
-      day -
-      32075);
+int _hmsToSeconds(int hour, int minutes, int seconds) {
+  return hour * 3600 + minutes * 60 + seconds;
+}
+
+/// Converts seconds from an epoch (e.g. Julian Date or Rata Die)
+/// to a whole numbered day. For Julian Date, this will be the day
+/// starting at noon. For Rata Die, it will be the day starting at
+/// midnight.
+int epochSecondsToDay(int seconds) {
+  if (seconds < 0) {
+    --seconds;
+  }
+  return (seconds / _secsPerDay).floor();
+}
+
+/// Converts Julian date (in seconds) to Gregorian year, month day, hours
+/// minutes, and seconds.
+///
+/// See: Baum, Peter. (2017). Date Algorithms.
+Tuple6<int, int, int, int, int, int> julianDaySecondsToGregorian(
+    int julianDaySeconds) {
+  int z = (julianDaySeconds / _secsPerDay - 1721118.5).floor();
+  int fractionalSeconds = (julianDaySeconds - _secsInHalfDay) % _secsPerDay;
+  int h = 100 * z - 25;
+  int a = (h / 3652425).floor();
+  int b = a - (a / 4).floor();
+  int year = ((100 * b + h) / 36525).floor();
+  int c = b + z - 365 * year - (year / 4).floor();
+  int month = (5 * c + 456) ~/ 153;
+  int day = c - (153 * month - 457) ~/ 5;
+  if (month > 12) {
+    ++year;
+    month -= 12;
+  }
+  Tuple3<int, int, int> t = _secondsToHms(fractionalSeconds);
+  return Tuple6<int, int, int, int, int, int>(
+      year, month, day, t.item1, t.item2, t.item3);
+}
+
+/// Converts a Gregorian date to a Julian Day (JD) in seconds.
+/// This should only be limited by the size of ints, and works for
+/// both positive and negative JDs.
+///
+/// See: Baum, Peter. (2017). Date Algorithms.
+int gregorianToJulianDaySeconds(int year, int month, int day,
+    [int hour = 12, int minute = 0, int second = 0]) {
+  int z = year + (month - 14) ~/ 12;
+  int f = _julianMonthTable[(month - 3) % 12]; // Shifted to start in March.
+  return (day +
+              f +
+              365 * z +
+              (z / 4).floor() -
+              (z / 100).floor() +
+              (z / 400).floor() +
+              1721118) *
+          _secsPerDay +
+      _secsInHalfDay +
+      _hmsToSeconds(hour, minute, second);
+}
+
+/// Converts Gregorian year, month, day to Rata Die microseconds for use
+/// in local date calculations.
+///
+/// See https://en.wikipedia.org/wiki/Rata_Die.
+int gregorianToRataDieSeconds(int year, int month, int day,
+    [int hours = 0, int minutes = 0, int seconds = 0]) {
+  return gregorianToJulianDaySeconds(
+          year, month, day, hours, minutes, seconds) -
+      _rataDieAdjustmentSecs;
+}
+
+/// Converts Rata Die (in seconds) to Gregorian year, month, day, hours,
+/// minutes, and seconds.
+///
+/// See https://en.wikipedia.org/wiki/Rata_Die.
+Tuple6<int, int, int, int, int, int> rataDieSecondsToGregorian(int n) {
+  return julianDaySecondsToGregorian(n + _rataDieAdjustmentSecs);
 }
