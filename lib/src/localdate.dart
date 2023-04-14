@@ -7,14 +7,24 @@ import 'period.dart';
 import 'util.dart';
 import 'weekday.dart';
 
-/// Contains a local date on the proleptic Gregorian calendar with no timezone.
+/// A date fixed at midnight local time.
 class LocalDate implements HasDate {
   static const int _daysPerWeek = 7;
 
+  @override
   final int year;
+
+  @override
   final int month;
+
+  @override
   final int day;
 
+  /// Constructs a [LocalDate] from individual parts.
+  ///
+  /// The [year] uses ISO 8601, or astronomical year numbering and may be
+  /// zero or negative. When negative, year equates to year - 1 BCE. Throws
+  /// an exception if [month] or [day] is invalid.
   LocalDate([this.year = 0, this.month = 1, this.day = 1]) {
     _validate();
   }
@@ -24,11 +34,11 @@ class LocalDate implements HasDate {
     return LocalDate(parts.item1, parts.item2, parts.item3);
   }
 
-  /// Creates a [LocalDate] with the current date and time in the
+  /// Constructs a [LocalDate] with the current date and time in the
   /// current time zone.
   LocalDate.now() : this.fromDateTime(DateTime.now());
 
-  /// Creates a [LocalDate] from a standard Dart [DateTime].
+  /// Constructs a [LocalDate] from a standard Dart [DateTime].
   /// The timezone (if any) of [dateTime] is ignored.
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);
@@ -55,9 +65,10 @@ class LocalDate implements HasDate {
     return LocalDate(year, month, day);
   }
 
+  @override
   int get rataDieSeconds => gregorianToRataDieSeconds(year, month, day);
 
-  /// True if this date falls on a leap year.
+  /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
   Weekday get weekday => Weekday
@@ -72,7 +83,7 @@ class LocalDate implements HasDate {
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
-  static int _absoluteMonth(LocalDate date) => 12 * date.year + date.month - 1;
+  static int _absoluteMonth(HasDate date) => 12 * date.year + date.month - 1;
 
   /// Finds the [Period] between this date and another. It first finds the
   /// number of months by advancing the smaller date until it is within 1
@@ -94,17 +105,17 @@ class LocalDate implements HasDate {
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  Period periodUntil(LocalDate other) {
+  Period periodUntil(HasDate other) {
     late int sign;
     late LocalDate d1;
-    late LocalDate d2;
-    if (other >= this) {
+    late HasDate d2;
+    if (other.rataDieSeconds >= rataDieSeconds) {
       sign = 1;
       d1 = this;
       d2 = other;
     } else {
       sign = -1;
-      d1 = other;
+      d1 = LocalDate._fromRataDieSeconds(other.rataDieSeconds);
       d2 = this;
     }
     var months = _absoluteMonth(d2) - _absoluteMonth(d1);
@@ -125,7 +136,8 @@ class LocalDate implements HasDate {
   }
 
   /// Returns the [Duration] between this and another date. The result will
-  /// always be an integer number of days.
+  /// always be an integer number of days. This works on [LocalDate]
+  /// and [LocalDateTime].
   ///
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
@@ -195,21 +207,17 @@ class LocalDate implements HasDate {
     return LocalDate._fromRataDieSeconds(d.rataDieSeconds + p.days * 86400);
   }
 
-  int _compare(Object other) {
-    if (!(other is LocalDate)) {
-      throw ArgumentError(
-          'Inavalid type for LocalDate comparison: ${other.runtimeType}');
-    }
+  int _compare(HasRataDie other) {
     return Comparable.compare(rataDieSeconds, other.rataDieSeconds);
   }
 
-  bool operator >(Object other) => _compare(other) > 0;
+  bool operator >(HasRataDie other) => _compare(other) > 0;
 
-  bool operator >=(Object other) => _compare(other) >= 0;
+  bool operator >=(HasRataDie other) => _compare(other) >= 0;
 
-  bool operator <(Object other) => _compare(other) < 0;
+  bool operator <(HasRataDie other) => _compare(other) < 0;
 
-  bool operator <=(Object other) => _compare(other) <= 0;
+  bool operator <=(HasRataDie other) => _compare(other) <= 0;
 
   @override
   bool operator ==(Object other) =>

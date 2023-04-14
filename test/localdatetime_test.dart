@@ -115,11 +115,6 @@ void main() {
       expect(LocalDateTime(2000).durationUntil(LocalDate(1999, 12, 31)),
           Duration(days: -1));
     });
-
-    test('LocalTime error', () {
-      expect(() => LocalDateTime(2000).durationUntil(LocalTime()),
-          throwsArgumentError);
-    });
   });
 
   group('addition operator:', () {

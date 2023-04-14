@@ -2,11 +2,12 @@ import 'interfaces.dart';
 import 'localdate.dart';
 import 'localtime.dart';
 import 'period.dart';
+import 'util.dart';
 import 'weekday.dart';
 
 /// Contains a date and time with no time zone on the proleptic Gregorian
 /// calendar.
-class LocalDateTime {
+class LocalDateTime implements HasDate {
   static const int _milli = 1000;
   static const int _micro = 1000000;
 
@@ -23,8 +24,8 @@ class LocalDateTime {
   /// with one addition. A wrap increments or decrements the date part
   /// accordingly.
   ///
-  /// The date fields are pickier in the same way that [LocalDate]'s fields
-  /// are picky.
+  /// The date args are passed to [LocalDate()] which may throw an
+  /// exception if the values are invalid.
   ///
   /// ```dart
   /// LocalDateTime(2000, 1, 1, 25) == LocalDateTime(2000, 1, 2, 1);
@@ -81,6 +82,10 @@ class LocalDateTime {
     }
   }
 
+  @override
+  int get rataDieSeconds =>
+      gregorianToRataDieSeconds(year, month, day, hour, minute, second);
+
   int get year => date.year;
   int get month => date.month;
   int get day => date.day;
@@ -97,15 +102,10 @@ class LocalDateTime {
   int get microsecond => time.microsecond;
 
   /// Finds the duration between [this] and [other].
-  Duration durationUntil(Object other) {
-    if (other is LocalDateTime) {
-      return date.durationUntil(other.date) + time.durationUntil(other.time);
-    } else if (other is LocalDate) {
-      return date.durationUntil(other);
-    } else {
-      throw ArgumentError(
-          'Invalid type for durationUntil: ${other.runtimeType}');
-    }
+  ///
+  /// TODO: This only has second resolution.
+  Duration durationUntil(HasRataDie other) {
+    return Duration(seconds: other.rataDieSeconds - rataDieSeconds);
   }
 
   /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.
@@ -136,17 +136,20 @@ class LocalDateTime {
     }
   }
 
-  bool operator >(LocalDateTime other) =>
-      date > other.date || (date == other.date && time > other.time);
+  int _compare(HasRataDie other) =>
+      Comparable.compare(rataDieSeconds, other.rataDieSeconds);
 
-  bool operator >=(LocalDateTime other) =>
-      date >= other.date || (date == other.date && time >= other.time);
+  /// TODO: This only has second resolution.
+  bool operator >(HasRataDie other) => _compare(other) > 0;
 
-  bool operator <(LocalDateTime other) =>
-      date < other.date || (date == other.date && time < other.time);
+  /// TODO: This only has second resolution.
+  bool operator >=(HasRataDie other) => _compare(other) >= 0;
 
-  bool operator <=(LocalDateTime other) =>
-      date <= other.date || (date == other.date && time <= other.time);
+  /// TODO: This only has second resolution.
+  bool operator <(HasRataDie other) => _compare(other) < 0;
+
+  /// TODO: This only has second resolution.
+  bool operator <=(HasRataDie other) => _compare(other) <= 0;
 
   @override
   bool operator ==(Object other) =>
