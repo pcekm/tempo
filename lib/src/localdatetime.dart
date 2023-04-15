@@ -1,3 +1,5 @@
+import 'package:fixnum/fixnum.dart';
+
 import 'interfaces.dart';
 import 'localdate.dart';
 import 'localtime.dart';
@@ -7,8 +9,7 @@ import 'weekday.dart';
 
 /// Contains a date and time with no time zone on the proleptic Gregorian
 /// calendar.
-class LocalDateTime implements HasDate {
-  static const int _milli = 1000;
+class LocalDateTime implements HasRataDie {
   static const int _micro = 1000000;
 
   static const int _microsecondsPerHour = 60 * _microsecondsPerMinute;
@@ -70,21 +71,22 @@ class LocalDateTime implements HasDate {
   // or forwards.
   static Period _dateAdjustment(
       int hour, int minute, int second, int millisecond, int microsecond) {
-    var total = hour * _microsecondsPerHour +
-        minute * _microsecondsPerMinute +
-        second * _micro +
-        millisecond * _milli +
-        microsecond;
-    if (total < 0) {
-      return Period(days: -1 + total ~/ _microsecondsPerDay);
+    var dur = Duration(
+        hours: hour,
+        minutes: minute,
+        seconds: second,
+        milliseconds: millisecond,
+        microseconds: microsecond);
+    if (dur.isNegative) {
+      return Period(days: -1 + dur.inDays);
     } else {
-      return Period(days: total ~/ _microsecondsPerDay);
+      return Period(days: dur.inDays);
     }
   }
 
   @override
-  int get rataDieSeconds =>
-      gregorianToRataDieSeconds(year, month, day, hour, minute, second);
+  Int64 get rataDieUsec => gregorianToRataDieUsec(
+      year, month, day, hour, minute, second, millisecond * 1000 + microsecond);
 
   int get year => date.year;
   int get month => date.month;
@@ -102,10 +104,8 @@ class LocalDateTime implements HasDate {
   int get microsecond => time.microsecond;
 
   /// Finds the duration between [this] and [other].
-  ///
-  /// TODO: This only has second resolution.
   Duration durationUntil(HasRataDie other) {
-    return Duration(seconds: other.rataDieSeconds - rataDieSeconds);
+    return Duration(microseconds: (other.rataDieUsec - rataDieUsec).toInt());
   }
 
   /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.
@@ -137,18 +137,14 @@ class LocalDateTime implements HasDate {
   }
 
   int _compare(HasRataDie other) =>
-      Comparable.compare(rataDieSeconds, other.rataDieSeconds);
+      Comparable.compare(rataDieUsec, other.rataDieUsec);
 
-  /// TODO: This only has second resolution.
   bool operator >(HasRataDie other) => _compare(other) > 0;
 
-  /// TODO: This only has second resolution.
   bool operator >=(HasRataDie other) => _compare(other) >= 0;
 
-  /// TODO: This only has second resolution.
   bool operator <(HasRataDie other) => _compare(other) < 0;
 
-  /// TODO: This only has second resolution.
   bool operator <=(HasRataDie other) => _compare(other) <= 0;
 
   @override

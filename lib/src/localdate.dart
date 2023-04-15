@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fixnum/fixnum.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'interfaces.dart';
@@ -29,8 +30,8 @@ class LocalDate implements HasDate {
     _validate();
   }
 
-  factory LocalDate._fromRataDieSeconds(int rataDieSeconds) {
-    var parts = rataDieSecondsToGregorian(rataDieSeconds);
+  factory LocalDate._fromRataDieUsec(Int64 rataDieUsec) {
+    var parts = rataDieUsecToGregorian(rataDieUsec);
     return LocalDate(parts.item1, parts.item2, parts.item3);
   }
 
@@ -66,19 +67,19 @@ class LocalDate implements HasDate {
   }
 
   @override
-  int get rataDieSeconds => gregorianToRataDieSeconds(year, month, day);
+  Int64 get rataDieUsec => gregorianToRataDieUsec(year, month, day);
 
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
-  Weekday get weekday => Weekday
-      .values[(epochSecondsToDay(rataDieSeconds) - 1) % _daysPerWeek + 1];
+  Weekday get weekday =>
+      Weekday.values[(epochUsecToDay(rataDieUsec) - 1) % _daysPerWeek + 1];
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
   int get ordinalDay =>
-      epochSecondsToDay(rataDieSeconds) -
-      epochSecondsToDay(LocalDate(year).rataDieSeconds) +
+      epochUsecToDay(rataDieUsec) -
+      epochUsecToDay(LocalDate(year).rataDieUsec) +
       1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
@@ -109,13 +110,13 @@ class LocalDate implements HasDate {
     late int sign;
     late LocalDate d1;
     late HasDate d2;
-    if (other.rataDieSeconds >= rataDieSeconds) {
+    if (other.rataDieUsec >= rataDieUsec) {
       sign = 1;
       d1 = this;
       d2 = other;
     } else {
       sign = -1;
-      d1 = LocalDate._fromRataDieSeconds(other.rataDieSeconds);
+      d1 = LocalDate._fromRataDieUsec(other.rataDieUsec);
       d2 = this;
     }
     var months = _absoluteMonth(d2) - _absoluteMonth(d1);
@@ -142,7 +143,7 @@ class LocalDate implements HasDate {
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
   Duration durationUntil(HasRataDie other) {
-    return Duration(seconds: other.rataDieSeconds - rataDieSeconds);
+    return Duration(microseconds: (other.rataDieUsec - rataDieUsec).toInt());
   }
 
   /// Adds a [Duration] or [Period]. The behavior depends on the type.
@@ -191,7 +192,7 @@ class LocalDate implements HasDate {
   }
 
   LocalDate _addDuration(Duration d) =>
-      LocalDate._fromRataDieSeconds(rataDieSeconds + d.inSeconds);
+      LocalDate._fromRataDieUsec(rataDieUsec + d.inMicroseconds);
 
   LocalDate _addPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
@@ -203,12 +204,12 @@ class LocalDate implements HasDate {
       ++y;
     }
     m = (m - 1) % 12 + 1;
-    var d = LocalDate(y, m, min(day, daysInMonth(y, m)));
-    return LocalDate._fromRataDieSeconds(d.rataDieSeconds + p.days * 86400);
+    return LocalDate(y, m, min(day, daysInMonth(y, m)))
+        ._addDuration(Duration(days: p.days));
   }
 
   int _compare(HasRataDie other) {
-    return Comparable.compare(rataDieSeconds, other.rataDieSeconds);
+    return Comparable.compare(rataDieUsec, other.rataDieUsec);
   }
 
   bool operator >(HasRataDie other) => _compare(other) > 0;
@@ -221,10 +222,10 @@ class LocalDate implements HasDate {
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate && rataDieSeconds == other.rataDieSeconds;
+      other is LocalDate && rataDieUsec == other.rataDieUsec;
 
   @override
-  int get hashCode => rataDieSeconds.hashCode;
+  int get hashCode => rataDieUsec.hashCode;
 
   /// Returns the date in ISO 8601 format.
   @override

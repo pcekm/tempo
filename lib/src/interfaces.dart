@@ -1,15 +1,17 @@
 // Interfaces used throughout this library.
 
+import 'package:fixnum/fixnum.dart';
+
 /// Interface for date/time objects that provide an absolute date/time
 /// relative to 0001-01-01 of the ISO 8601 calendar.
 abstract class HasRataDie {
-  /// Gets absolute seconds relative to midnight **local** time on `0001-01-01`.
+  /// Gets microseconds relative to midnight **local** time on `0001-01-01`.
   ///
   /// Note that "relative to" does not mean "since," which may
   /// be confusing to those used to Unix times. Rata Die
-  /// numbers days starting at 1. So this actually measures seconds since
+  /// numbers days starting at 1. So this actually measures microseconds since
   /// midnight `0000-12-31`.
-  int get rataDieSeconds;
+  Int64 get rataDieUsec;
 }
 
 /// Interface for date/time objects that have an ISO 8601 date.
