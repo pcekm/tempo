@@ -10,12 +10,6 @@ import 'weekday.dart';
 /// Contains a date and time with no time zone on the proleptic Gregorian
 /// calendar.
 class LocalDateTime implements HasRataDie {
-  static const int _micro = 1000000;
-
-  static const int _microsecondsPerHour = 60 * _microsecondsPerMinute;
-  static const int _microsecondsPerMinute = 60 * _micro;
-  static const int _microsecondsPerDay = 86400 * _micro;
-
   final LocalDate date;
   final LocalTime time;
 
