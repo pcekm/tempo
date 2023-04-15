@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fixnum/fixnum.dart';
 import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
 
@@ -61,7 +62,11 @@ void main() {
     });
   });
 
-  group('replace', () {
+  test('rataDieUsec() smoke test', () {
+    expect(LocalDate(1970, 1, 1).rataDieUsec, Int64(719163) * 86400 * 1000000);
+  });
+
+  group('replace()', () {
     test('year', () {
       expect(LocalDate(2023, 1, 2).replace(year: 1998), LocalDate(1998, 1, 2));
     });
