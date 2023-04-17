@@ -27,6 +27,8 @@ void main() {
     expect(JulianDay(1, dayNano + 1), HasDayFraction(2, 1));
     expect(JulianDay(1, 2 * dayNano + 1), HasDayFraction(3, 1));
 
+    expect(JulianDay(10, -1), HasDayFraction(9, dayNano - 1));
+
     expect(JulianDay(0, -1), HasDayFraction(-1, dayNano - 1));
     expect(JulianDay(0, -halfDayNano), HasDayFraction(-1, halfDayNano));
     expect(JulianDay(0, -dayNano + 1), HasDayFraction(-1, 1));
@@ -118,6 +120,52 @@ void main() {
           reason: 'JD = $jd, intermediate = $date');
     }
   }, tags: ['slow']);
+
+  test('plus()', () {
+    var jd = JulianDay(-10, 0);
+    expect(jd.plus(1), HasDayFraction(-9, 0));
+    expect(jd.plus(5), HasDayFraction(-5, 0));
+    expect(jd.plus(10), HasDayFraction(0, 0));
+    expect(jd.plus(11), HasDayFraction(1, 0));
+
+    expect(jd.plus(0, 1), HasDayFraction(-10, 1));
+    expect(jd.plus(0, dayNano - 1), HasDayFraction(-10, dayNano - 1));
+    expect(jd.plus(0, dayNano), HasDayFraction(-9, 0));
+    expect(jd.plus(0, 2 * dayNano - 1), HasDayFraction(-9, dayNano - 1));
+    expect(jd.plus(0, 2 * dayNano), HasDayFraction(-8, 0));
+    expect(jd.plus(0, 2 * dayNano + 1), HasDayFraction(-8, 1));
+
+    expect(jd.plus(0, 10 * dayNano - 1), HasDayFraction(-1, dayNano - 1));
+    expect(jd.plus(0, 10 * dayNano), HasDayFraction(0, 0));
+    expect(jd.plus(0, 10 * dayNano + 1), HasDayFraction(0, 1));
+
+    expect(jd.plus(0, 20 * dayNano - 1), HasDayFraction(9, dayNano - 1));
+    expect(jd.plus(0, 20 * dayNano), HasDayFraction(10, 0));
+    expect(jd.plus(0, 20 * dayNano + 1), HasDayFraction(10, 1));
+  });
+
+  test('minus()', () {
+    var jd = JulianDay(10, 0);
+    expect(jd.minus(1), HasDayFraction(9, 0));
+    expect(jd.minus(5), HasDayFraction(5, 0));
+    expect(jd.minus(10), HasDayFraction(0, 0));
+    expect(jd.minus(11), HasDayFraction(-1, 0));
+
+    expect(jd.minus(0, 1), HasDayFraction(9, dayNano - 1));
+    expect(jd.minus(0, dayNano - 1), HasDayFraction(9, 1));
+    expect(jd.minus(0, dayNano), HasDayFraction(9, 0));
+    expect(jd.minus(0, 2 * dayNano - 1), HasDayFraction(8, 1));
+    expect(jd.minus(0, 2 * dayNano), HasDayFraction(8, 0));
+    expect(jd.minus(0, 2 * dayNano + 1), HasDayFraction(7, dayNano - 1));
+
+    expect(jd.minus(0, 10 * dayNano - 1), HasDayFraction(0, 1));
+    expect(jd.minus(0, 10 * dayNano), HasDayFraction(0, 0));
+    expect(jd.minus(0, 10 * dayNano + 1), HasDayFraction(-1, dayNano - 1));
+
+    expect(jd.minus(0, 20 * dayNano - 1), HasDayFraction(-10, 1));
+    expect(jd.minus(0, 20 * dayNano), HasDayFraction(-10, 0));
+    expect(jd.minus(0, 20 * dayNano + 1), HasDayFraction(-11, dayNano - 1));
+  });
 
   test('toDouble()', () {
     expect(JulianDay(0).toDouble(), 0);

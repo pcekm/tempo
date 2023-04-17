@@ -126,6 +126,14 @@ class JulianDay {
     return Gregorian(Y, M, D, remainder);
   }
 
+  /// Adds days and nanoseconds and returns a new object.
+  JulianDay plus(int days, [int nanoseconds = 0]) =>
+      JulianDay(day + days, fraction + nanoseconds, denominator);
+
+  /// Subtracts days and nanoseconds and returns a new object.
+  JulianDay minus(int days, [int nanoseconds = 0]) =>
+      JulianDay(day - days, fraction - nanoseconds, denominator);
+
   /// Converts this to a **less precise** double.
   ///
   /// This can be quite handy, but the result will only have about millisecond
