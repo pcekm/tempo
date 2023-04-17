@@ -88,10 +88,9 @@ class JulianDay {
   }
 
   /// Converts a Gregorian date and time to a Julian Day (JD).
-  ///
-  /// See: Baum, Peter. (2017). Date Algorithms.
   factory JulianDay.fromGregorian(Gregorian date,
       [int denominator = _nsPerDay]) {
+    // See: Baum, Peter. (2017). Date Algorithms.
     int z = date.year + (date.month - 14) ~/ 12;
     int f = _monthTable[(date.month - 3) % 12]; // Shifted to start in March.
     int jdn = date.day +
@@ -106,11 +105,9 @@ class JulianDay {
   }
 
   /// Converts a [JulianDay] to years, months, days, and nanoseconds past
-  /// noon on the Gregorian calendar.
-  ///
-  /// See: Baum, Peter. (2017). Date Algorithms.
+  /// midnight on the Gregorian calendar.
   Gregorian toGregorian() {
-    // int z = (day + fraction / denominator - 1721118.5).floor();
+    // See: Baum, Peter. (2017). Date Algorithms.
     int z = day -
         1721118 +
         ((fraction - (denominator / 2).floor()) / denominator).floor();
