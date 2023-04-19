@@ -1,3 +1,5 @@
+import 'weekday.dart';
+
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.
 class Gregorian {
@@ -29,7 +31,14 @@ class Gregorian {
 /// For example, if this is used to represent the last second of `2016-12-31`
 /// UTC (a day with a leap second), the denominator could be one second
 /// bigger than normal.
-class JulianDay {
+//
+// Note: It would be cool if this could be implemented in terms of
+// Timespan. There are some issues with doing that, however. Mainly I'm
+// not keen on complicating the end-user API with the ability to choose
+// arbitrary denominators. So far I'm not actually using arbitrary
+// denominators, though. And if I can implement leap seconds without them,
+// then this becomes easier.
+class JulianDay implements Comparable<JulianDay> {
   // The number of nanoseconds in a day.
   static const int _nsPerDay = 86400 * 1000000000;
 
@@ -134,11 +143,22 @@ class JulianDay {
   JulianDay minus(int days, [int nanoseconds = 0]) =>
       JulianDay(day - days, fraction - nanoseconds, denominator);
 
+  /// Returns the day of the week.
+  Weekday get weekday => Weekday.values[plus(0, _nsPerDay ~/ 2).day % 7 + 1];
+
   /// Converts this to a **less precise** double.
   ///
   /// This can be quite handy, but the result will only have about millisecond
   /// precision.
   double toDouble() => day + fraction / denominator;
+
+  @override
+  int compareTo(JulianDay other) {
+    if (day == other.day) {
+      return Comparable.compare(fraction, other.fraction);
+    }
+    return Comparable.compare(day, other.day);
+  }
 
   @override
   String toString() => '[$day + $fraction / $denominator]';

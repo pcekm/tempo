@@ -1,4 +1,4 @@
-import 'package:tuple/tuple.dart';
+import 'package:goodtime/src/weekday.dart';
 import 'package:test/test.dart';
 import 'package:goodtime/src/julian_day.dart';
 
@@ -10,6 +10,7 @@ class HasDayFraction extends CustomMatcher {
   HasDayFraction(day, fraction)
       : super('JulianDay with [day, fraction]', '[day, fraction]',
             [day, fraction]);
+  @override
   featureValueOf(actual) {
     var jd = actual as JulianDay;
     return [jd.day, jd.fraction];
@@ -172,6 +173,22 @@ void main() {
     expect(JulianDay(0, halfDayNano).toDouble(), 0.5);
     expect(JulianDay(0, -halfDayNano).toDouble(), -0.5);
     expect(JulianDay(1721424, halfDayNano).toDouble(), 1721424.5);
+  });
+
+  test('weekday', () {
+    expect(JulianDay(0, -halfDayNano).weekday, Weekday.monday);
+    expect(JulianDay(0, 0).weekday, Weekday.monday);
+    expect(JulianDay(0, halfDayNano).weekday, Weekday.tuesday);
+    expect(JulianDay(2430335, halfDayNano).weekday, Weekday.sunday);
+    expect(JulianDay(2460053, halfDayNano).weekday, Weekday.wednesday);
+  });
+
+  test('compareTo()', () {
+    expect(JulianDay(0, 0).compareTo(JulianDay(0, 1)), -1);
+    expect(JulianDay(0, 1).compareTo(JulianDay(0, 0)), 1);
+    expect(JulianDay(0, 0).compareTo(JulianDay(1, 0)), -1);
+    expect(JulianDay(1, 0).compareTo(JulianDay(0, 0)), 1);
+    expect(JulianDay(1, 1).compareTo(JulianDay(1, 1)), 0);
   });
 
   test('toString()', () {

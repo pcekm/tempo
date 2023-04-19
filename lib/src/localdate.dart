@@ -1,24 +1,25 @@
 import 'dart:math';
 
-import 'package:fixnum/fixnum.dart';
 import 'package:sprintf/sprintf.dart';
 
-import 'interfaces.dart';
+import 'julian_day.dart';
 import 'period.dart';
+import 'timespan.dart';
 import 'util.dart';
 import 'weekday.dart';
 
-/// A date fixed at midnight local time.
-class LocalDate implements HasDate {
-  static const int _daysPerWeek = 7;
-
-  @override
+/// An ISO 8601 date with no timezone.
+class LocalDate implements Comparable<LocalDate> {
+  /// The year.
+  ///
+  /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
+  /// This is also called astronomical year numbering.
   final int year;
 
-  @override
+  /// The month from 1 to 12.
   final int month;
 
-  @override
+  /// The day starting at 1.
   final int day;
 
   /// Constructs a [LocalDate] from individual parts.
@@ -30,9 +31,9 @@ class LocalDate implements HasDate {
     _validate();
   }
 
-  factory LocalDate._fromRataDieUsec(Int64 rataDieUsec) {
-    var parts = rataDieUsecToGregorian(rataDieUsec);
-    return LocalDate(parts.item1, parts.item2, parts.item3);
+  factory LocalDate._fromJulianDay(JulianDay julianDay) {
+    var parts = julianDay.toGregorian();
+    return LocalDate(parts.year, parts.month, parts.day);
   }
 
   /// Constructs a [LocalDate] with the current date and time in the
@@ -51,8 +52,8 @@ class LocalDate implements HasDate {
     return LocalDate(dateTime.year, dateTime.month, dateTime.day);
   }
 
-  /// Returns a new date with one or more fields replaced. Adjusts the day
-  /// if the resulting month is shorter.
+  /// Returns a new date with one or more fields replaced. Uses the largest
+  /// valid day if the resulting month is shorter.
   ///
   /// ```dart
   /// var date = LocalDate(2000, 1, 31);
@@ -66,25 +67,22 @@ class LocalDate implements HasDate {
     return LocalDate(year, month, day);
   }
 
-  @override
-  Int64 get rataDieUsec => gregorianToRataDieUsec(year, month, day);
+  // The Julian day represented by this date.
+  JulianDay get _julianDay =>
+      JulianDay.fromGregorian(Gregorian(year, month, day, 0));
 
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
-  Weekday get weekday =>
-      Weekday.values[(epochUsecToDay(rataDieUsec) - 1) % _daysPerWeek + 1];
+  Weekday get weekday => _julianDay.plus(0, 43100 * 1000000000).weekday;
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
-  int get ordinalDay =>
-      epochUsecToDay(rataDieUsec) -
-      epochUsecToDay(LocalDate(year).rataDieUsec) +
-      1;
+  int get ordinalDay => _julianDay.day - LocalDate(year)._julianDay.day + 1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
-  static int _absoluteMonth(HasDate date) => 12 * date.year + date.month - 1;
+  static int _absoluteMonth(LocalDate date) => 12 * date.year + date.month - 1;
 
   /// Finds the [Period] between this date and another. It first finds the
   /// number of months by advancing the smaller date until it is within 1
@@ -92,7 +90,7 @@ class LocalDate implements HasDate {
   /// The final result is normalized into years, months and days—all positive
   /// or all negative.
   ///
-  /// To count the number of days between two dates, use [durationUntil()].
+  /// To count the number of days between two dates, use [periodUntil()].
   ///
   /// ```dart
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
@@ -106,17 +104,17 @@ class LocalDate implements HasDate {
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  Period periodUntil(HasDate other) {
+  Period periodUntil(LocalDate other) {
     late int sign;
     late LocalDate d1;
-    late HasDate d2;
-    if (other.rataDieUsec >= rataDieUsec) {
+    late LocalDate d2;
+    if (other._julianDay.day >= _julianDay.day) {
       sign = 1;
       d1 = this;
       d2 = other;
     } else {
       sign = -1;
-      d1 = LocalDate._fromRataDieUsec(other.rataDieUsec);
+      d1 = other;
       d2 = this;
     }
     var months = _absoluteMonth(d2) - _absoluteMonth(d1);
@@ -125,7 +123,7 @@ class LocalDate implements HasDate {
           .normalize();
     } else {
       --months;
-      var advanced = d1 + Period(months: months);
+      var advanced = d1.plusPeriod(Period(months: months));
       return Period(
               months: sign * months,
               days: sign *
@@ -136,34 +134,29 @@ class LocalDate implements HasDate {
     }
   }
 
-  /// Returns the [Duration] between this and another date. The result will
-  /// always be an integer number of days. This works on [LocalDate]
-  /// and [LocalDateTime].
+  /// Returns the [Timespan] between this and another date. The result will
+  /// always be an integer number of days.
   ///
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
-  Duration durationUntil(HasRataDie other) {
-    return Duration(microseconds: (other.rataDieUsec - rataDieUsec).toInt());
-  }
+  Timespan timespanUntil(LocalDate other) =>
+      Timespan(days: other._julianDay.day - _julianDay.day);
 
-  /// Adds a [Duration] or [Period]. The behavior depends on the type.
-  ///
-  /// ## Duration
+  /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
   /// duration. Fractional results are rounded down.
+  LocalDate plusTimespan(Timespan t) =>
+      LocalDate._fromJulianDay(_julianDay.plus(t.dayPart, t.nanosecondPart));
+
+  /// Subtracts a [Timespan].
   ///
-  /// Note: Any duration of less than one second is treated as zero. This
-  /// behavior may change in the future, so please don't depend on it.
-  ///
-  /// ```dart
-  /// LocalDate(2000) + Duration(days: 1) == LocalDate(2000, 1, 2);
-  /// LocalDate(2000) + Duration(days: -1) == LocalDate(1999, 12, 31);
-  /// LocalDate(2000) + Duration(hours: 23) == LocalDate(2000);
-  /// LocalDate(2000) + Duration(hours: -23) == LocalDate(1999, 12, 31);
-  /// ```
-  ///
-  /// ## Period
+  /// The date is decremented or incremented by the number of days in the
+  /// duration. Fractional results are rounded down.
+  LocalDate minusTimespan(Timespan t) =>
+      LocalDate._fromJulianDay(_julianDay.minus(t.dayPart, t.nanosecondPart));
+
+  /// Adds [Period] of time.
   ///
   /// Increments (or decrements) the date by a specific number of months
   /// or years while—as much as possible—keeping the day the same. When this
@@ -173,28 +166,7 @@ class LocalDate implements HasDate {
   /// The days part is applied last. For example, adding one month and one day
   /// to `2023-01-31` first adds one month to get `2023-02-28` and then
   /// adds one day for a final result of `2023-03-01`.
-  ///
-  /// ```dart
-  /// LocalDate(2023, 1, 31) + Period(months: 1, days: 1) ==
-  ///     LocalDate(2023, 3, 1);
-  /// LocalDate(2023, 3, 31) + Period(months: -1, days: -1) ==
-  ///     LocalDate(2023, 2, 27);
-  /// ```
-  LocalDate operator +(Object other) {
-    if (other is Duration) {
-      return _addDuration(other);
-    } else if (other is Period) {
-      return _addPeriod(other);
-    } else {
-      throw ArgumentError(
-          'Invalid type for LocalDate addition: ${other.runtimeType}');
-    }
-  }
-
-  LocalDate _addDuration(Duration d) =>
-      LocalDate._fromRataDieUsec(rataDieUsec + d.inMicroseconds);
-
-  LocalDate _addPeriod(Period p) {
+  LocalDate plusPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
     var months = p.months.remainder(12);
     var m = month + months;
@@ -205,27 +177,40 @@ class LocalDate implements HasDate {
     }
     m = (m - 1) % 12 + 1;
     return LocalDate(y, m, min(day, daysInMonth(y, m)))
-        ._addDuration(Duration(days: p.days));
+        .plusTimespan(Timespan(days: p.days));
   }
 
-  int _compare(HasRataDie other) {
-    return Comparable.compare(rataDieUsec, other.rataDieUsec);
+  /// Subtracts [Period] of time.
+  ///
+  /// Decrements (or increments) the date by a specific number of months
+  /// or years while—as much as possible—keeping the day the same. When this
+  /// is not possible the result will be the last day of the month. For
+  /// example, adding one month to `2023-01-31` gives `2023-01-28`.
+  ///
+  /// The days part is applied last. For example, subtracting one month and
+  /// one day from `2023-03-31` first subtracts one month to get `2023-02-28`
+  /// and then subtracts one day for a final result of `2023-02-27`.
+  LocalDate minusPeriod(Period p) => plusPeriod(-p);
+
+  @override
+  int compareTo(LocalDate other) {
+    return Comparable.compare(_julianDay.day, other._julianDay.day);
   }
 
-  bool operator >(HasRataDie other) => _compare(other) > 0;
+  bool operator >(LocalDate other) => compareTo(other) > 0;
 
-  bool operator >=(HasRataDie other) => _compare(other) >= 0;
+  bool operator >=(LocalDate other) => compareTo(other) >= 0;
 
-  bool operator <(HasRataDie other) => _compare(other) < 0;
+  bool operator <(LocalDate other) => compareTo(other) < 0;
 
-  bool operator <=(HasRataDie other) => _compare(other) <= 0;
+  bool operator <=(LocalDate other) => compareTo(other) <= 0;
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate && rataDieUsec == other.rataDieUsec;
+      other is LocalDate && _julianDay.day == other._julianDay.day;
 
   @override
-  int get hashCode => rataDieUsec.hashCode;
+  int get hashCode => _julianDay.hashCode;
 
   /// Returns the date in ISO 8601 format.
   @override

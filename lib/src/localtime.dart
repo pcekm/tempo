@@ -1,11 +1,17 @@
 import 'package:sprintf/sprintf.dart';
+import 'timespan.dart';
 
-/// Contains a time of day. Think of this as exactly what you'd normally see
-/// on a wall clock. It has no concept of the current date, leap seconds or
-/// anything else.
-class LocalTime {
-  static const int _milli = 1000;
-  static const int _micro = 1000000;
+/// Represents a time of day without a time zone.
+///
+/// Internally this stores the time in [nanosecondsSinceMidnight], which
+/// means it can represent any time down to the nanosecond. This does
+/// not support leap seconds.
+class LocalTime implements Comparable<LocalTime> {
+  static const int _nano = 1000000000;
+
+  static const int _nsPerS = 1000000000;
+  static const int _nsPerMs = 1000000;
+  static const int _nsPerUs = 1000;
 
   static const int _secsPerDay = 86400;
   static const int _secsPerMinute = 60;
@@ -13,7 +19,8 @@ class LocalTime {
   static const int _secsPerHour = 3600;
   static const int _hoursPerDay = 24;
 
-  final int microsecondsSinceMidnight;
+  /// The time in nanoseconds relative to midnight.
+  final int nanosecondsSinceMidnight;
 
   /// Constructs a new [LocalTime]. If the provided values are bigger than
   /// expected (e.g. minute = 61), the residues will increment the overall time
@@ -27,73 +34,89 @@ class LocalTime {
   /// LocalTime(23, 60, 0) == LocalTime(0, 0, 0);
   /// LocalTime(0, 0, -1) == LocalTime(23, 59, 59);
   /// ```
-  LocalTime(
-      [int hour = 0,
-      int minute = 0,
-      int second = 0,
-      int millisecond = 0,
-      int microsecond = 0])
-      : microsecondsSinceMidnight = (hour * _secsPerHour * _micro +
-                minute * _secsPerMinute * _micro +
-                second * _micro +
-                millisecond * _milli +
-                microsecond) %
-            (_secsPerDay * _micro);
+  LocalTime([int hour = 0, int minute = 0, int second = 0, int nanosecond = 0])
+      : nanosecondsSinceMidnight = (hour * _secsPerHour * _nano +
+                minute * _secsPerMinute * _nano +
+                second * _nsPerS +
+                nanosecond) %
+            (_secsPerDay * _nano);
 
-  /// Creates a [LocalTime] using the number of microseconds since midnight.
-  /// This is just a convenience function for
-  /// `LocalTime(0, 0, 0, 0, microseconds)`.
-  LocalTime.fromMicroseconds(int microseconds) : this(0, 0, 0, 0, microseconds);
-
-  /// Constructs a [LocalTime] with the currenttime in the current time zone.
+  /// Constructs a [LocalTime] with the current time in the current time zone.
+  ///
+  /// The result will have a maximum resolution of microseconds.
   LocalTime.now() : this.fromDateTime(DateTime.now());
 
   /// Constructs a [LocalTime] from a standard Dart [DateTime].
-  /// The timezone (if any) of [dateTime] is ignored.
+  ///
+  /// The timezone (if any) of [dateTime] is ignored. The resulting time will
+  /// have a maximum resolution of microseconds.
   LocalTime.fromDateTime(DateTime dateTime)
       : this(dateTime.hour, dateTime.minute, dateTime.second,
-            dateTime.millisecond, dateTime.microsecond);
+            dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
 
+  /// The hour from 0 to 23.
   int get hour =>
-      (microsecondsSinceMidnight ~/ (_secsPerHour * _micro)) % _hoursPerDay;
+      (nanosecondsSinceMidnight ~/ (_secsPerHour * _nano)) % _hoursPerDay;
+
+  /// The minute from 0 to 59.
   int get minute =>
-      (microsecondsSinceMidnight ~/ (_secsPerMinute * _micro)) % _minsPerHour;
-  int get second => (microsecondsSinceMidnight ~/ _micro) % _secsPerMinute;
-  int get millisecond => (microsecondsSinceMidnight ~/ _milli) % 1000;
-  int get microsecond => microsecondsSinceMidnight % 1000;
+      (nanosecondsSinceMidnight ~/ (_secsPerMinute * _nano)) % _minsPerHour;
 
-  /// Finds the duration between two times. The result will be negative if
+  /// Seconds from 0 to 59.
+  int get second => (nanosecondsSinceMidnight ~/ _nano) % _secsPerMinute;
+
+  /// Nanoseconds from 0 to 999,999,999.
+  int get nanosecond => nanosecondsSinceMidnight % _nsPerS;
+
+  /// Finds the [Timespan] between two times. The result will be negative if
   /// [other] is earlier than this.
-  Duration durationUntil(LocalTime other) => Duration(
-      microseconds:
-          other.microsecondsSinceMidnight - microsecondsSinceMidnight);
+  Timespan timespanUntil(LocalTime other) =>
+      Timespan(nanoseconds: other.nanosecondsSinceMidnight) -
+      Timespan(nanoseconds: nanosecondsSinceMidnight);
 
-  /// Adds a [Duration] modulo 1 day.
-  LocalTime operator +(Duration duration) => LocalTime.fromMicroseconds(
-      microsecondsSinceMidnight + duration.inMicroseconds);
+  /// Adds a [Timespan]. If [span] covers more than one day, the result will
+  /// wrap.
+  LocalTime plusTimespan(Timespan span) =>
+      LocalTime(0, 0, 0, nanosecondsSinceMidnight + span.nanosecondPart);
 
+  /// Subtracts a [Timespan]. If [span] covers more than one day, the result
+  /// will wrap.
+  LocalTime minusTimespan(Timespan span) =>
+      LocalTime(0, 0, 0, nanosecondsSinceMidnight - span.nanosecondPart);
+
+  /// Compares this to another [LocalTime].
+  @override
+  int compareTo(LocalTime other) => Comparable.compare(
+      nanosecondsSinceMidnight, other.nanosecondsSinceMidnight);
+
+  /// Greater than operator.
   bool operator >(LocalTime other) =>
-      microsecondsSinceMidnight > other.microsecondsSinceMidnight;
+      nanosecondsSinceMidnight > other.nanosecondsSinceMidnight;
 
+  /// Greater than or equals operator.
   bool operator >=(LocalTime other) =>
-      microsecondsSinceMidnight >= other.microsecondsSinceMidnight;
+      nanosecondsSinceMidnight >= other.nanosecondsSinceMidnight;
 
+  /// Less than operator.
   bool operator <(LocalTime other) =>
-      microsecondsSinceMidnight < other.microsecondsSinceMidnight;
+      nanosecondsSinceMidnight < other.nanosecondsSinceMidnight;
 
+  /// Less than or equals operator.
   bool operator <=(LocalTime other) =>
-      microsecondsSinceMidnight <= other.microsecondsSinceMidnight;
+      nanosecondsSinceMidnight <= other.nanosecondsSinceMidnight;
 
   @override
   bool operator ==(Object other) =>
       other is LocalTime &&
-      microsecondsSinceMidnight == other.microsecondsSinceMidnight;
+      nanosecondsSinceMidnight == other.nanosecondsSinceMidnight;
 
   @override
-  int get hashCode => microsecondsSinceMidnight.hashCode;
+  int get hashCode => nanosecondsSinceMidnight.hashCode;
 
   /// Returns the time in ISO 8601 format.
+  ///
+  /// For example, 04:30:55.123456789.
   @override
-  String toString() => sprintf('%02d:%02d:%02d.%03d%03d',
-      [hour, minute, second, millisecond, microsecond]);
+  String toString() =>
+      sprintf('%02d:%02d:%02d.%09d', [hour, minute, second, nanosecond]);
 }

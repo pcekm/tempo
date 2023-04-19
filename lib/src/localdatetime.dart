@@ -1,16 +1,26 @@
-import 'package:fixnum/fixnum.dart';
-
-import 'interfaces.dart';
 import 'localdate.dart';
 import 'localtime.dart';
+import 'julian_day.dart';
 import 'period.dart';
-import 'util.dart';
 import 'weekday.dart';
+import 'timespan.dart';
 
-/// Contains a date and time with no time zone on the proleptic Gregorian
-/// calendar.
-class LocalDateTime implements HasRataDie {
+/// Contains an ISO 8601 date and time with no time zone.
+///
+/// This is a combination of [LocalDate] and [LocalTime]. The individual
+/// parts can be retrieved with [date] and [time].
+class LocalDateTime implements Comparable<LocalDateTime> {
+  static const int _nsPerMicrosecond = 1000;
+  static const int _nsPerMillisecond = 1000000;
+  static const int _nsPerSecond = 1000000000;
+
+  static const int _nsPerMinute = 60 * _nsPerSecond;
+  static const int _nsPerHour = 60 * _nsPerMinute;
+
+  /// The date part of this [DateTime].
   final LocalDate date;
+
+  /// The time part of this [DateTime].
   final LocalTime time;
 
   /// Constructs a new LocalDateTime.
@@ -33,18 +43,24 @@ class LocalDateTime implements HasRataDie {
       int hour = 0,
       int minute = 0,
       int second = 0,
-      int millisecond = 0,
-      int microsecond = 0])
-      : time = LocalTime(hour, minute, second, millisecond, microsecond),
-        date = LocalDate(year, month, day) +
-            _dateAdjustment(hour, minute, second, millisecond, microsecond);
+      int nanosecond = 0])
+      : time = LocalTime(hour, minute, second, nanosecond),
+        date = LocalDate(year, month, day).plusTimespan(Timespan(
+            hours: hour,
+            minutes: minute,
+            seconds: second,
+            nanoseconds: nanosecond));
 
   /// Constructs a [LocalDateTime] with the current date and time in the
   /// current time zone.
+  ///
+  /// This will have a maximum resolution of microseconds.
   LocalDateTime.now() : this.fromDateTime(DateTime.now());
 
   /// Constructs a [LocalDateTime] from a standard Dart [DateTime].
   /// The timezone (if any) of [dateTime] is ignored.
+  ///
+  /// This will have a maximum resolution of microseconds.
   LocalDateTime.fromDateTime(DateTime dateTime)
       : this(
             dateTime.year,
@@ -53,34 +69,28 @@ class LocalDateTime implements HasRataDie {
             dateTime.hour,
             dateTime.minute,
             dateTime.second,
-            dateTime.millisecond,
-            dateTime.microsecond);
+            dateTime.millisecond * _nsPerMillisecond +
+                dateTime.microsecond * _nsPerMicrosecond);
 
   /// Makes a [LocalDateTime] from a [LocalDate] and an optional
-  /// [LocalTime].
+  /// [LocalTime]. Uses midnight if no time is provided.
   LocalDateTime.combine(this.date, [LocalTime? time])
       : time = time ?? LocalTime();
 
-  // The amount to adjust a date if the time parameters wrap backwards
-  // or forwards.
-  static Period _dateAdjustment(
-      int hour, int minute, int second, int millisecond, int microsecond) {
-    var dur = Duration(
-        hours: hour,
-        minutes: minute,
-        seconds: second,
-        milliseconds: millisecond,
-        microseconds: microsecond);
-    if (dur.isNegative) {
-      return Period(days: -1 + dur.inDays);
-    } else {
-      return Period(days: dur.inDays);
-    }
+  factory LocalDateTime._fromJulianDay(JulianDay julianDay) {
+    var parts = julianDay.toGregorian();
+    return LocalDateTime(
+        parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
-  @override
-  Int64 get rataDieUsec => gregorianToRataDieUsec(
-      year, month, day, hour, minute, second, millisecond * 1000 + microsecond);
+  JulianDay get _julianDay => JulianDay.fromGregorian(Gregorian(
+      year,
+      month,
+      day,
+      hour * _nsPerHour +
+          minute * _nsPerMinute +
+          second * _nsPerSecond +
+          nanosecond));
 
   int get year => date.year;
   int get month => date.month;
@@ -89,57 +99,67 @@ class LocalDateTime implements HasRataDie {
   Weekday get weekday => date.weekday;
 
   int get ordinalDay => date.ordinalDay;
-  int get microsecondsSinceMidnight => time.microsecondsSinceMidnight;
 
   int get hour => time.hour;
   int get minute => time.minute;
   int get second => time.second;
-  int get millisecond => time.millisecond;
-  int get microsecond => time.microsecond;
+  int get nanosecond => time.nanosecond;
 
-  /// Finds the duration between [this] and [other].
-  Duration durationUntil(HasRataDie other) {
-    return Duration(microseconds: (other.rataDieUsec - rataDieUsec).toInt());
-  }
+  /// Finds the timespan between [this] and [other].
+  Timespan timespanUntil(LocalDateTime other) => Timespan(
+      days: other._julianDay.day - _julianDay.day,
+      nanoseconds: other._julianDay.fraction - _julianDay.fraction);
 
-  /// Adds a [Duration] or [Period]. Throws [ArgumentError] for other types.
+  /// Adds a [Period] of time.
   ///
-  /// If [amount] is a Period, this acts on the date parts in exactly the same
-  /// way as [LocalDate.operator+()]. If [amount] is a Duration, it acts
-  /// on the time parts exactly like [LocalTime.operator+()] and increments
-  /// or decrements the date if the amount is at least 1 day or negative.
+  /// This acts on the date parts in exactly the same way as
+  /// [LocalDate.plusPeriod()] and leaves the time untouched.
   ///
   /// ```dart
-  /// var d= LocalDateTime(2000);
-  /// d + Period(days: 1) == LocalDateTime(2000, 1, 2);
-  /// d - Period(days: -1) == LocalDateTime(1999, 12, 31);
-  /// d + Duration(seconds: 1) == LocalDateTime(2000, 1, 1, 0, 0, 1);
-  /// d + Duration(days: 1, seconds: 1) == LocalDateTime(2000, 1, 2, 0, 0, 1);
-  /// d + Duration(days: -1, seconds: -1) == LocalDateTime(1999, 12, 30, 23, 59, 59);
+  /// var d = LocalDateTime(2000);
+  /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
   /// ```
-  LocalDateTime operator +(Object amount) {
-    if (amount is Period) {
-      return LocalDateTime.combine(date + amount, time);
-    }
-    if (amount is Duration) {
-      var days = amount.inDays - (amount.inMicroseconds < 0 ? 1 : 0);
-      return LocalDateTime.combine(date + Period(days: days), time + amount);
-    } else {
-      throw ArgumentError(
-          'Invalid type added to LocalDateTime: ${amount.runtimeType}');
-    }
-  }
+  LocalDateTime plusPeriod(Period amount) =>
+      LocalDateTime.combine(date.plusPeriod(amount), time);
 
-  int _compare(HasRataDie other) =>
-      Comparable.compare(rataDieUsec, other.rataDieUsec);
+  /// Subtracts a [Period] of time.
+  ///
+  /// This acts on the date parts in exactly the same way as
+  /// [LocalDate.plusPeriod()] and leaves the time untouched.
+  ///
+  /// ```dart
+  /// var d = LocalDateTime(2000);
+  /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
+  /// ```
+  LocalDateTime minusPeriod(Period amount) =>
+      LocalDateTime.combine(date.minusPeriod(amount), time);
 
-  bool operator >(HasRataDie other) => _compare(other) > 0;
+  /// Adds a [Timespan].
+  ///
+  /// This acts on the time parts exactly like [LocalTime.plusTimespan()]
+  /// and increments or decrements the date if the amount is at least
+  /// 1 day or negative.
+  LocalDateTime plusTimespan(Timespan amount) => LocalDateTime._fromJulianDay(
+      _julianDay.plus(amount.dayPart, amount.nanosecondPart));
 
-  bool operator >=(HasRataDie other) => _compare(other) >= 0;
+  /// Subtracts a [Timespan].
+  ///
+  /// This acts on the time parts exactly like [LocalTime.minusTimespan()]
+  /// and increments or decrements the date if the amount is at least
+  /// 1 day or positive.
+  LocalDateTime minusTimespan(Timespan amount) => LocalDateTime._fromJulianDay(
+      _julianDay.minus(amount.dayPart, amount.nanosecondPart));
 
-  bool operator <(HasRataDie other) => _compare(other) < 0;
+  @override
+  int compareTo(LocalDateTime other) => _julianDay.compareTo(other._julianDay);
 
-  bool operator <=(HasRataDie other) => _compare(other) <= 0;
+  bool operator >(LocalDateTime other) => compareTo(other) > 0;
+
+  bool operator >=(LocalDateTime other) => compareTo(other) >= 0;
+
+  bool operator <(LocalDateTime other) => compareTo(other) < 0;
+
+  bool operator <=(LocalDateTime other) => compareTo(other) <= 0;
 
   @override
   bool operator ==(Object other) =>

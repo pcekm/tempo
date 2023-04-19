@@ -137,7 +137,7 @@ class Timespan implements Comparable<Timespan> {
   int get inNanoseconds => _sum(_nanosecondsPerDay, 1);
 
   /// Determines if the timespan is negative.
-  bool get isNegative => dayPart.isNegative;
+  bool get isNegative => dayPart.isNegative || nanosecondPart.isNegative;
 
   /// Addition operator.
   Timespan operator +(Timespan other) => Timespan._fromParts(

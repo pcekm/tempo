@@ -4,15 +4,14 @@ import 'package:test/test.dart';
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
-      var d = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+      var d = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
       expect(d.year, 2000, reason: 'Year mismatch');
       expect(d.month, 1, reason: 'Month mismatch');
       expect(d.day, 2, reason: 'Day mismatch');
       expect(d.hour, 3, reason: 'Hour mismatch');
       expect(d.minute, 4, reason: 'Minute mismatch');
       expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.millisecond, 6, reason: 'Millisecond mismatch');
-      expect(d.microsecond, 7, reason: 'Microsecond mismatch');
+      expect(d.nanosecond, 6, reason: 'Nanosecond mismatch');
     });
 
     test('wrapping times', () {
@@ -23,19 +22,15 @@ void main() {
           LocalDateTime(2000, 1, 2, 0, 0, 1));
       expect(LocalDateTime(2000, 1, 1, 24, 0, 0, 1),
           LocalDateTime(2000, 1, 2, 0, 0, 0, 1));
-      expect(LocalDateTime(2000, 1, 1, 24, 0, 0, 0, 1),
-          LocalDateTime(2000, 1, 2, 0, 0, 0, 0, 1));
 
-      expect(LocalDateTime(2000, 1, 1, 0, 0, 0, 0, -1),
-          LocalDateTime(1999, 12, 31, 23, 59, 59, 999, 999));
       expect(LocalDateTime(2000, 1, 1, 0, 0, 0, -1),
-          LocalDateTime(1999, 12, 31, 23, 59, 59, 999));
+          LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
       expect(LocalDateTime(2000, 1, 1, 0, 0, -1),
           LocalDateTime(1999, 12, 31, 23, 59, 59));
       expect(LocalDateTime(2000, 1, 1, 0, -1),
           LocalDateTime(1999, 12, 31, 23, 59));
       expect(LocalDateTime(2000, 1, 1, -1), LocalDateTime(1999, 12, 31, 23));
-      expect(LocalDateTime(2000, 1, 1, -24), LocalDateTime(1999, 12, 30));
+      expect(LocalDateTime(2000, 1, 1, -24), LocalDateTime(1999, 12, 31));
     });
 
     test('fromDateTime()', () {
@@ -46,21 +41,19 @@ void main() {
       expect(d.hour, 3, reason: 'Hour mismatch');
       expect(d.minute, 4, reason: 'Minute mismatch');
       expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.millisecond, 6, reason: 'Millisecond mismatch');
-      expect(d.microsecond, 7, reason: 'Microsecond mismatch');
+      expect(d.nanosecond, 006007000, reason: 'Nanosecond mismatch');
     });
 
     test('combine()', () {
-      var d = LocalDateTime.combine(
-          LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6, 7));
+      var d =
+          LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));
       expect(d.year, 2000, reason: 'Year mismatch');
       expect(d.month, 1, reason: 'Month mismatch');
       expect(d.day, 2, reason: 'Day mismatch');
       expect(d.hour, 3, reason: 'Hour mismatch');
       expect(d.minute, 4, reason: 'Minute mismatch');
       expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.millisecond, 6, reason: 'Millisecond mismatch');
-      expect(d.microsecond, 7, reason: 'Microsecond mismatch');
+      expect(d.nanosecond, 6, reason: 'Nanosecond mismatch');
     });
 
     test('now() smoke test', () {
@@ -99,54 +92,70 @@ void main() {
     });
   });
 
-  group('durationUntil():', () {
-    test('LocalDateTime', () {
-      expect(
-          LocalDateTime(2000).durationUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
-          Duration(days: 366, seconds: 1));
-      expect(
-          LocalDateTime(2000).durationUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
-          -Duration(days: 364, hours: 23, minutes: 59, seconds: 59));
-    });
-
-    test('LocalDate', () {
-      expect(LocalDateTime(2000).durationUntil(LocalDate(2001, 1, 1)),
-          Duration(days: 366));
-      expect(LocalDateTime(2000).durationUntil(LocalDate(1999, 12, 31)),
-          Duration(days: -1));
-    });
+  test('timespanUntil():', () {
+    expect(
+        LocalDateTime(2000).timespanUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
+        Timespan(days: 366, seconds: 1));
+    expect(
+        LocalDateTime(2000).timespanUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
+        -Timespan(days: 364, hours: 23, minutes: 59, seconds: 59));
   });
 
-  group('addition operator:', () {
-    test('Duration', () {
-      var d = LocalDateTime(2000);
-      expect(d + Duration(seconds: 1), LocalDateTime(2000, 1, 1, 0, 0, 1));
-      expect(d + Duration(days: 1, seconds: 1),
-          LocalDateTime(2000, 1, 2, 0, 0, 1));
-      expect(
-          d + Duration(seconds: -1), LocalDateTime(1999, 12, 31, 23, 59, 59));
-      expect(d + Duration(days: -1, seconds: -1),
-          LocalDateTime(1999, 12, 30, 23, 59, 59));
-    });
+  test('plusTimespan', () {
+    var d = LocalDateTime(2000);
+    expect(d.plusTimespan(Timespan(seconds: 1)),
+        LocalDateTime(2000, 1, 1, 0, 0, 1));
+    expect(d.plusTimespan(Timespan(days: 1, seconds: 1)),
+        LocalDateTime(2000, 1, 2, 0, 0, 1));
+    expect(d.plusTimespan(Timespan(nanoseconds: 1)),
+        LocalDateTime(2000, 1, 1, 0, 0, 0, 1));
+    expect(d.plusTimespan(Timespan(seconds: -1)),
+        LocalDateTime(1999, 12, 31, 23, 59, 59));
+    expect(d.plusTimespan(Timespan(days: -1, seconds: -1)),
+        LocalDateTime(1999, 12, 30, 23, 59, 59));
+    expect(d.plusTimespan(Timespan(nanoseconds: -1)),
+        LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
+  });
 
-    test('Period', () {
-      var d = LocalDateTime(2000);
-      expect(d + Period(months: 1), LocalDateTime(2000, 2));
-      expect(d + Period(months: -1), LocalDateTime(1999, 12));
-    });
+  test('minusTimespan', () {
+    var d = LocalDateTime(2000);
+    expect(d.minusTimespan(Timespan(seconds: -1)),
+        LocalDateTime(2000, 1, 1, 0, 0, 1));
+    expect(d.minusTimespan(Timespan(days: -1, seconds: -1)),
+        LocalDateTime(2000, 1, 2, 0, 0, 1));
+    expect(d.minusTimespan(Timespan(nanoseconds: -1)),
+        LocalDateTime(2000, 1, 1, 0, 0, 0, 1));
+    expect(d.minusTimespan(Timespan(seconds: 1)),
+        LocalDateTime(1999, 12, 31, 23, 59, 59));
+    expect(d.minusTimespan(Timespan(days: 1, seconds: 1)),
+        LocalDateTime(1999, 12, 30, 23, 59, 59));
+    expect(d.minusTimespan(Timespan(nanoseconds: 1)),
+        LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
+  });
+
+  test('plusPeriod', () {
+    var d = LocalDateTime(2000);
+    expect(d.plusPeriod(Period(months: 1)), LocalDateTime(2000, 2));
+    expect(d.plusPeriod(Period(months: -1)), LocalDateTime(1999, 12));
+  });
+
+  test('minusPeriod', () {
+    var d = LocalDateTime(2000);
+    expect(d.minusPeriod(Period(months: -1)), LocalDateTime(2000, 2));
+    expect(d.minusPeriod(Period(months: 1)), LocalDateTime(1999, 12));
   });
 
   group('Comparison operator', () {
     test('== (and hash code)', () {
-      var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 7);
-      var d2 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+      var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var d2 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
       expect(d1, d2);
       expect(d1.hashCode, d2.hashCode, reason: 'Hash mismatch');
     });
 
     test('!= (and hash code)', () {
-      var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 7);
-      var d2 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6, 8);
+      var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var d2 = LocalDateTime(2000, 1, 2, 3, 4, 5, 7);
       expect(d1, isNot(equals(d2)));
       expect(d1.hashCode, isNot(equals(d2.hashCode)), reason: 'Hashes match');
     });
@@ -209,12 +218,13 @@ void main() {
   });
 
   test('toString()', () {
-    expect(LocalDateTime(2023, 4, 10, 1, 2, 3, 4, 5).toString(),
-        '2023-04-10T01:02:03.004005');
-    expect(LocalDateTime(1).toString(), '0001-01-01T00:00:00.000000');
-    expect(LocalDateTime(0).toString(), '+0000-01-01T00:00:00.000000'); // 1 BC
-    expect(LocalDateTime(-4711).toString(), '-4711-01-01T00:00:00.000000');
-    expect(LocalDateTime(9999).toString(), '9999-01-01T00:00:00.000000');
-    expect(LocalDateTime(10000).toString(), '+10000-01-01T00:00:00.000000');
+    expect(LocalDateTime(2023, 4, 10, 1, 2, 3, 4).toString(),
+        '2023-04-10T01:02:03.000000004');
+    expect(LocalDateTime(1).toString(), '0001-01-01T00:00:00.000000000');
+    expect(
+        LocalDateTime(0).toString(), '+0000-01-01T00:00:00.000000000'); // 1 BC
+    expect(LocalDateTime(-4711).toString(), '-4711-01-01T00:00:00.000000000');
+    expect(LocalDateTime(9999).toString(), '9999-01-01T00:00:00.000000000');
+    expect(LocalDateTime(10000).toString(), '+10000-01-01T00:00:00.000000000');
   });
 }

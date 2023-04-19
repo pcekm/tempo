@@ -189,7 +189,7 @@ void main() {
 
       expect(Timespan(days: 10, nanoseconds: 3) * 0.5, HasDayFraction(5, 1));
       expect(
-          Timespan(days: -10, nanoseconds: -3) * 0.5, HasDayFraction(-5, -2));
+          Timespan(days: -10, nanoseconds: -3) * 0.5, HasDayFraction(-5, -1));
     });
 
     test('operator~/', () {
@@ -285,6 +285,14 @@ void main() {
   test('abs()', () {
     expect(Timespan(days: 2, nanoseconds: 3).abs(), HasDayFraction(2, 3));
     expect(Timespan(days: -2, nanoseconds: -3).abs(), HasDayFraction(2, 3));
+  });
+
+  test('isNegative', () {
+    expect(Timespan().isNegative, false);
+    expect(Timespan(days: 1).isNegative, false);
+    expect(Timespan(days: -1).isNegative, true);
+    expect(Timespan(microseconds: 1).isNegative, false);
+    expect(Timespan(microseconds: -1).isNegative, true);
   });
 
   test('toString()', () {

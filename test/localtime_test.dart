@@ -1,15 +1,15 @@
-import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/src/localtime.dart';
+import 'package:goodtime/src/timespan.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
-      var t = LocalTime(3, 4, 5, 6, 7);
+      var t = LocalTime(3, 4, 5, 6);
       expect(t.hour, 3, reason: 'Hour mismatch');
       expect(t.minute, 4, reason: 'Minute mismatch');
       expect(t.second, 5, reason: 'Second mismatch');
-      expect(t.millisecond, 6, reason: 'Millisecond mismatch');
-      expect(t.microsecond, 7, reason: 'Microsecond mismatch');
+      expect(t.nanosecond, 6, reason: 'Nanosecond mismatch');
     });
 
     test('Default examples', () {
@@ -20,17 +20,17 @@ void main() {
     });
 
     test('wrapping', () {
-      expect(LocalTime(23, 59, 59, 999, 1000), LocalTime());
-      expect(LocalTime(0, 0, 0, 0, -1), LocalTime(23, 59, 59, 999, 999));
+      expect(LocalTime(23, 59, 59, 1000000000), LocalTime());
+      expect(LocalTime(0, 0, 0, -1), LocalTime(23, 59, 59, 999999999));
     });
 
     test('fromDateTime()', () {
+      // No nanoseconds in a DateTime.
       var t = LocalTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
       expect(t.hour, 3, reason: 'Hour mismatch');
       expect(t.minute, 4, reason: 'Minute mismatch');
       expect(t.second, 5, reason: 'Second mismatch');
-      expect(t.millisecond, 6, reason: 'Millisecond mismatch');
-      expect(t.microsecond, 7, reason: 'Microsecond mismatch');
+      expect(t.nanosecond, 6007000, reason: 'Nanosecond mismatch');
     });
 
     test('now() smoke test', () {
@@ -38,56 +38,42 @@ void main() {
       expect(t.hour, greaterThanOrEqualTo(0));
       expect(t.minute, greaterThanOrEqualTo(0));
       expect(t.second, greaterThanOrEqualTo(0));
-      expect(t.millisecond, greaterThanOrEqualTo(0));
-      expect(t.microsecond, greaterThanOrEqualTo(0));
+      expect(t.nanosecond, greaterThanOrEqualTo(0));
     });
   });
 
-  test('durationUntil()', () {
+  test('timespanUntil()', () {
     var t = LocalTime(12);
-    expect(t.durationUntil(t), Duration());
-    expect(t.durationUntil(LocalTime(13)), Duration(hours: 1));
-    expect(t.durationUntil(LocalTime(11)), Duration(hours: -1));
-    expect(t.durationUntil(LocalTime(12, 0, 1)), Duration(seconds: 1));
-    expect(t.durationUntil(LocalTime(11, 59, 59)), Duration(seconds: -1));
-    expect(t.durationUntil(LocalTime(12, 0, 0, 1)), Duration(milliseconds: 1));
-    expect(t.durationUntil(LocalTime(11, 59, 59, 999)),
-        Duration(milliseconds: -1));
-    expect(
-        t.durationUntil(LocalTime(12, 0, 0, 0, 1)), Duration(microseconds: 1));
-    expect(t.durationUntil(LocalTime(11, 59, 59, 999, 999)),
-        Duration(microseconds: -1));
-  });
-
-  test('adding Duration', () {
-    var t = LocalTime(12);
-    expect(t + Duration(hours: 1), LocalTime(13));
-    expect(t + Duration(hours: -1), LocalTime(11));
-    expect(t + Duration(seconds: 1), LocalTime(12, 0, 1));
-    expect(t + Duration(seconds: -1), LocalTime(11, 59, 59));
-    expect(t + Duration(milliseconds: 1), LocalTime(12, 0, 0, 1));
-    expect(t + Duration(milliseconds: -1), LocalTime(11, 59, 59, 999));
-    expect(t + Duration(microseconds: 1), LocalTime(12, 0, 0, 0, 1));
-    expect(t + Duration(microseconds: -1), LocalTime(11, 59, 59, 999, 999));
-    expect(t + Duration(days: 1), t);
-    expect(t + Duration(days: -1), t);
-    expect(t + Duration(days: 1, hours: 1), LocalTime(13));
-    expect(t + Duration(days: -1, hours: 1), LocalTime(13));
-    expect(t + Duration(days: 1, hours: -1), LocalTime(11));
-    expect(t + Duration(days: -1, hours: -1), LocalTime(11));
+    expect(t.timespanUntil(t), Timespan());
+    expect(t.timespanUntil(LocalTime(13)), Timespan(hours: 1));
+    expect(t.timespanUntil(LocalTime(11)), Timespan(hours: -1));
+    expect(t.timespanUntil(LocalTime(12, 0, 1)), Timespan(seconds: 1));
+    expect(t.timespanUntil(LocalTime(11, 59, 59)), Timespan(seconds: -1));
+    expect(t.timespanUntil(LocalTime(12, 0, 0, 001000000)),
+        Timespan(milliseconds: 1));
+    expect(t.timespanUntil(LocalTime(11, 59, 59, 999000000)),
+        Timespan(milliseconds: -1));
+    expect(t.timespanUntil(LocalTime(12, 0, 0, 000001000)),
+        Timespan(microseconds: 1));
+    expect(t.timespanUntil(LocalTime(11, 59, 59, 999999000)),
+        Timespan(microseconds: -1));
+    expect(t.timespanUntil(LocalTime(12, 0, 0, 000000001)),
+        Timespan(nanoseconds: 1));
+    expect(t.timespanUntil(LocalTime(11, 59, 59, 999999999)),
+        Timespan(nanoseconds: -1));
   });
 
   group('Comparison operator', () {
     test('== (and hash equality)', () {
-      var t1 = LocalTime(3, 4, 5, 6, 7);
-      var t2 = LocalTime(3, 4, 5, 6, 7);
+      var t1 = LocalTime(3, 4, 5, 6);
+      var t2 = LocalTime(3, 4, 5, 6);
       expect(t1, t2);
       expect(t1.hashCode, t2.hashCode, reason: 'Hash mismatch');
     });
 
     test('!= (and hash inequality)', () {
-      var t1 = LocalTime(3, 4, 5, 6, 7);
-      var t2 = LocalTime(3, 4, 5, 6, 8);
+      var t1 = LocalTime(3, 4, 5, 6);
+      var t2 = LocalTime(3, 4, 5, 7);
       expect(t1, isNot(equals(t2)));
       expect(t1.hashCode, isNot(equals(t2.hashCode)), reason: 'Hashes match');
     });
@@ -121,7 +107,15 @@ void main() {
     });
   });
 
+  test('compareTo()', () {
+    var t1 = LocalTime(0, 0, 0, 1);
+    var t2 = LocalTime(0, 0, 0, 2);
+    expect(t1.compareTo(t1), 0);
+    expect(t1.compareTo(t2), -1);
+    expect(t2.compareTo(t1), 1);
+  });
+
   test('toString()', () {
-    expect(LocalTime(1, 2, 3, 4, 5).toString(), '01:02:03.004005');
+    expect(LocalTime(1, 2, 3, 4).toString(), '01:02:03.000000004');
   });
 }
