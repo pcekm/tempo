@@ -74,6 +74,7 @@ class LocalDate implements Comparable<LocalDate> {
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
+  /// Gets the day of the week.
   Weekday get weekday => _julianDay.plus(0, 43100 * 1000000000).weekday;
 
   /// The number of days since the beginning of the year. This will range from
@@ -84,13 +85,15 @@ class LocalDate implements Comparable<LocalDate> {
   /// current month).
   static int _absoluteMonth(LocalDate date) => 12 * date.year + date.month - 1;
 
-  /// Finds the [Period] between this date and another. It first finds the
-  /// number of months by advancing the smaller date until it is within 1
-  /// month of the larger. Then it finds the number of days between them.
-  /// The final result is normalized into years, months and days—all positive
-  /// or all negative.
+  /// Finds the [Period] between this date and another.
   ///
-  /// To count the number of days between two dates, use [periodUntil()].
+  /// It first finds the number of months by advancing the smaller date
+  /// until it is within 1 month of the larger. Then it finds the number
+  /// of days between them. The final result is normalized into years,
+  /// months and days—all positive or all negative.
+  ///
+  /// To count the total number of days between two dates use
+  /// [timespanUntil()].
   ///
   /// ```dart
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
@@ -145,14 +148,14 @@ class LocalDate implements Comparable<LocalDate> {
   /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
-  /// duration. Fractional results are rounded down.
+  /// timespan. Fractional results are rounded down.
   LocalDate plusTimespan(Timespan t) =>
       LocalDate._fromJulianDay(_julianDay.plus(t.dayPart, t.nanosecondPart));
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
-  /// duration. Fractional results are rounded down.
+  /// timespan. Fractional results are rounded down.
   LocalDate minusTimespan(Timespan t) =>
       LocalDate._fromJulianDay(_julianDay.minus(t.dayPart, t.nanosecondPart));
 
@@ -197,12 +200,16 @@ class LocalDate implements Comparable<LocalDate> {
     return Comparable.compare(_julianDay.day, other._julianDay.day);
   }
 
+  /// Greater than operator.
   bool operator >(LocalDate other) => compareTo(other) > 0;
 
+  /// Greater than or equals operator.
   bool operator >=(LocalDate other) => compareTo(other) >= 0;
 
+  /// Less than operator.
   bool operator <(LocalDate other) => compareTo(other) < 0;
 
+  /// Less than or equals operator.
   bool operator <=(LocalDate other) => compareTo(other) <= 0;
 
   @override
@@ -213,6 +220,8 @@ class LocalDate implements Comparable<LocalDate> {
   int get hashCode => _julianDay.hashCode;
 
   /// Returns the date in ISO 8601 format.
+  ///
+  /// For example, 2000-01-02.
   @override
   String toString() {
     var format = "%${(year < 1 || year > 9999) ? '+05' : '04'}d-%02d-%02d";

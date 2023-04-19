@@ -1,4 +1,21 @@
 /// Represents a period between two dates on a calendar.
+///
+/// Unlike [Timespan] and [Duration], which both represent an absolute length of
+/// time, the exact length of time this represents varies according to
+/// the dates it's relative to.
+///
+/// ```dart
+/// var d1 = LocalDate(2023, 2, 1);
+/// var d2 = LocalDate(2023, 3, 2);
+/// d1.periodUntil(d2) == Period(months: 1, days: 1);
+/// d2.timespanUntil(d2) == Timespan(days: 29);
+/// ```
+///
+/// See also
+///   * [LocalDate.periodUntil()]
+///   * [LocalDate.plusPeriod()]
+///   * [LocalDateTime.periodUntil()]
+///   * [LocalDateTime.plusPeriod()]
 class Period {
   static final _isoRegex = RegExp(
       r'^P(?:(-?\d+)Y)?(?:(-?\d+)M)?(?:(-?\d+)W)?(?:(-?\d+)D)?(?:T(?:-?[0-9.,]+H)?(?:-?[0-9.,]+M)?(?:-?[0-9.,]+S)?)?$');

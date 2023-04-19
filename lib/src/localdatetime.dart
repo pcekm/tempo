@@ -92,17 +92,35 @@ class LocalDateTime implements Comparable<LocalDateTime> {
           second * _nsPerSecond +
           nanosecond));
 
+  /// The year.
+  ///
+  /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
+  /// This is also called astronomical year numbering.
   int get year => date.year;
+
+  /// The month from 1 to 12.
   int get month => date.month;
+
+  /// The day starting at 1.
   int get day => date.day;
 
+  /// Gets the day of the week.
   Weekday get weekday => date.weekday;
 
+  /// The number of days since the beginning of the year. This will range from
+  /// 1 to 366.
   int get ordinalDay => date.ordinalDay;
 
+  /// The hour from 0 to 23.
   int get hour => time.hour;
+
+  /// The minute from 0 to 59.
   int get minute => time.minute;
+
+  /// The second from 0 to 59.
   int get second => time.second;
+
+  /// The nanoseconds from 0 to 999,999,999.
   int get nanosecond => time.nanosecond;
 
   /// Finds the timespan between [this] and [other].
@@ -153,12 +171,16 @@ class LocalDateTime implements Comparable<LocalDateTime> {
   @override
   int compareTo(LocalDateTime other) => _julianDay.compareTo(other._julianDay);
 
+  /// Greater than operator.
   bool operator >(LocalDateTime other) => compareTo(other) > 0;
 
+  /// Greater than or equals operator.
   bool operator >=(LocalDateTime other) => compareTo(other) >= 0;
 
+  /// Less than operator.
   bool operator <(LocalDateTime other) => compareTo(other) < 0;
 
+  /// Less than or equals operator.
   bool operator <=(LocalDateTime other) => compareTo(other) <= 0;
 
   @override
@@ -169,6 +191,8 @@ class LocalDateTime implements Comparable<LocalDateTime> {
   int get hashCode => Object.hash(date, time);
 
   /// Returns the date and time in ISO 8601 format.
+  ///
+  /// For example, 2000-01-02T12:00:01.000000009.
   @override
   String toString() => '${date}T$time';
 }
