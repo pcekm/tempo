@@ -59,20 +59,19 @@ void main() {
       expect(
           Timespan(days: 10, nanoseconds: -1), HasDayFraction(9, dayNano - 1));
 
-      expect(
-          Timespan(days: 0, nanoseconds: -1), HasDayFraction(-1, dayNano - 1));
+      expect(Timespan(days: 0, nanoseconds: -1), HasDayFraction(0, -1));
       expect(Timespan(days: 0, nanoseconds: -halfDayNano),
-          HasDayFraction(-1, halfDayNano));
-      expect(
-          Timespan(days: 0, nanoseconds: -dayNano + 1), HasDayFraction(-1, 1));
+          HasDayFraction(0, -halfDayNano));
+      expect(Timespan(days: 0, nanoseconds: -dayNano + 1),
+          HasDayFraction(0, -dayNano + 1));
       expect(Timespan(days: -1), HasDayFraction(-1, 0));
+      expect(Timespan(days: -1, nanoseconds: -1), HasDayFraction(-1, -1));
       expect(
-          Timespan(days: -1, nanoseconds: -1), HasDayFraction(-2, dayNano - 1));
-      expect(Timespan(days: -1, nanoseconds: 1), HasDayFraction(-1, 1));
+          Timespan(days: -1, nanoseconds: 1), HasDayFraction(0, -dayNano + 1));
       expect(Timespan(days: -1, nanoseconds: -(dayNano + 1)),
-          HasDayFraction(-3, dayNano - 1));
+          HasDayFraction(-2, -1));
       expect(Timespan(days: -1, nanoseconds: -(2 * dayNano + 1)),
-          HasDayFraction(-4, dayNano - 1));
+          HasDayFraction(-3, -1));
     });
   });
 
@@ -128,17 +127,17 @@ void main() {
       expect(t + Timespan(days: 10), HasDayFraction(0, 0));
       expect(t + Timespan(days: 11), HasDayFraction(1, 0));
 
-      expect(t + Timespan(nanoseconds: 1), HasDayFraction(-10, 1));
-      expect(t + Timespan(nanoseconds: dayNano - 1),
-          HasDayFraction(-10, dayNano - 1));
+      expect(t + Timespan(nanoseconds: 1), HasDayFraction(-9, -dayNano + 1));
+      expect(t + Timespan(nanoseconds: dayNano - 1), HasDayFraction(-9, -1));
       expect(t + Timespan(nanoseconds: dayNano), HasDayFraction(-9, 0));
-      expect(t + Timespan(nanoseconds: 2 * dayNano - 1),
-          HasDayFraction(-9, dayNano - 1));
+      expect(
+          t + Timespan(nanoseconds: 2 * dayNano - 1), HasDayFraction(-8, -1));
       expect(t + Timespan(nanoseconds: 2 * dayNano), HasDayFraction(-8, 0));
-      expect(t + Timespan(nanoseconds: 2 * dayNano + 1), HasDayFraction(-8, 1));
+      expect(t + Timespan(nanoseconds: 2 * dayNano + 1),
+          HasDayFraction(-7, -dayNano + 1));
 
-      expect(t + Timespan(nanoseconds: 10 * dayNano - 1),
-          HasDayFraction(-1, dayNano - 1));
+      expect(
+          t + Timespan(nanoseconds: 10 * dayNano - 1), HasDayFraction(0, -1));
       expect(t + Timespan(nanoseconds: 10 * dayNano), HasDayFraction(0, 0));
       expect(t + Timespan(nanoseconds: 10 * dayNano + 1), HasDayFraction(0, 1));
 
@@ -166,35 +165,48 @@ void main() {
 
       expect(t - Timespan(nanoseconds: 10 * dayNano - 1), HasDayFraction(0, 1));
       expect(t - Timespan(nanoseconds: 10 * dayNano), HasDayFraction(0, 0));
-      expect(t - Timespan(nanoseconds: 10 * dayNano + 1),
-          HasDayFraction(-1, dayNano - 1));
-
       expect(
-          t - Timespan(nanoseconds: 20 * dayNano - 1), HasDayFraction(-10, 1));
+          t - Timespan(nanoseconds: 10 * dayNano + 1), HasDayFraction(0, -1));
+
+      expect(t - Timespan(nanoseconds: 20 * dayNano - 1),
+          HasDayFraction(-9, -dayNano + 1));
       expect(t - Timespan(nanoseconds: 20 * dayNano), HasDayFraction(-10, 0));
-      expect(t - Timespan(nanoseconds: 20 * dayNano + 1),
-          HasDayFraction(-11, dayNano - 1));
+      expect(
+          t - Timespan(nanoseconds: 20 * dayNano + 1), HasDayFraction(-10, -1));
     });
 
     test('operator*', () {
       expect(Timespan(days: 1) * 2, HasDayFraction(2, 0));
       expect(Timespan(days: -1) * 2, HasDayFraction(-2, 0));
       expect(Timespan(days: 1, nanoseconds: 2) * 2, HasDayFraction(2, 4));
-      expect(Timespan(days: -1, nanoseconds: 2) * 2, HasDayFraction(-2, 4));
-      expect(Timespan(days: 1, nanoseconds: 2) * -2,
-          HasDayFraction(-3, dayNano - 4));
+      expect(Timespan(days: -1, nanoseconds: 2) * 2,
+          HasDayFraction(-1, -dayNano + 4));
+      expect(Timespan(days: 1, nanoseconds: 2) * -2, HasDayFraction(-2, -4));
       expect(Timespan(days: -1, nanoseconds: 2) * -2,
           HasDayFraction(1, dayNano - 4));
+      expect(Timespan(days: -1, nanoseconds: -2) * 2, HasDayFraction(-2, -4));
+      expect(Timespan(days: -1, nanoseconds: -2) * -2, HasDayFraction(2, 4));
+
+      expect(Timespan(days: 10, nanoseconds: 3) * 0.5, HasDayFraction(5, 1));
+      expect(
+          Timespan(days: -10, nanoseconds: -3) * 0.5, HasDayFraction(-5, -2));
     });
 
-    test('operator/', () {
+    test('operator~/', () {
       expect(Timespan(days: 2) ~/ 2, HasDayFraction(1, 0));
+      expect(Timespan(days: 2) ~/ -2, HasDayFraction(-1, 0));
       expect(Timespan(days: -2) ~/ 2, HasDayFraction(-1, 0));
+      expect(Timespan(days: -2) ~/ -2, HasDayFraction(1, 0));
+
+      expect(Timespan(nanoseconds: 2) ~/ 2, HasDayFraction(0, 1));
+      expect(Timespan(nanoseconds: 2) ~/ -2, HasDayFraction(0, -1));
+      expect(Timespan(nanoseconds: -2) ~/ 2, HasDayFraction(0, -1));
+      expect(Timespan(nanoseconds: -2) ~/ -2, HasDayFraction(0, 1));
+
       expect(Timespan(days: 2, nanoseconds: 4) ~/ 2, HasDayFraction(1, 2));
-      expect(Timespan(days: 2, nanoseconds: 4) ~/ -2,
-          HasDayFraction(-2, dayNano - 2));
-      expect(Timespan(days: -2, nanoseconds: 4) ~/ -2,
-          HasDayFraction(0, dayNano - 2));
+      expect(Timespan(days: 2, nanoseconds: 4) ~/ -2, HasDayFraction(-1, -2));
+      expect(Timespan(days: -2, nanoseconds: -4) ~/ 2, HasDayFraction(-1, -2));
+      expect(Timespan(days: -2, nanoseconds: -4) ~/ -2, HasDayFraction(1, 2));
     });
   });
 
@@ -266,14 +278,13 @@ void main() {
   });
 
   test('operator- (unary negation)', () {
-    expect(-Timespan(days: 2, nanoseconds: 1), HasDayFraction(-3, dayNano - 1));
-    expect(-Timespan(days: -2, nanoseconds: 1), HasDayFraction(1, dayNano - 1));
+    expect(-Timespan(days: 2, nanoseconds: 1), HasDayFraction(-2, -1));
+    expect(-Timespan(days: -2, nanoseconds: -1), HasDayFraction(2, 1));
   });
 
   test('abs()', () {
     expect(Timespan(days: 2, nanoseconds: 3).abs(), HasDayFraction(2, 3));
-    expect(Timespan(days: -2, nanoseconds: 3).abs(),
-        HasDayFraction(1, dayNano - 3));
+    expect(Timespan(days: -2, nanoseconds: -3).abs(), HasDayFraction(2, 3));
   });
 
   test('toString()', () {

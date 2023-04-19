@@ -4,14 +4,19 @@
 ///
 /// [dayPart] + [nanosecondPart] / nanoseconds_per_day
 ///
+/// The component numbers will always be normalized as follows:
+///
+///   * -1 < [nanosecondPart] < 1
+///   * [dayPart].sign == [nanosecondPart].sign
+///
 /// There are two important differences between this and [Duration]:
-/// precision and longest representable timespan. This can represent
-/// spans down to the nanosecond vs. microsecond for `Duration`, and
-/// it can represent much longer time spans (read on for details).
+/// precision and longest representable timespan. This has nanosecond
+/// precision vs. microsecond for `Duration`, and it can represent
+/// much longer time spans (read on for details).
 ///
 /// ## Longest Timespan
 ///
-/// The longest representable timespans are a bit complicated. [Duration]
+/// The longest representable timespans are a bit complicated. `Duration`
 /// stores a single [int] in microseconds. This stores two ints: one for the
 /// number of days, and one for a nanosecond fraction of days.
 ///
@@ -42,55 +47,52 @@ class Timespan implements Comparable<Timespan> {
   static const int _nsPerMinute = 60 * _nsPerSecond;
   static const int _nsPerHour = 60 * _nsPerMinute;
 
-  /// The raw whole number of days.
+  /// The whole number of days.
   ///
-  /// May be positive or negative.
-  ///
-  /// **Important**: If this is negative, it is _not_ equal to the floor
-  /// of the number of days spanned by this. Use [inDays] for that instead.
+  /// Mathematically, [dayPart] = int([dayPart] + [nanosecondPart]), where
+  /// [int()](https://mathworld.wolfram.com/IntegerPart.html) gives the integer
+  /// part of a real number.
   final int dayPart;
 
-  /// The raw fractional part of the day in nanoseconds;
+  /// The fractional part of the day in nanoseconds.
   ///
-  /// This will always be positive, even when [dayPart] is negative.
+  /// Mathematically, [nanosecondPart] = frac([dayPart] + [nanosecondPart]),
+  /// where [frac()](https://mathworld.wolfram.com/FractionalPart.html) gives
+  /// the fractional part of a real number.
   final int nanosecondPart;
 
   Timespan._(this.dayPart, this.nanosecondPart);
 
   // Constructs a timespan from days + fraction.
   //
-  // Either days or fraction may be negative, but the result
-  // will be normalized to a positive fraction less than one day.
+  // Either days or fraction may be negative and any value, but the result
+  // will be normalized as follows:
   //
-  // The first part of this is straightforward. Divide out the whole days,
-  // floor(fraction / denominator), add that to days, and leave the remainder.
-  //
-  // Forcing the fraction to be positive is a bit trickier. The key
-  // realization is this:
-  //
-  //    -a / b = (b - a) / b - 1
-  //
-  // Since in this case a < b, then b - a must be positive. Bringing that
-  // back into this timespan, we have
-  //
-  //    days + -a / b = days + (b - a) / b - 1
-  //                  = (days - 1) + (b - a) / b
+  //   - -1 < nanosecondPart < 1
+  //   - dayPart.sign == nanosecondPart.sign
   factory Timespan._fromParts(int days, int fraction) {
-    days += (fraction / _nanosecondsPerDay).floor();
+    days += fraction ~/ _nanosecondsPerDay;
     fraction = fraction.remainder(_nanosecondsPerDay);
-    if (fraction.isNegative) {
-      fraction = _nanosecondsPerDay + fraction;
+    if (days < 0 && fraction > 0) {
+      ++days;
+      fraction -= _nanosecondsPerDay;
+    } else if (days > 0 && fraction < 0) {
+      --days;
+      fraction += _nanosecondsPerDay;
     }
-    assert(!fraction.isNegative);
+    assert(days.sign * fraction.sign != -1);
     return Timespan._(days, fraction);
   }
 
   /// Constructs a [Timespan].
   ///
-  /// This is meant to work much like [Duration] with [nanoseconds].
+  /// This is meant to work much like a higher-precision [Duration].
   ///
   /// Any fields may be positive or negative, but the result will always
-  /// be normalized to a positive [microseconds].
+  /// be normalized as follows:
+  ///
+  ///   - -1 < [nanosecondPart] < 1
+  ///   - [dayPart].sign == [nanosecondPart].sign
   factory Timespan(
       {int days = 0,
       int hours = 0,
@@ -110,7 +112,7 @@ class Timespan implements Comparable<Timespan> {
 
   /// Gets the timespan in days.
   ///
-  /// This is _not_ equivalent to [dayPart] for negative timespans.
+  /// This is equvalent to [dayPart] and included for consistency.
   int get inDays => (dayPart + nanosecondPart / _nanosecondsPerDay).truncate();
 
   int _sum(int dayMultiplier, int nanoDivisor) =>
@@ -137,20 +139,35 @@ class Timespan implements Comparable<Timespan> {
   /// Determines if the timespan is negative.
   bool get isNegative => dayPart.isNegative;
 
+  /// Addition operator.
   Timespan operator +(Timespan other) => Timespan._fromParts(
       dayPart + other.dayPart, nanosecondPart + other.nanosecondPart);
+
+  /// Subtraction operator.
   Timespan operator -(Timespan other) => Timespan._fromParts(
       dayPart - other.dayPart, nanosecondPart - other.nanosecondPart);
+
+  /// Multiplication operator. Fractional results are rounded towards zero.
   Timespan operator *(num other) => Timespan._fromParts(
-      (dayPart * other).floor(), (nanosecondPart * other).floor());
+      (dayPart * other).truncate(), (nanosecondPart * other).truncate());
+
+  /// Integer division operator.
   Timespan operator ~/(num other) =>
       Timespan._fromParts(dayPart ~/ other, nanosecondPart ~/ other);
 
+  /// Less than operator.
   bool operator <(Timespan other) => compareTo(other) < 0;
+
+  /// Less than or equal operator.
   bool operator <=(Timespan other) => compareTo(other) <= 0;
+
+  /// Greater than operator.
   bool operator >(Timespan other) => compareTo(other) > 0;
+
+  /// Greater than or equal operator.
   bool operator >=(Timespan other) => compareTo(other) >= 0;
 
+  /// Unary negation operator.
   Timespan operator -() => Timespan._fromParts(-dayPart, -nanosecondPart);
 
   /// Converts this to a duration with a loss of precision.
@@ -158,13 +175,14 @@ class Timespan implements Comparable<Timespan> {
 
   /// Returns the absolute value of this [Timespan].
   Timespan abs() {
-    if (dayPart >= 0) {
-      return this;
-    } else {
-      return Timespan._fromParts(-dayPart, -nanosecondPart);
-    }
+    // Important: this is only true because the both parts are normalized
+    // with matching signs.
+    return Timespan._fromParts(dayPart.abs(), nanosecondPart.abs());
   }
 
+  /// Compares this to another [Timespan].
+  ///
+  /// Returns 0 if they are equal, -1 if this < [other] and 1 if this > [other].
   @override
   int compareTo(Timespan other) {
     int daycmp = Comparable.compare(dayPart, other.dayPart);
@@ -175,6 +193,12 @@ class Timespan implements Comparable<Timespan> {
   }
 
   /// Returns a string formatted as an ISO 8601 time duration.
+  ///
+  /// Some examples:
+  ///   * One day: P1D
+  ///   * Ten minutes: PT10M
+  ///   * Two days, three hours, one minute, 30 seconds: P2DT3H1M30S
+  ///   * Negative duration: P-3DT-1H
   @override
   String toString() {
     if (dayPart == 0 && nanosecondPart == 0) {
