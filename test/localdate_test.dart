@@ -372,21 +372,21 @@ void main() {
     // This is excluded by default. To run it use 'dart test -P all'
     test('golden file', () {
       var dateRe = RegExp(r'(\d+)-(\d+)-(\d+)');
-      var periodRe = RegExp(r'P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d*)D)?');
+      var periodRe = RegExp(r'P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?');
       var file = File('test/localdate_period_until_testcases.txt');
       for (var line in file.readAsLinesSync()) {
         var parts = line.split(' ');
         var d1Match = dateRe.firstMatch(parts[0]);
         var d1 = LocalDate(int.parse(d1Match!.group(1)!),
-            int.parse(d1Match!.group(2)!), int.parse(d1Match!.group(3)!));
+            int.parse(d1Match.group(2)!), int.parse(d1Match.group(3)!));
         var d2Match = dateRe.firstMatch(parts[1]);
         var d2 = LocalDate(int.parse(d2Match!.group(1)!),
-            int.parse(d2Match!.group(2)!), int.parse(d2Match!.group(3)!));
-        var wantMatch = periodRe.firstMatch(parts[2]);
+            int.parse(d2Match.group(2)!), int.parse(d2Match.group(3)!));
+        var periodMatch = periodRe.firstMatch(parts[2]);
         var want = Period(
-            years: int.parse(wantMatch!.group(1)!),
-            months: int.parse(wantMatch!.group(2)!),
-            days: int.parse(wantMatch!.group(3)!));
+            years: int.parse(periodMatch!.group(1) ?? '0'),
+            months: int.parse(periodMatch.group(2) ?? '0'),
+            days: int.parse(periodMatch.group(3) ?? '0'));
         if (d1 == d2) {
           continue;
         }
