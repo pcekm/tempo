@@ -2,35 +2,6 @@ import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('parse()', () {
-    test('simple', () {
-      expect(Period.parse('P0Y'), Period());
-      expect(Period.parse('P1Y'), Period(years: 1));
-      expect(Period.parse('P-1Y'), Period(years: -1));
-      expect(Period.parse('P0M'), Period());
-      expect(Period.parse('P1M'), Period(months: 1));
-      expect(Period.parse('P-1M'), Period(months: -1));
-      expect(Period.parse('P0W'), Period());
-      expect(Period.parse('P1W'), Period(days: 7));
-      expect(Period.parse('P-1W'), Period(days: -7));
-      expect(Period.parse('P0D'), Period());
-      expect(Period.parse('P1D'), Period(days: 1));
-      expect(Period.parse('P-1D'), Period(days: -1));
-    });
-
-    test('complex', () {
-      expect(Period.parse('P1Y2M3W4D'), Period(years: 1, months: 2, days: 25));
-      expect(Period.parse('P-1Y-2M-3W-4D'),
-          -Period(years: 1, months: 2, days: 25));
-    });
-
-    test('ignores hours, minutes and seconds', () {
-      expect(Period.parse('PT1M'), Period());
-      expect(Period.parse('PT-1H1.1M1,23S'), Period());
-      expect(Period.parse('P1YT-1H1.1M1,23S'), Period(years: 1));
-    });
-  });
-
   test('normalize()', () {
     expect(Period(years: 1, months: 13, days: 3).normalize(),
         Period(years: 2, months: 1, days: 3));

@@ -5,7 +5,7 @@ import 'package:sprintf/sprintf.dart';
 import 'julian_day.dart';
 import 'period.dart';
 import 'timespan.dart';
-import 'util.dart';
+import 'common.dart';
 import 'weekday.dart';
 
 /// An ISO 8601 date with no timezone.
@@ -44,13 +44,6 @@ class LocalDate implements Comparable<LocalDate> {
   /// The timezone (if any) of [dateTime] is ignored.
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);
-
-  /// Parses a [LocalDate] from an ISO 8601 date string. Any non-date
-  /// parts of the string will be silently discarded. Uses [DateTime.parse].
-  factory LocalDate.parse(String dateString) {
-    var dateTime = DateTime.parse(dateString);
-    return LocalDate(dateTime.year, dateTime.month, dateTime.day);
-  }
 
   /// Returns a new date with one or more fields replaced. Uses the largest
   /// valid day if the resulting month is shorter.

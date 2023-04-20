@@ -1,3 +1,5 @@
+import 'common.dart';
+
 /// A duration of time with nanosecond precision.
 ///
 /// This represents a duration of time equal to

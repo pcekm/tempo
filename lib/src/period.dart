@@ -1,3 +1,5 @@
+import 'common.dart';
+
 /// Represents a period between two dates on a calendar.
 ///
 /// Unlike [Timespan] and [Duration], which both represent an absolute length of
@@ -17,9 +19,6 @@
 ///   * [LocalDateTime.periodUntil()]
 ///   * [LocalDateTime.plusPeriod()]
 class Period {
-  static final _isoRegex = RegExp(
-      r'^P(?:(-?\d+)Y)?(?:(-?\d+)M)?(?:(-?\d+)W)?(?:(-?\d+)D)?(?:T(?:-?[0-9.,]+H)?(?:-?[0-9.,]+M)?(?:-?[0-9.,]+S)?)?$');
-
   final int years;
   final int months;
   final int days;
@@ -29,22 +28,6 @@ class Period {
   /// Provided for convenience and readability. Equivalent to
   /// Period(days: 7 * weeks).
   const Period.ofWeeks(int weeks) : this(days: 7 * weeks);
-
-  /// Parses an ISO 8601 formatted period. This does not support fractional
-  /// years, months or days. Any other fields in the string are silently
-  /// ignored. If [periodString] contains a week component, it will be
-  /// converted to days.
-  factory Period.parse(String periodString) {
-    var match = _isoRegex.firstMatch(periodString);
-    if (match == null) {
-      throw ArgumentError.value(periodString, 'periodString',
-          'Is not in the form "P[nY][nM][nW][nD]"');
-    }
-    return Period(
-        years: int.parse(match[1] ?? '0'),
-        months: int.parse(match[2] ?? '0'),
-        days: 7 * (int.parse(match[3] ?? '0')) + int.parse(match[4] ?? '0'));
-  }
 
   /// Returns an equivalent period in which months is less than 12. This does
   /// not attempt to convert days to months or years, which would be ambiguous.
