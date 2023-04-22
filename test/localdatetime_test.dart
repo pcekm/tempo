@@ -105,6 +105,12 @@ void main() {
     });
   });
 
+  test('toDateTime', () {
+    var dt = LocalDateTime(2000, 1, 2, 3, 4, 5, 006007000);
+    var want = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+    expect(dt.toDateTime(), want);
+  });
+
   test('timespanUntil():', () {
     expect(
         LocalDateTime(2000).timespanUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),

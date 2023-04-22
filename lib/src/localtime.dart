@@ -1,12 +1,13 @@
 import 'package:sprintf/sprintf.dart';
 import 'timespan.dart';
+import 'has_time.dart';
 
 /// Represents a time of day without a time zone.
 ///
 /// Internally this stores the time in [nanosecondsSinceMidnight], which
 /// means it can represent any time down to the nanosecond. This does
 /// not support leap seconds.
-class LocalTime implements Comparable<LocalTime> {
+class LocalTime implements Comparable<LocalTime>, HasTime {
   static const int _nano = 1000000000;
 
   static const int _nsPerS = 1000000000;

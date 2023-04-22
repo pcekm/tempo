@@ -46,6 +46,21 @@ class OffsetDateTime
         dt.second, dt.nanosecond);
   }
 
+  /// Constructs an [OffsetDateTime] with the current date and time in the
+  /// local time zone.
+  OffsetDateTime.now() : this.fromDateTime(DateTime.now());
+
+  /// Constructs an [OffsetDateTime] from a [DateTime].
+  ///
+  /// This will have the same time zone offset as the `DateTime`.
+  OffsetDateTime.fromDateTime(DateTime dateTime)
+      : this.fromInstant(
+            Instant.fromUnix(
+                Timespan(microseconds: dateTime.microsecondsSinceEpoch)),
+            ZoneOffset.fromDuration(dateTime.timeZoneOffset));
+
+  /// Constructs an [OffsetDateTime] from an [Instant] and a fixed offset
+  /// from UTC.
   OffsetDateTime.fromInstant(HasInstant hasInstant, this.offset)
       : _dateTime = _mkDateTime(hasInstant.asInstant, offset),
         _instant = hasInstant.asInstant;
@@ -54,10 +69,16 @@ class OffsetDateTime
 
   final LocalDateTime _dateTime;
   final Instant _instant;
+
+  /// The amount the time zone is offset from UTC.
   final ZoneOffset offset;
 
   @override
   Instant get asInstant => _instant;
+
+  @override
+  DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
+      _instant.unixTimestamp.inMicroseconds);
 
   /// The year.
   ///

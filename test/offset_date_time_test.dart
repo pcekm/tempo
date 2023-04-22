@@ -58,6 +58,18 @@ void main() {
     expect(dt.asInstant, nepalInstant);
   });
 
+  test('fromDateTime()', () {
+    var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+    var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
+    var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006007000);
+    expect(OffsetDateTime.fromDateTime(dt), want);
+  });
+
+  test('now() smoke test', () {
+    var got = OffsetDateTime.now();
+    expect(got.year, greaterThanOrEqualTo(2023));
+  });
+
   test('fromInstant()', () {
     var dt = OffsetDateTime.fromInstant(nepalInstant, nepalOffset);
     expect(dt.year, 2000, reason: 'year');
@@ -69,6 +81,12 @@ void main() {
     expect(dt.nanosecond, 6, reason: 'nanosecond');
     expect(dt.offset, ZoneOffset(5, 45));
     expect(dt.asInstant, nepalInstant);
+  });
+
+  test('toDateTime()', () {
+    var want = DateTime.fromMicrosecondsSinceEpoch(
+        nepalInstant.unixTimestamp.inMicroseconds);
+    expect(nepalOffsetTime.toDateTime(), want);
   });
 
   test('timespanUntil()', () {

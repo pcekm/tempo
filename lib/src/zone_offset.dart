@@ -21,8 +21,6 @@ class ZoneOffset {
   ///    * `-59 <= minutes <= 59`
   ///    * `hours.sign == minutes.sign` (Changes [minutes] to match [hours]).
   ///
-  // TODO: Should this even normalize? If someone wants to be 2 days behind,
-  // let them!
   factory ZoneOffset(int hours, [int minutes = 0]) {
     hours += minutes ~/ 60;
     minutes = minutes.remainder(60);
@@ -34,6 +32,19 @@ class ZoneOffset {
       minutes += 60;
     }
     return ZoneOffset._(hours.remainder(24), minutes);
+  }
+
+  /// Constructs a new ZoneOffset from a Duration.
+  ///
+  /// This will be normalized as described in [ZoneOffset].
+  // TODO: Hide this.
+  factory ZoneOffset.fromDuration(Duration amount) {
+    return ZoneOffset(0, amount.inMinutes);
+  }
+
+  /// Provides the platform's current default zone offset.
+  factory ZoneOffset.local() {
+    return ZoneOffset.fromDuration(DateTime.now().timeZoneOffset);
   }
 
   /// The offset in minutes.

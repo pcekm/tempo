@@ -138,6 +138,10 @@ class LocalDateTime
   @override
   int get nanosecond => time.nanosecond;
 
+  @override
+  DateTime toDateTime() =>
+      DateTime(year, month, day, hour, minute, second, 0, nanosecond ~/ 1000);
+
   /// Finds the timespan between [this] and [other].
   Timespan timespanUntil(LocalDateTime other) => Timespan(
       days: other._julianDay.day - _julianDay.day,
