@@ -11,3 +11,4 @@ pubspec.lock
 
 *.sublime-*
 .vscode
+doc/api
