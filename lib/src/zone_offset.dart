@@ -1,4 +1,4 @@
-import 'package:sprintf/sprintf.dart';
+part of '../goodtime.dart';
 
 /// A time zone offset from UTC.
 ///

@@ -1,11 +1,4 @@
-import 'has_date_time.dart';
-import 'local_date.dart';
-import 'local_time.dart';
-import 'julian_day.dart';
-import 'period.dart';
-import 'period_arithmetic.dart';
-import 'weekday.dart';
-import 'timespan.dart';
+part of '../goodtime.dart';
 
 /// Contains an ISO 8601 date and time with no time zone.
 ///

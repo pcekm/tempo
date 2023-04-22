@@ -1,5 +1,4 @@
-import 'weekday.dart';
-import 'timespan.dart';
+part of '../goodtime.dart';
 
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.

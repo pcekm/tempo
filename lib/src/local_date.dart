@@ -1,13 +1,4 @@
-import 'dart:math';
-
-import 'package:sprintf/sprintf.dart';
-
-import 'julian_day.dart';
-import 'period.dart';
-import 'period_arithmetic.dart';
-import 'timespan.dart';
-import 'common.dart';
-import 'weekday.dart';
+part of '../goodtime.dart';
 
 /// An ISO 8601 date with no timezone.
 class LocalDate implements Comparable<LocalDate>, PeriodArithmetic<LocalDate> {

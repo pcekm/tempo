@@ -1,4 +1,4 @@
-import 'period.dart';
+part of '../goodtime.dart';
 
 /// Interface implemented by classes that can add and subtract [Period]s.
 abstract class PeriodArithmetic<T> {

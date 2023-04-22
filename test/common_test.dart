@@ -1,4 +1,4 @@
-import 'package:goodtime/src/common.dart';
+import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
 
 // Equality matcher that looks for

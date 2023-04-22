@@ -1,6 +1,4 @@
-import 'package:sprintf/sprintf.dart';
-import 'timespan.dart';
-import 'has_time.dart';
+part of '../goodtime.dart';
 
 /// Represents a time of day without a time zone.
 ///

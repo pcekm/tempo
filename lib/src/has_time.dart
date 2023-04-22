@@ -1,3 +1,5 @@
+part of '../goodtime.dart';
+
 /// Interface implemented by classes that provide the time of day.
 abstract class HasTime {
   /// The hour from 0 to 23.

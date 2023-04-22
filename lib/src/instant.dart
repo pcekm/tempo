@@ -1,7 +1,4 @@
-import 'has_instant.dart';
-import 'julian_day.dart';
-import 'timespan.dart';
-import 'local_date_time.dart';
+part of '../goodtime.dart';
 
 /// Represents a single instant in time.
 ///

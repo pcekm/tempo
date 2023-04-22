@@ -1,4 +1,4 @@
-import 'instant.dart';
+part of '../goodtime.dart';
 
 /// Interface implemented by any class that is tied to a specific [Instant]
 /// in time.

@@ -1,4 +1,4 @@
-import 'weekday.dart';
+part of '../goodtime.dart';
 
 /// Interface implemented by objects that have a date on the
 /// ISO 8601 calendar.

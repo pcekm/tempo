@@ -1,5 +1,4 @@
-import 'package:goodtime/src/local_time.dart';
-import 'package:goodtime/src/timespan.dart';
+import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
 
 void main() {

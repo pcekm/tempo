@@ -1,4 +1,4 @@
-import 'package:goodtime/src/zone_offset.dart';
+import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
 
 void main() {

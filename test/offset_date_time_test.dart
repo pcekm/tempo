@@ -1,10 +1,5 @@
 import 'package:test/test.dart';
-import 'package:goodtime/src/offset_date_time.dart';
-import 'package:goodtime/src/local_date_time.dart';
-import 'package:goodtime/src/instant.dart';
-import 'package:goodtime/src/zone_offset.dart';
-import 'package:goodtime/src/timespan.dart';
-import 'package:goodtime/src/period.dart';
+import 'package:goodtime/goodtime.dart';
 
 void main() {
   const int nano = 1000000000;

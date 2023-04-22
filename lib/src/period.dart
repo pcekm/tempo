@@ -1,3 +1,4 @@
+part of '../goodtime.dart';
 
 /// Represents a period between two dates on a calendar.
 ///

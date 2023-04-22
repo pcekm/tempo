@@ -1,13 +1,4 @@
-import 'instant.dart';
-import 'has_date_time.dart';
-import 'has_instant.dart';
-import 'zone_offset.dart';
-import 'local_date_time.dart';
-import 'weekday.dart';
-import 'period.dart';
-import 'period_arithmetic.dart';
-import 'timespan.dart';
-import 'julian_day.dart';
+part of '../goodtime.dart';
 
 /// A date and time at a fixed offset from UTC.
 class OffsetDateTime
