@@ -1,6 +1,4 @@
-/// Common constants and functions for date time handling.
-
-const int nanosecondsPerSecond = 1000000000;
+/// Common functions for date time handling.
 
 const List<int> _daysInMonthTable = [
   0,
