@@ -76,13 +76,13 @@ class LocalDateTime
   LocalDateTime.combine(this.date, [LocalTime? time])
       : time = time ?? LocalTime();
 
-  factory LocalDateTime._fromJulianDay(JulianDay julianDay) {
-    var parts = julianDay.toGregorian();
+  factory LocalDateTime._fromJulianDay(Timespan julianDay) {
+    var parts = julianDayToGregorian(julianDay);
     return LocalDateTime(
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
-  JulianDay get _julianDay => JulianDay.fromGregorian(Gregorian(
+  Timespan get _julianDay => gregorianToJulianDay(Gregorian(
       year,
       month,
       day,
@@ -136,9 +136,7 @@ class LocalDateTime
       DateTime(year, month, day, hour, minute, second, 0, nanosecond ~/ 1000);
 
   /// Finds the timespan between [this] and [other].
-  Timespan timespanUntil(LocalDateTime other) => Timespan(
-      days: other._julianDay.day - _julianDay.day,
-      nanoseconds: other._julianDay.fraction - _julianDay.fraction);
+  Timespan timespanUntil(LocalDateTime other) => other._julianDay - _julianDay;
 
   /// Adds a [Period] of time.
   ///
@@ -171,16 +169,16 @@ class LocalDateTime
   /// This acts on the time parts exactly like [LocalTime.plusTimespan()]
   /// and increments or decrements the date if the amount is at least
   /// 1 day or negative.
-  LocalDateTime plusTimespan(Timespan amount) => LocalDateTime._fromJulianDay(
-      _julianDay.plus(amount.dayPart, amount.nanosecondPart));
+  LocalDateTime plusTimespan(Timespan amount) =>
+      LocalDateTime._fromJulianDay(_julianDay + amount);
 
   /// Subtracts a [Timespan].
   ///
   /// This acts on the time parts exactly like [LocalTime.minusTimespan()]
   /// and increments or decrements the date if the amount is at least
   /// 1 day or positive.
-  LocalDateTime minusTimespan(Timespan amount) => LocalDateTime._fromJulianDay(
-      _julianDay.minus(amount.dayPart, amount.nanosecondPart));
+  LocalDateTime minusTimespan(Timespan amount) =>
+      LocalDateTime._fromJulianDay(_julianDay - amount);
 
   @override
   int compareTo(LocalDateTime other) => _julianDay.compareTo(other._julianDay);

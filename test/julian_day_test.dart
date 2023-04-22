@@ -6,201 +6,86 @@ const int nano = 1000000000;
 const int dayNano = 86400 * nano;
 const int halfDayNano = dayNano ~/ 2;
 
-class HasDayFraction extends CustomMatcher {
-  HasDayFraction(day, fraction)
-      : super('JulianDay with [day, fraction]', '[day, fraction]',
-            [day, fraction]);
-  @override
-  featureValueOf(actual) {
-    var jd = actual as JulianDay;
-    return [jd.day, jd.fraction];
-  }
-}
-
 void main() {
-  test('Default Constructor', () {
-    expect(JulianDay(), HasDayFraction(0, 0));
-    expect(JulianDay(0, 1), HasDayFraction(0, 1));
-    expect(JulianDay(0, halfDayNano), HasDayFraction(0, halfDayNano));
-    expect(JulianDay(1), HasDayFraction(1, 0));
-    expect(JulianDay(1, 1), HasDayFraction(1, 1));
-    expect(JulianDay(1, halfDayNano), HasDayFraction(1, halfDayNano));
-    expect(JulianDay(1, dayNano + 1), HasDayFraction(2, 1));
-    expect(JulianDay(1, 2 * dayNano + 1), HasDayFraction(3, 1));
+  group('julianDayToGregorian()', () {
+    Gregorian jdToGregorian(int day, int hours) =>
+        julianDayToGregorian(Timespan(days: day, hours: hours));
 
-    expect(JulianDay(10, -1), HasDayFraction(9, dayNano - 1));
-
-    expect(JulianDay(0, -1), HasDayFraction(-1, dayNano - 1));
-    expect(JulianDay(0, -halfDayNano), HasDayFraction(-1, halfDayNano));
-    expect(JulianDay(0, -dayNano + 1), HasDayFraction(-1, 1));
-    expect(JulianDay(-1), HasDayFraction(-1, 0));
-    expect(JulianDay(-1, -1), HasDayFraction(-2, dayNano - 1));
-    expect(JulianDay(-1, 1), HasDayFraction(-1, 1));
-    expect(JulianDay(-1, -(dayNano + 1)), HasDayFraction(-3, dayNano - 1));
-    expect(JulianDay(-1, -(2 * dayNano + 1)), HasDayFraction(-4, dayNano - 1));
-  });
-
-  group('toGregorian()', () {
     test('small positive', () {
-      expect(JulianDay().toGregorian(), Gregorian(-4713, 11, 24, halfDayNano),
+      expect(jdToGregorian(0, 0), Gregorian(-4713, 11, 24, halfDayNano),
           reason: 'JD = 0');
-      expect(
-          JulianDay(0, halfDayNano).toGregorian(), Gregorian(-4713, 11, 25, 0),
+      expect(jdToGregorian(0, 12), Gregorian(-4713, 11, 25, 0),
           reason: 'JD = 0.5');
-      expect(
-          JulianDay(1, 0).toGregorian(), Gregorian(-4713, 11, 25, halfDayNano),
+      expect(jdToGregorian(1, 0), Gregorian(-4713, 11, 25, halfDayNano),
           reason: 'JD = 1');
-      expect(
-          JulianDay(1, halfDayNano).toGregorian(), Gregorian(-4713, 11, 26, 0),
+      expect(jdToGregorian(1, 12), Gregorian(-4713, 11, 26, 0),
           reason: 'JD = 1.5');
     });
 
     test('small negative', () {
-      expect(
-          JulianDay(-1, halfDayNano).toGregorian(), Gregorian(-4713, 11, 24, 0),
+      expect(jdToGregorian(-1, 12), Gregorian(-4713, 11, 24, 0),
           reason: 'JD = -0.5');
-      expect(
-          JulianDay(-1, 0).toGregorian(), Gregorian(-4713, 11, 23, halfDayNano),
+      expect(jdToGregorian(-1, 0), Gregorian(-4713, 11, 23, halfDayNano),
           reason: 'JD = -1');
-      expect(
-          JulianDay(-2, halfDayNano).toGregorian(), Gregorian(-4713, 11, 23, 0),
+      expect(jdToGregorian(-2, 12), Gregorian(-4713, 11, 23, 0),
           reason: 'JD = -1.5');
-      expect(
-          JulianDay(-2, 0).toGregorian(), Gregorian(-4713, 11, 22, halfDayNano),
+      expect(jdToGregorian(-2, 0), Gregorian(-4713, 11, 22, halfDayNano),
           reason: 'JD = -2');
     });
 
     test('range limits', () {
-      expect(JulianDay(5373483, halfDayNano).toGregorian(),
-          Gregorian(9999, 12, 31));
-      expect(JulianDay(-1930999, -halfDayNano).toGregorian(),
-          Gregorian(-9999, 1, 1, 0));
+      expect(jdToGregorian(5373483, 12), Gregorian(9999, 12, 31));
+      expect(jdToGregorian(-1930999, -12), Gregorian(-9999, 1, 1, 0));
     });
 
     test('important epochs', () {
       // Some important epoch dates.
       // Source: Baum, Peter. (2017). Date Algorithms.
-      expect(
-          JulianDay(1721425, halfDayNano).toGregorian(), Gregorian(1, 1, 1, 0),
+      expect(jdToGregorian(1721425, 12), Gregorian(1, 1, 1, 0),
           reason: 'Rata Die epoch, 0001-01-01');
-      expect(JulianDay(2299160, halfDayNano).toGregorian(),
-          Gregorian(1582, 10, 15, 0),
+      expect(jdToGregorian(2299160, 12), Gregorian(1582, 10, 15, 0),
           reason: 'Gregorian reform, 1582-10-15');
-      expect(JulianDay(2440587, halfDayNano).toGregorian(),
-          Gregorian(1970, 1, 1, 0),
+      expect(jdToGregorian(2440587, 12), Gregorian(1970, 1, 1, 0),
           reason: 'Unix epoch, 1970-01-01');
     });
   });
 
-  test('fromGregorian()', () {
-    expect(JulianDay.fromGregorian(Gregorian(-4713, 11, 24, halfDayNano)),
-        JulianDay(0));
-    expect(JulianDay.fromGregorian(Gregorian(-4713, 11, 24, 0)),
-        JulianDay(0, -halfDayNano));
+  test('gregorianToJulianDay()', () {
+    expect(gregorianToJulianDay(Gregorian(-4713, 11, 24, halfDayNano)),
+        Timespan(days: 0));
+    expect(gregorianToJulianDay(Gregorian(-4713, 11, 24, 0)),
+        Timespan(days: 0, hours: -12));
 
     // Some important epoch dates.
     // Source: Baum, Peter. (2017). Date Algorithms.
-    expect(JulianDay.fromGregorian(Gregorian(1, 1, 1, 0)),
-        JulianDay(1721425, halfDayNano),
+    expect(gregorianToJulianDay(Gregorian(1, 1, 1, 0)),
+        Timespan(days: 1721425, hours: 12),
         reason: 'Rata Die epoch, 0001-01-01');
-    expect(JulianDay.fromGregorian(Gregorian(1582, 10, 15, 0)),
-        JulianDay(2299160, halfDayNano),
+    expect(gregorianToJulianDay(Gregorian(1582, 10, 15, 0)),
+        Timespan(days: 2299160, hours: 12),
         reason: 'Gregorian reform, 1582-10-15');
-    expect(JulianDay.fromGregorian(Gregorian(1970, 1, 1, 0)),
-        JulianDay(2440587, halfDayNano),
+    expect(gregorianToJulianDay(Gregorian(1970, 1, 1, 0)),
+        Timespan(days: 2440587, hours: 12),
         reason: 'Unix epoch, 1970-01-01');
-  });
-
-  test('fromTimespan()', () {
-    expect(JulianDay.fromTimespan(Timespan(days: 1, nanoseconds: 2)),
-        HasDayFraction(1, 2));
-    expect(JulianDay.fromTimespan(Timespan(days: -1, nanoseconds: 2)),
-        HasDayFraction(-1, 2));
-    expect(JulianDay.fromTimespan(Timespan(days: -1, nanoseconds: -2)),
-        HasDayFraction(-2, dayNano - 2));
   });
 
   test('Bidirectional conversion -9999-01-01 to +9999-12-31 inclusive', () {
     const int start = -1930999; // -9999-01-01
     const int end = 5373484; // 10000-01-01
     for (int jd = start; jd < end; ++jd) {
-      var date = JulianDay(jd).toGregorian();
-      var gotJD = JulianDay.fromGregorian(date);
-      expect(gotJD, HasDayFraction(jd, 0),
-          reason: 'JD = $jd, intermediate = $date');
+      var date = julianDayToGregorian(Timespan(days: jd));
+      var gotJD = gregorianToJulianDay(date);
+      expect(gotJD.inDays, jd, reason: 'JD = $jd, intermediate = $date');
     }
   }, tags: ['slow']);
 
-  test('plus()', () {
-    var jd = JulianDay(-10, 0);
-    expect(jd.plus(1), HasDayFraction(-9, 0));
-    expect(jd.plus(5), HasDayFraction(-5, 0));
-    expect(jd.plus(10), HasDayFraction(0, 0));
-    expect(jd.plus(11), HasDayFraction(1, 0));
-
-    expect(jd.plus(0, 1), HasDayFraction(-10, 1));
-    expect(jd.plus(0, dayNano - 1), HasDayFraction(-10, dayNano - 1));
-    expect(jd.plus(0, dayNano), HasDayFraction(-9, 0));
-    expect(jd.plus(0, 2 * dayNano - 1), HasDayFraction(-9, dayNano - 1));
-    expect(jd.plus(0, 2 * dayNano), HasDayFraction(-8, 0));
-    expect(jd.plus(0, 2 * dayNano + 1), HasDayFraction(-8, 1));
-
-    expect(jd.plus(0, 10 * dayNano - 1), HasDayFraction(-1, dayNano - 1));
-    expect(jd.plus(0, 10 * dayNano), HasDayFraction(0, 0));
-    expect(jd.plus(0, 10 * dayNano + 1), HasDayFraction(0, 1));
-
-    expect(jd.plus(0, 20 * dayNano - 1), HasDayFraction(9, dayNano - 1));
-    expect(jd.plus(0, 20 * dayNano), HasDayFraction(10, 0));
-    expect(jd.plus(0, 20 * dayNano + 1), HasDayFraction(10, 1));
-  });
-
-  test('minus()', () {
-    var jd = JulianDay(10, 0);
-    expect(jd.minus(1), HasDayFraction(9, 0));
-    expect(jd.minus(5), HasDayFraction(5, 0));
-    expect(jd.minus(10), HasDayFraction(0, 0));
-    expect(jd.minus(11), HasDayFraction(-1, 0));
-
-    expect(jd.minus(0, 1), HasDayFraction(9, dayNano - 1));
-    expect(jd.minus(0, dayNano - 1), HasDayFraction(9, 1));
-    expect(jd.minus(0, dayNano), HasDayFraction(9, 0));
-    expect(jd.minus(0, 2 * dayNano - 1), HasDayFraction(8, 1));
-    expect(jd.minus(0, 2 * dayNano), HasDayFraction(8, 0));
-    expect(jd.minus(0, 2 * dayNano + 1), HasDayFraction(7, dayNano - 1));
-
-    expect(jd.minus(0, 10 * dayNano - 1), HasDayFraction(0, 1));
-    expect(jd.minus(0, 10 * dayNano), HasDayFraction(0, 0));
-    expect(jd.minus(0, 10 * dayNano + 1), HasDayFraction(-1, dayNano - 1));
-
-    expect(jd.minus(0, 20 * dayNano - 1), HasDayFraction(-10, 1));
-    expect(jd.minus(0, 20 * dayNano), HasDayFraction(-10, 0));
-    expect(jd.minus(0, 20 * dayNano + 1), HasDayFraction(-11, dayNano - 1));
-  });
-
-  test('toDouble()', () {
-    expect(JulianDay(0).toDouble(), 0);
-    expect(JulianDay(0, halfDayNano).toDouble(), 0.5);
-    expect(JulianDay(0, -halfDayNano).toDouble(), -0.5);
-    expect(JulianDay(1721424, halfDayNano).toDouble(), 1721424.5);
-  });
-
-  test('weekday', () {
-    expect(JulianDay(0, -halfDayNano).weekday, Weekday.monday);
-    expect(JulianDay(0, 0).weekday, Weekday.monday);
-    expect(JulianDay(0, halfDayNano).weekday, Weekday.tuesday);
-    expect(JulianDay(2430335, halfDayNano).weekday, Weekday.sunday);
-    expect(JulianDay(2460053, halfDayNano).weekday, Weekday.wednesday);
-  });
-
-  test('compareTo()', () {
-    expect(JulianDay(0, 0).compareTo(JulianDay(0, 1)), -1);
-    expect(JulianDay(0, 1).compareTo(JulianDay(0, 0)), 1);
-    expect(JulianDay(0, 0).compareTo(JulianDay(1, 0)), -1);
-    expect(JulianDay(1, 0).compareTo(JulianDay(0, 0)), 1);
-    expect(JulianDay(1, 1).compareTo(JulianDay(1, 1)), 0);
-  });
-
-  test('toString()', () {
-    expect(JulianDay(1, 2, 3).toString(), '[1 + 2 / 3]');
+  test('weekdayForJulianDay', () {
+    expect(weekdayForJulianDay(Timespan(days: 0, hours: -12)), Weekday.monday);
+    expect(weekdayForJulianDay(Timespan(days: 0)), Weekday.monday);
+    expect(weekdayForJulianDay(Timespan(days: 0, hours: 12)), Weekday.tuesday);
+    expect(weekdayForJulianDay(Timespan(days: 2430335, hours: 12)),
+        Weekday.sunday);
+    expect(weekdayForJulianDay(Timespan(days: 2460053, hours: 12)),
+        Weekday.wednesday);
   });
 }

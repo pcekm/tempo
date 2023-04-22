@@ -23,8 +23,8 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
     _validate();
   }
 
-  factory LocalDate._fromJulianDay(JulianDay julianDay) {
-    var parts = julianDay.toGregorian();
+  factory LocalDate._fromJulianDay(Timespan julianDay) {
+    var parts = julianDayToGregorian(julianDay);
     return LocalDate(parts.year, parts.month, parts.day);
   }
 
@@ -53,18 +53,19 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   }
 
   // The Julian day represented by this date.
-  JulianDay get _julianDay =>
-      JulianDay.fromGregorian(Gregorian(year, month, day, 0));
+  Timespan get _julianDay =>
+      gregorianToJulianDay(Gregorian(year, month, day, 0));
 
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
   /// Gets the day of the week.
-  Weekday get weekday => _julianDay.plus(0, 43100 * 1000000000).weekday;
+  Weekday get weekday => weekdayForJulianDay(_julianDay);
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
-  int get ordinalDay => _julianDay.day - LocalDate(year)._julianDay.day + 1;
+  int get ordinalDay =>
+      _julianDay.inDays - LocalDate(year)._julianDay.inDays + 1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
@@ -96,7 +97,7 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
     late int sign;
     late LocalDate d1;
     late LocalDate d2;
-    if (other._julianDay.day >= _julianDay.day) {
+    if (other._julianDay.inDays >= _julianDay.inDays) {
       sign = 1;
       d1 = this;
       d2 = other;
@@ -128,21 +129,21 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
   Timespan timespanUntil(LocalDate other) =>
-      Timespan(days: other._julianDay.day - _julianDay.day);
+      Timespan(days: other._julianDay.inDays - _julianDay.inDays);
 
   /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate plusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDay.plus(t.dayPart, t.nanosecondPart));
+      LocalDate._fromJulianDay(_julianDay + t);
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate minusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDay.minus(t.dayPart, t.nanosecondPart));
+      LocalDate._fromJulianDay(_julianDay - t);
 
   /// Adds [Period] of time.
   ///
@@ -184,7 +185,7 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
 
   @override
   int compareTo(LocalDate other) {
-    return Comparable.compare(_julianDay.day, other._julianDay.day);
+    return _julianDay.compareTo(other._julianDay);
   }
 
   /// Greater than operator.
@@ -201,7 +202,10 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate && _julianDay.day == other._julianDay.day;
+      other is LocalDate &&
+      year == other.year &&
+      month == other.month &&
+      day == other.day;
 
   @override
   int get hashCode => _julianDay.hashCode;
