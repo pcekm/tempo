@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+import '../goodtime.dart';
 
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.

@@ -6,7 +6,7 @@ class OffsetDateTime
   static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
     var parts = instant
         .plusTimespan(Timespan(minutes: offset.inMinutes))
-        .julianDay
+        ._julianDay
         .toGregorian();
     return LocalDateTime(
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
@@ -23,7 +23,7 @@ class OffsetDateTime
       int nanosecond = 0]) {
     var dateTime =
         LocalDateTime(year, month, day, hour, minute, second, nanosecond);
-    var instant = Instant.fromJulianDay(JulianDay.fromGregorian(Gregorian(
+    var instant = Instant._fromJulianDay(JulianDay.fromGregorian(Gregorian(
             year, month, day, dateTime.time.nanosecondsSinceMidnight)))
         .minusTimespan(Timespan(minutes: offset.inMinutes));
     return OffsetDateTime._(dateTime, instant, offset);

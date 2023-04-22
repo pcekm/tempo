@@ -35,8 +35,7 @@ class Instant implements _HasInstant {
   /// ```
   Instant.fromUnix(this.unixTimestamp);
 
-  /// TODO: Hide this!
-  Instant.fromJulianDay(JulianDay julianDay)
+  Instant._fromJulianDay(JulianDay julianDay)
       : unixTimestamp =
             Timespan(days: julianDay.day, nanoseconds: julianDay.fraction) -
                 _julianOffset;
@@ -44,8 +43,7 @@ class Instant implements _HasInstant {
   @override
   Instant get asInstant => this;
 
-  /// TOOD: Hide this!
-  JulianDay get julianDay =>
+  JulianDay get _julianDay =>
       JulianDay.fromTimespan(unixTimestamp + _julianOffset);
 
   /// Returns the amount of time between this and another instant in time.
@@ -84,7 +82,7 @@ class Instant implements _HasInstant {
   /// For example, `2000-01-02T03:04:05.123456789Z`.
   @override
   String toString() {
-    var parts = julianDay.toGregorian();
+    var parts = _julianDay.toGregorian();
     var dateTime = LocalDateTime(
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
     return '${dateTime.toString()}Z';

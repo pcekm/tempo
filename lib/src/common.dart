@@ -1,7 +1,5 @@
 /// Common constants and functions for date time handling.
 
-part of '../goodtime.dart';
-
 const int nanosecondsPerSecond = 1000000000;
 
 const List<int> _daysInMonthTable = [

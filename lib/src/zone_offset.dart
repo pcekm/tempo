@@ -3,7 +3,7 @@ part of '../goodtime.dart';
 /// A time zone offset from UTC.
 ///
 /// Zone offsets can range from UTC-23:59 to UTC+23:59, although as of this
-/// writing, the largest offset is UTC+14:00 for the easternmost islands
+/// writing, the largest offset in use is UTC+14:00 for the easternmost islands
 /// of Kiribati.
 class ZoneOffset {
   /// UTC offset hours `[-23 to +23]`.
@@ -37,7 +37,6 @@ class ZoneOffset {
   /// Constructs a new ZoneOffset from a Duration.
   ///
   /// This will be normalized as described in [ZoneOffset].
-  // TODO: Hide this.
   factory ZoneOffset.fromDuration(Duration amount) {
     return ZoneOffset(0, amount.inMinutes);
   }

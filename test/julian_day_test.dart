@@ -1,5 +1,6 @@
-import 'package:goodtime/goodtime.dart';
 import 'package:test/test.dart';
+import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/src/julian_day.dart';
 
 const int nano = 1000000000;
 const int dayNano = 86400 * nano;
