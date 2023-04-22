@@ -33,17 +33,30 @@ void main() {
       expect(LocalDateTime(2000, 1, 1, -24), LocalDateTime(1999, 12, 31));
     });
 
-    test('fromDateTime()', () {
-      var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
-      expect(d.year, 2000, reason: 'Year mismatch');
-      expect(d.month, 1, reason: 'Month mismatch');
-      expect(d.day, 2, reason: 'Day mismatch');
-      expect(d.hour, 3, reason: 'Hour mismatch');
-      expect(d.minute, 4, reason: 'Minute mismatch');
-      expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.nanosecond, 006007000, reason: 'Nanosecond mismatch');
-    });
+    group('fromDateTime()', () {
+      test('fromDateTime()', () {
+        var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6));
+        expect(d.year, 2000, reason: 'Year mismatch');
+        expect(d.month, 1, reason: 'Month mismatch');
+        expect(d.day, 2, reason: 'Day mismatch');
+        expect(d.hour, 3, reason: 'Hour mismatch');
+        expect(d.minute, 4, reason: 'Minute mismatch');
+        expect(d.second, 5, reason: 'Second mismatch');
+        // JS platforms can't handle more than milliseconds.
+        expect(d.nanosecond, 006000000, reason: 'Nanosecond mismatch');
+      });
 
+      test('vm platforms', () {
+        var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
+        expect(d.year, 2000, reason: 'Year mismatch');
+        expect(d.month, 1, reason: 'Month mismatch');
+        expect(d.day, 2, reason: 'Day mismatch');
+        expect(d.hour, 3, reason: 'Hour mismatch');
+        expect(d.minute, 4, reason: 'Minute mismatch');
+        expect(d.second, 5, reason: 'Second mismatch');
+        expect(d.nanosecond, 006007000, reason: 'Nanosecond mismatch');
+      }, testOn: '!js');
+    });
     test('combine()', () {
       var d =
           LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));

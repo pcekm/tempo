@@ -1,4 +1,3 @@
-import 'common.dart';
 
 /// A duration of time with nanosecond precision.
 ///
@@ -103,6 +102,26 @@ class Timespan implements Comparable<Timespan> {
       int milliseconds = 0,
       int microseconds = 0,
       int nanoseconds = 0}) {
+    // Divide days out of each field separately to minimize the chances of
+    // overflow.
+    days += hours ~/ _hoursPerDay;
+    hours = hours.remainder(_hoursPerDay);
+
+    days += minutes ~/ _minutesPerDay;
+    minutes = minutes.remainder(_minutesPerDay);
+
+    days += seconds ~/ _secondsPerDay;
+    seconds = seconds.remainder(_secondsPerDay);
+
+    days += milliseconds ~/ _millisecondsPerDay;
+    milliseconds = milliseconds.remainder(_millisecondsPerDay);
+
+    days += microseconds ~/ _microsecondsPerDay;
+    microseconds = microseconds.remainder(_microsecondsPerDay);
+
+    days += nanoseconds ~/ _nanosecondsPerDay;
+    nanoseconds = nanoseconds.remainder(_nanosecondsPerDay);
+
     var fraction = hours * _nsPerHour +
         minutes * _nsPerMinute +
         seconds * _nsPerSecond +

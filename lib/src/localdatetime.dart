@@ -1,7 +1,9 @@
+import 'has_date_time.dart';
 import 'localdate.dart';
 import 'localtime.dart';
 import 'julian_day.dart';
 import 'period.dart';
+import 'period_arithmetic.dart';
 import 'weekday.dart';
 import 'timespan.dart';
 
@@ -9,7 +11,11 @@ import 'timespan.dart';
 ///
 /// This is a combination of [LocalDate] and [LocalTime]. The individual
 /// parts can be retrieved with [date] and [time].
-class LocalDateTime implements Comparable<LocalDateTime> {
+class LocalDateTime
+    implements
+        Comparable<LocalDateTime>,
+        HasDateTime,
+        PeriodArithmetic<LocalDateTime> {
   static const int _nsPerMicrosecond = 1000;
   static const int _nsPerMillisecond = 1000000;
   static const int _nsPerSecond = 1000000000;
@@ -96,31 +102,40 @@ class LocalDateTime implements Comparable<LocalDateTime> {
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
   /// This is also called astronomical year numbering.
+  @override
   int get year => date.year;
 
   /// The month from 1 to 12.
+  @override
   int get month => date.month;
 
   /// The day starting at 1.
+  @override
   int get day => date.day;
 
   /// Gets the day of the week.
+  @override
   Weekday get weekday => date.weekday;
 
   /// The number of days since the beginning of the year. This will range from
   /// 1 to 366.
+  @override
   int get ordinalDay => date.ordinalDay;
 
   /// The hour from 0 to 23.
+  @override
   int get hour => time.hour;
 
   /// The minute from 0 to 59.
+  @override
   int get minute => time.minute;
 
   /// The second from 0 to 59.
+  @override
   int get second => time.second;
 
   /// The nanoseconds from 0 to 999,999,999.
+  @override
   int get nanosecond => time.nanosecond;
 
   /// Finds the timespan between [this] and [other].
@@ -137,6 +152,7 @@ class LocalDateTime implements Comparable<LocalDateTime> {
   /// var d = LocalDateTime(2000);
   /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
   /// ```
+  @override
   LocalDateTime plusPeriod(Period amount) =>
       LocalDateTime.combine(date.plusPeriod(amount), time);
 
@@ -149,6 +165,7 @@ class LocalDateTime implements Comparable<LocalDateTime> {
   /// var d = LocalDateTime(2000);
   /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
   /// ```
+  @override
   LocalDateTime minusPeriod(Period amount) =>
       LocalDateTime.combine(date.minusPeriod(amount), time);
 

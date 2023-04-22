@@ -1,6 +1,7 @@
 import 'package:goodtime/src/weekday.dart';
 import 'package:test/test.dart';
 import 'package:goodtime/src/julian_day.dart';
+import 'package:goodtime/src/timespan.dart';
 
 const int nano = 1000000000;
 const int dayNano = 86400 * nano;
@@ -109,6 +110,15 @@ void main() {
     expect(JulianDay.fromGregorian(Gregorian(1970, 1, 1, 0)),
         JulianDay(2440587, halfDayNano),
         reason: 'Unix epoch, 1970-01-01');
+  });
+
+  test('fromTimespan()', () {
+    expect(JulianDay.fromTimespan(Timespan(days: 1, nanoseconds: 2)),
+        HasDayFraction(1, 2));
+    expect(JulianDay.fromTimespan(Timespan(days: -1, nanoseconds: 2)),
+        HasDayFraction(-1, 2));
+    expect(JulianDay.fromTimespan(Timespan(days: -1, nanoseconds: -2)),
+        HasDayFraction(-2, dayNano - 2));
   });
 
   test('Bidirectional conversion -9999-01-01 to +9999-12-31 inclusive', () {

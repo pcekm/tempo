@@ -1,4 +1,3 @@
-import 'common.dart';
 
 /// Represents a period between two dates on a calendar.
 ///
@@ -12,12 +11,6 @@ import 'common.dart';
 /// d1.periodUntil(d2) == Period(months: 1, days: 1);
 /// d2.timespanUntil(d2) == Timespan(days: 29);
 /// ```
-///
-/// See also
-///   * [LocalDate.periodUntil()]
-///   * [LocalDate.plusPeriod()]
-///   * [LocalDateTime.periodUntil()]
-///   * [LocalDateTime.plusPeriod()]
 class Period {
   final int years;
   final int months;

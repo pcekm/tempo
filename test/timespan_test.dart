@@ -73,6 +73,21 @@ void main() {
       expect(Timespan(days: -1, nanoseconds: -(2 * dayNano + 1)),
           HasDayFraction(-3, -1));
     });
+
+    test("large components don't overflow", () {
+      const int trillion = 1000000000000;
+      expect(Timespan(hours: trillion),
+          HasDayFraction(41666666666, 16 * hourNano));
+      expect(Timespan(minutes: trillion),
+          HasDayFraction(694444444, 640 * minuteNano));
+      expect(Timespan(seconds: trillion),
+          HasDayFraction(11574074, 6400 * secondNano));
+      expect(Timespan(milliseconds: trillion),
+          HasDayFraction(11574, 6400000 * millisecondNano));
+      expect(Timespan(microseconds: trillion),
+          HasDayFraction(11, 49600000000 * microsecondNano));
+      expect(Timespan(nanoseconds: trillion), HasDayFraction(0, 1000000000000));
+    });
   });
 
   group('conversion', () {

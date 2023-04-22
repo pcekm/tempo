@@ -1,4 +1,5 @@
 import 'weekday.dart';
+import 'timespan.dart';
 
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.
@@ -25,6 +26,8 @@ class Gregorian {
   int get hashCode => Object.hash(year, month, day, nanosecond);
 }
 
+/// TODO: This doesn't work properly in JS.
+///
 /// A Julian Day equal to [day] + [fraction] / [denominator].
 ///
 /// This tries to make no assumptions about the underlying time scale.
@@ -111,6 +114,12 @@ class JulianDay implements Comparable<JulianDay> {
         1721118;
     return JulianDay(
         jdn, (denominator / 2).floor() + date.nanosecond, denominator);
+  }
+
+  /// Constructs a Julian day from the [Timespan] since the start of the Julian
+  /// period.
+  factory JulianDay.fromTimespan(Timespan span) {
+    return JulianDay(span.dayPart, span.nanosecondPart);
   }
 
   /// Converts a [JulianDay] to years, months, days, and nanoseconds past

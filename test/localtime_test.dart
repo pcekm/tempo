@@ -24,13 +24,27 @@ void main() {
       expect(LocalTime(0, 0, 0, -1), LocalTime(23, 59, 59, 999999999));
     });
 
-    test('fromDateTime()', () {
-      // No nanoseconds in a DateTime.
-      var t = LocalTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
-      expect(t.hour, 3, reason: 'Hour mismatch');
-      expect(t.minute, 4, reason: 'Minute mismatch');
-      expect(t.second, 5, reason: 'Second mismatch');
-      expect(t.nanosecond, 6007000, reason: 'Nanosecond mismatch');
+    group('fromDateTime()', () {
+      test('all platforms', () {
+        // No nanoseconds in a DateTime.
+        var dt = DateTime(2000, 1, 2, 3, 4, 5, 6);
+        var t = LocalTime.fromDateTime(dt);
+        expect(t.hour, 3, reason: 'Hour mismatch');
+        expect(t.minute, 4, reason: 'Minute mismatch');
+        expect(t.second, 5, reason: 'Second mismatch');
+        // Only test milliseconds, since that's all js can do.
+        expect(t.nanosecond, 6000000, reason: 'Nanosecond mismatch');
+      });
+
+      test('vm platforms', () {
+        // No nanoseconds in a DateTime.
+        var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+        var t = LocalTime.fromDateTime(dt);
+        expect(t.hour, 3, reason: 'Hour mismatch');
+        expect(t.minute, 4, reason: 'Minute mismatch');
+        expect(t.second, 5, reason: 'Second mismatch');
+        expect(t.nanosecond, 6007000, reason: 'Nanosecond mismatch');
+      }, testOn: '!js');
     });
 
     test('now() smoke test', () {

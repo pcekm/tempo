@@ -4,12 +4,13 @@ import 'package:sprintf/sprintf.dart';
 
 import 'julian_day.dart';
 import 'period.dart';
+import 'period_arithmetic.dart';
 import 'timespan.dart';
 import 'common.dart';
 import 'weekday.dart';
 
 /// An ISO 8601 date with no timezone.
-class LocalDate implements Comparable<LocalDate> {
+class LocalDate implements Comparable<LocalDate>, PeriodArithmetic<LocalDate> {
   /// The year.
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
@@ -162,6 +163,7 @@ class LocalDate implements Comparable<LocalDate> {
   /// The days part is applied last. For example, adding one month and one day
   /// to `2023-01-31` first adds one month to get `2023-02-28` and then
   /// adds one day for a final result of `2023-03-01`.
+  @override
   LocalDate plusPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
     var months = p.months.remainder(12);
@@ -186,6 +188,7 @@ class LocalDate implements Comparable<LocalDate> {
   /// The days part is applied last. For example, subtracting one month and
   /// one day from `2023-03-31` first subtracts one month to get `2023-02-28`
   /// and then subtracts one day for a final result of `2023-02-27`.
+  @override
   LocalDate minusPeriod(Period p) => plusPeriod(-p);
 
   @override

@@ -43,13 +43,15 @@ class LocalTime implements Comparable<LocalTime> {
 
   /// Constructs a [LocalTime] with the current time in the current time zone.
   ///
-  /// The result will have a maximum resolution of microseconds.
+  /// The result will have a maximum resolution of microseconds, and on web
+  /// platforms it may be milliseconds.
   LocalTime.now() : this.fromDateTime(DateTime.now());
 
   /// Constructs a [LocalTime] from a standard Dart [DateTime].
   ///
   /// The timezone (if any) of [dateTime] is ignored. The resulting time will
-  /// have a maximum resolution of microseconds.
+  /// have a maximum resolution of microseconds, and on web platforms it may
+  /// be milliseconds.
   LocalTime.fromDateTime(DateTime dateTime)
       : this(dateTime.hour, dateTime.minute, dateTime.second,
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
