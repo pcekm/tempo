@@ -58,17 +58,21 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
 
   /// The hour from 0 to 23.
+  @override
   int get hour =>
       (nanosecondsSinceMidnight ~/ (_secsPerHour * _nano)) % _hoursPerDay;
 
   /// The minute from 0 to 59.
+  @override
   int get minute =>
       (nanosecondsSinceMidnight ~/ (_secsPerMinute * _nano)) % _minsPerHour;
 
   /// Seconds from 0 to 59.
+  @override
   int get second => (nanosecondsSinceMidnight ~/ _nano) % _secsPerMinute;
 
   /// Nanoseconds from 0 to 999,999,999.
+  @override
   int get nanosecond => nanosecondsSinceMidnight % _nsPerS;
 
   /// Finds the [Timespan] between two times. The result will be negative if
