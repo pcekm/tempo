@@ -53,11 +53,20 @@ void main() {
     expect(dt.asInstant, nepalInstant);
   });
 
-  test('fromDateTime()', () {
-    var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
-    var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
-    var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006007000);
-    expect(OffsetDateTime.fromDateTime(dt), want);
+  group('fromDateTime()', () {
+    test('fromDateTime() microsecond precision', () {
+      var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+      var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
+      var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006007000);
+      expect(OffsetDateTime.fromDateTime(dt), want);
+    }, testOn: '!js');
+
+    test('fromDateTime() millisecond precision', () {
+      var dt = DateTime(2000, 1, 2, 3, 4, 5, 6);
+      var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
+      var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006000000);
+      expect(OffsetDateTime.fromDateTime(dt), want);
+    }, testOn: 'js');
   });
 
   test('now() smoke test', () {
