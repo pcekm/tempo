@@ -1,7 +1,7 @@
 import 'has_instant.dart';
 import 'julian_day.dart';
 import 'timespan.dart';
-import 'localdatetime.dart';
+import 'local_date_time.dart';
 
 /// Represents a single instant in time.
 ///

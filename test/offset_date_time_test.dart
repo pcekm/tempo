@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:goodtime/src/offset_date_time.dart';
-import 'package:goodtime/src/localdatetime.dart';
+import 'package:goodtime/src/local_date_time.dart';
 import 'package:goodtime/src/instant.dart';
 import 'package:goodtime/src/zone_offset.dart';
 import 'package:goodtime/src/timespan.dart';

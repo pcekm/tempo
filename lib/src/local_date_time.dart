@@ -1,6 +1,6 @@
 import 'has_date_time.dart';
-import 'localdate.dart';
-import 'localtime.dart';
+import 'local_date.dart';
+import 'local_time.dart';
 import 'julian_day.dart';
 import 'period.dart';
 import 'period_arithmetic.dart';

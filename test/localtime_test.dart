@@ -1,4 +1,4 @@
-import 'package:goodtime/src/localtime.dart';
+import 'package:goodtime/src/local_time.dart';
 import 'package:goodtime/src/timespan.dart';
 import 'package:test/test.dart';
 
