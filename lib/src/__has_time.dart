@@ -1,7 +1,7 @@
 part of '../goodtime.dart';
 
 /// Interface implemented by classes that provide the time of day.
-abstract class HasTime {
+abstract class _HasTime {
   /// The hour from 0 to 23.
   int get hour;
 

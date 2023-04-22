@@ -1,7 +1,7 @@
 part of '../goodtime.dart';
 
 /// Interface implemented by classes that can add and subtract [Period]s.
-abstract class PeriodArithmetic<T> {
+abstract class _PeriodArithmetic<T> {
   /// Adds a [Period] of time.
   ///
   /// Increments (or decrements) the date by a specific number of months

@@ -2,7 +2,7 @@ part of '../goodtime.dart';
 
 /// A date and time at a fixed offset from UTC.
 class OffsetDateTime
-    implements HasInstant, HasDateTime, PeriodArithmetic<OffsetDateTime> {
+    implements _HasInstant, _HasDateTime, _PeriodArithmetic<OffsetDateTime> {
   static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
     var parts = instant
         .plusTimespan(Timespan(minutes: offset.inMinutes))
@@ -52,7 +52,7 @@ class OffsetDateTime
 
   /// Constructs an [OffsetDateTime] from an [Instant] and a fixed offset
   /// from UTC.
-  OffsetDateTime.fromInstant(HasInstant hasInstant, this.offset)
+  OffsetDateTime.fromInstant(_HasInstant hasInstant, this.offset)
       : _dateTime = _mkDateTime(hasInstant.asInstant, offset),
         _instant = hasInstant.asInstant;
 
@@ -112,7 +112,7 @@ class OffsetDateTime
   int get nanosecond => _dateTime.nanosecond;
 
   /// Returns the amount of time between this and another instant in time.
-  Timespan timespanUntil(HasInstant other) => _instant.timespanUntil(other);
+  Timespan timespanUntil(_HasInstant other) => _instant.timespanUntil(other);
 
   /// Adds a [Timespan].
   OffsetDateTime plusTimespan(Timespan span) =>
@@ -131,23 +131,23 @@ class OffsetDateTime
       OffsetDateTime.fromLocalDateTime(_dateTime.minusPeriod(period), offset);
 
   @override
-  int compareTo(HasInstant other) => _instant.compareTo(other);
+  int compareTo(_HasInstant other) => _instant.compareTo(other);
 
   /// Greater than operator.
   @override
-  bool operator >(HasInstant other) => compareTo(other) > 0;
+  bool operator >(_HasInstant other) => compareTo(other) > 0;
 
   /// Greater than or equals operator.
   @override
-  bool operator >=(HasInstant other) => compareTo(other) >= 0;
+  bool operator >=(_HasInstant other) => compareTo(other) >= 0;
 
   /// Less than operator.
   @override
-  bool operator <(HasInstant other) => compareTo(other) < 0;
+  bool operator <(_HasInstant other) => compareTo(other) < 0;
 
   /// Less than or equals operator.
   @override
-  bool operator <=(HasInstant other) => compareTo(other) <= 0;
+  bool operator <=(_HasInstant other) => compareTo(other) <= 0;
 
   /// Formats this as an ISO 8601 date time with offset.
   ///

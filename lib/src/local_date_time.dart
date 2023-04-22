@@ -7,8 +7,8 @@ part of '../goodtime.dart';
 class LocalDateTime
     implements
         Comparable<LocalDateTime>,
-        HasDateTime,
-        PeriodArithmetic<LocalDateTime> {
+        _HasDateTime,
+        _PeriodArithmetic<LocalDateTime> {
   static const int _nsPerMicrosecond = 1000;
   static const int _nsPerMillisecond = 1000000;
   static const int _nsPerSecond = 1000000000;

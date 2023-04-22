@@ -1,7 +1,7 @@
 part of '../goodtime.dart';
 
 /// An ISO 8601 date with no timezone.
-class LocalDate implements Comparable<LocalDate>, PeriodArithmetic<LocalDate> {
+class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   /// The year.
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.

@@ -2,7 +2,7 @@ part of '../goodtime.dart';
 
 /// Interface implemented by objects that have a date on the
 /// ISO 8601 calendar.
-abstract class HasDate {
+abstract class _HasDate {
   /// The year.
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.

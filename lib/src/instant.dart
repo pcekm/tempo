@@ -4,7 +4,7 @@ part of '../goodtime.dart';
 ///
 /// Leap second handling
 /// [UTC-SLS](https://www.cl.cam.ac.uk/~mgk25/time/utc-sls/).
-class Instant implements HasInstant {
+class Instant implements _HasInstant {
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
   /// The amount of time since midnight, January 1, 1970 UTC.
@@ -49,7 +49,7 @@ class Instant implements HasInstant {
       JulianDay.fromTimespan(unixTimestamp + _julianOffset);
 
   /// Returns the amount of time between this and another instant in time.
-  Timespan timespanUntil(HasInstant other) =>
+  Timespan timespanUntil(_HasInstant other) =>
       other.asInstant.unixTimestamp - unixTimestamp;
 
   /// Adds a [Timespan].
@@ -59,25 +59,25 @@ class Instant implements HasInstant {
   Instant minusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp - t);
 
   @override
-  int compareTo(HasInstant other) {
+  int compareTo(_HasInstant other) {
     return Comparable.compare(unixTimestamp, other.asInstant.unixTimestamp);
   }
 
   /// Greater than operator.
   @override
-  bool operator >(HasInstant other) => compareTo(other) > 0;
+  bool operator >(_HasInstant other) => compareTo(other) > 0;
 
   /// Greater than or equals operator.
   @override
-  bool operator >=(HasInstant other) => compareTo(other) >= 0;
+  bool operator >=(_HasInstant other) => compareTo(other) >= 0;
 
   /// Less than operator.
   @override
-  bool operator <(HasInstant other) => compareTo(other) < 0;
+  bool operator <(_HasInstant other) => compareTo(other) < 0;
 
   /// Less than or equals operator.
   @override
-  bool operator <=(HasInstant other) => compareTo(other) <= 0;
+  bool operator <=(_HasInstant other) => compareTo(other) <= 0;
 
   /// Formats this as an ISO 8601 timestamp.
   ///
