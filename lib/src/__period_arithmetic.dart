@@ -1,6 +1,8 @@
 part of '../goodtime.dart';
 
 /// Interface implemented by classes that can add and subtract [Period]s.
+// Avoid exporting this interface. It exists mainly to avoid repeating
+// documentation comments in each implementor.
 abstract class _PeriodArithmetic<T> {
   /// Adds a [Period] of time.
   ///

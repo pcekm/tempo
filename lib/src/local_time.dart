@@ -5,7 +5,7 @@ part of '../goodtime.dart';
 /// Internally this stores the time in [nanosecondsSinceMidnight], which
 /// means it can represent any time down to the nanosecond. This does
 /// not support leap seconds.
-class LocalTime implements Comparable<LocalTime>, _HasTime {
+class LocalTime implements Comparable<LocalTime>, HasTime {
   static const int _nano = 1000000000;
 
   static const int _nsPerS = 1000000000;

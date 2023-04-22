@@ -10,10 +10,10 @@ import 'package:sprintf/sprintf.dart';
 import 'src/common.dart';
 import 'src/julian_day.dart';
 
-part 'src/__has_date_time.dart';
-part 'src/__has_date.dart';
-part 'src/__has_instant.dart';
-part 'src/__has_time.dart';
+part 'src/has_date_time.dart';
+part 'src/has_date.dart';
+part 'src/has_instant.dart';
+part 'src/has_time.dart';
 part 'src/__period_arithmetic.dart';
 part 'src/instant.dart';
 part 'src/local_date_time.dart';
