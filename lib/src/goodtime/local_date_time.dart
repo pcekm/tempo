@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+part of '../../goodtime.dart';
 
 /// Contains an ISO 8601 date and time with no time zone.
 ///

@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+part of '../../goodtime.dart';
 
 /// A time zone offset from UTC.
 ///

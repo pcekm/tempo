@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+part of '../../goodtime.dart';
 
 /// Represents a single instant in time.
 ///

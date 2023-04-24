@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+part of '../../goodtime.dart';
 
 /// An ISO 8601 date with no timezone.
 class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {

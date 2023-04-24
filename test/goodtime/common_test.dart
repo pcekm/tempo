@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:goodtime/src/common.dart';
+import 'package:goodtime/src/goodtime/common.dart';
 
 // Equality matcher that looks for
 void main() {

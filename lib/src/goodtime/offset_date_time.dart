@@ -1,4 +1,4 @@
-part of '../goodtime.dart';
+part of '../../goodtime.dart';
 
 /// A date and time at a fixed offset from UTC.
 class OffsetDateTime

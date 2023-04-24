@@ -7,20 +7,20 @@ import 'dart:math';
 
 import 'package:sprintf/sprintf.dart';
 
-import 'src/common.dart';
-import 'src/julian_day.dart';
+import 'src/goodtime/common.dart';
+import 'src/goodtime/julian_day.dart';
 
-part 'src/__period_arithmetic.dart';
-part 'src/has_date_time.dart';
-part 'src/has_date.dart';
-part 'src/has_instant.dart';
-part 'src/has_time.dart';
-part 'src/instant.dart';
-part 'src/local_date_time.dart';
-part 'src/local_date.dart';
-part 'src/local_time.dart';
-part 'src/offset_date_time.dart';
-part 'src/period.dart';
-part 'src/timespan.dart';
-part 'src/weekday.dart';
-part 'src/zone_offset.dart';
+part 'src/goodtime/__period_arithmetic.dart';
+part 'src/goodtime/has_date_time.dart';
+part 'src/goodtime/has_date.dart';
+part 'src/goodtime/has_instant.dart';
+part 'src/goodtime/has_time.dart';
+part 'src/goodtime/instant.dart';
+part 'src/goodtime/local_date_time.dart';
+part 'src/goodtime/local_date.dart';
+part 'src/goodtime/local_time.dart';
+part 'src/goodtime/offset_date_time.dart';
+part 'src/goodtime/period.dart';
+part 'src/goodtime/timespan.dart';
+part 'src/goodtime/weekday.dart';
+part 'src/goodtime/zone_offset.dart';
