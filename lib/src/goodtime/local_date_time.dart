@@ -91,6 +91,33 @@ class LocalDateTime
           second * _nsPerSecond +
           nanosecond));
 
+  /// Returns a new datetime with one or more fields replaced.
+  ///
+  /// See [LocalDate.replace] and [LocalTime.replace] for more information on
+  /// replacements to the respective parts of the datetime.
+  ///
+  /// ```dart
+  /// var dt = LocalDateTime(2000, 1, 31, 12, 23);
+  /// dt.replace(month: 4) == LocalDateTime(2000, 4, 30, 12, 23);
+  /// dt.replace(second: 59) == LocalDateTime(2000, 4, 30, 12, 23, 59);
+  /// ```
+  LocalDateTime replace(
+      {int? year,
+      int? month,
+      int? day,
+      int? hour,
+      int? minute,
+      int? second,
+      int? nanosecond}) {
+    return LocalDateTime.combine(
+        date.replace(year: year, month: month, day: day),
+        time.replace(
+            hour: hour,
+            minute: minute,
+            second: second,
+            nanosecond: nanosecond));
+  }
+
   /// The year.
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.

@@ -55,6 +55,20 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
       : this(dateTime.hour, dateTime.minute, dateTime.second,
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
 
+  /// Returns a new time with one or more fields replaced.
+  ///
+  /// ```dart
+  /// var time = LocalTime(1, 23, 40);
+  /// time.replace(minute: 2) == LocalTime(1, 2, 40);
+  /// ```
+  LocalTime replace({int? hour, int? minute, int? second, int? nanosecond}) {
+    hour ??= this.hour;
+    minute ??= this.minute;
+    second ??= this.second;
+    nanosecond ??= this.nanosecond;
+    return LocalTime(hour, minute, second, nanosecond);
+  }
+
   /// The hour from 0 to 23.
   @override
   int get hour =>

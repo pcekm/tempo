@@ -2,9 +2,9 @@ part of '../../goodtime.dart';
 
 /// A time zone offset from UTC.
 ///
-/// Zone offsets can range from UTC-23:59 to UTC+23:59, although as of this
-/// writing, the largest offset in use is UTC+14:00 for the easternmost islands
-/// of Kiribati.
+/// Zone offsets can range from UTC-23:59:59 to UTC+23:59:59, although as
+/// of this writing, the largest offset in use is UTC+14:00 for the
+/// easternmost islands of Kiribati.
 class ZoneOffset {
   /// UTC offset hours `[-23 to +23]`.
   final int hours;
@@ -12,48 +12,64 @@ class ZoneOffset {
   /// UTC offset minutes `[-59 to +59]`.
   final int minutes;
 
-  ZoneOffset._(this.hours, this.minutes);
+  /// UTC offset seconds `[-59 to +59]`.
+  final int seconds;
+
+  ZoneOffset._(this.hours, this.minutes, this.seconds);
 
   /// Construct a new ZoneOffset.
   ///
   /// Will be normalized such that
   ///    * `-23 <= hours <= 23`
   ///    * `-59 <= minutes <= 59`
-  ///    * `hours.sign == minutes.sign` (Changes [minutes] to match [hours]).
+  ///    * `-59 <= seconds <= 59`
+  ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
+  ///      [hours]).
   ///
-  factory ZoneOffset(int hours, [int minutes = 0]) {
-    hours += minutes ~/ 60;
-    minutes = minutes.remainder(60);
-    if (hours < 0 && minutes > 0) {
-      hours++;
-      minutes -= 60;
-    } else if (hours > 0 && minutes < 0) {
-      hours--;
-      minutes += 60;
-    }
-    return ZoneOffset._(hours.remainder(24), minutes);
-  }
+  ZoneOffset(int hours, [int minutes = 0, int seconds = 0])
+      : this.fromDuration(
+            Duration(hours: hours, minutes: minutes, seconds: seconds));
 
   /// Constructs a new ZoneOffset from a Duration.
   ///
   /// This will be normalized as described in [ZoneOffset].
-  factory ZoneOffset.fromDuration(Duration amount) {
-    return ZoneOffset(0, amount.inMinutes);
-  }
+  ZoneOffset.fromDuration(Duration amount)
+      : this.fromTimespan(Timespan.fromDuration(amount));
+
+  /// Constructs a new ZoneOffset from a Timespan.
+  ///
+  /// This will be normalized as described in [ZoneOffset].
+  ZoneOffset.fromTimespan(Timespan amount)
+      : this._(amount.inHours.remainder(24), amount.inMinutes.remainder(60),
+            amount.inSeconds.remainder(60));
 
   /// Provides the platform's current default zone offset.
   factory ZoneOffset.local() {
     return ZoneOffset.fromDuration(DateTime.now().timeZoneOffset);
   }
 
-  /// The offset in minutes.
+  /// The offset in the a whole number of seconds, rounded towards zero.
+  int get inSeconds => hours * 3600 + minutes * 60 + seconds;
+
+  /// The offset in the a whole number of minutes, rounded towards zero.
   int get inMinutes => hours * 60 + minutes;
 
-  /// The offset in fractional hours.
-  double get inHours => hours + minutes / 60;
+  /// The offset the a whole number of hours, rounded towards zero.
+  int get inHours => hours;
 
   @override
-  String toString() => sprintf('%+03d%02d', [hours, minutes.abs()]);
+  String toString() {
+    var parts = [
+      sprintf('%+03d', [hours])
+    ];
+    if (minutes != 0 || seconds != 0) {
+      parts.add(sprintf('%02d', [minutes.abs()]));
+    }
+    if (seconds != 0) {
+      parts.add(sprintf('%02d', [seconds.abs()]));
+    }
+    return parts.join(':');
+  }
 
   /// Equality operator.
   ///

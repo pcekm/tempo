@@ -55,6 +55,16 @@ void main() {
     });
   });
 
+  test('replace()', () {
+    var t = LocalTime(1, 2, 3, 4);
+    expect(t.replace(hour: 10), LocalTime(10, 2, 3, 4));
+    expect(t.replace(minute: 10), LocalTime(1, 10, 3, 4));
+    expect(t.replace(second: 10), LocalTime(1, 2, 10, 4));
+    expect(t.replace(nanosecond: 10), LocalTime(1, 2, 3, 10));
+    expect(t.replace(hour: 5, minute: 6, second: 7, nanosecond: 8),
+        LocalTime(5, 6, 7, 8));
+  });
+
   test('timespanUntil()', () {
     var t = LocalTime(12);
     expect(t.timespanUntil(t), Timespan());

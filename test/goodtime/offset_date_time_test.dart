@@ -87,6 +87,10 @@ void main() {
     expect(dt.asInstant, nepalInstant);
   });
 
+  test('toLocal()', () {
+    expect(nepalOffsetTime.toLocal(), nepalTime);
+  });
+
   test('toDateTime()', () {
     var want = DateTime.fromMicrosecondsSinceEpoch(
         nepalInstant.unixTimestamp.inMicroseconds);

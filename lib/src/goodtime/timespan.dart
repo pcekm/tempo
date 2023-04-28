@@ -132,6 +132,10 @@ class Timespan implements Comparable<Timespan> {
     return Timespan._fromParts(days, fraction);
   }
 
+  /// Constructs a [Timespan] from a [Duration].
+  factory Timespan.fromDuration(Duration duration) =>
+      Timespan(microseconds: duration.inMicroseconds);
+
   /// Gets the timespan in days.
   ///
   /// This is equvalent to [dayPart] and included for consistency.

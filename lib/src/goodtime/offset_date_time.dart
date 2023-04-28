@@ -50,8 +50,12 @@ class OffsetDateTime
 
   /// Constructs an [OffsetDateTime] from an [Instant] and a fixed offset
   /// from UTC.
-  OffsetDateTime.fromInstant(HasInstant hasInstant, this.offset)
-      : _dateTime = _mkDateTime(hasInstant.asInstant, offset),
+  ///
+  /// If [offset] is unset, this defaults to zero, making this equal to
+  /// UTC.
+  OffsetDateTime.fromInstant(HasInstant hasInstant, [ZoneOffset? offset])
+      : offset = offset ?? ZoneOffset(0),
+        _dateTime = _mkDateTime(hasInstant.asInstant, offset ?? ZoneOffset(0)),
         _instant = hasInstant.asInstant;
 
   OffsetDateTime._(this._dateTime, this._instant, this.offset);
@@ -61,6 +65,12 @@ class OffsetDateTime
 
   /// The amount the time zone is offset from UTC.
   final ZoneOffset offset;
+
+  /// Converts this to a [LocalDateTime].
+  ///
+  /// The result will have exactly the same year, month, day, etc. but will
+  /// lack any time zone information.
+  LocalDateTime toLocal() => _dateTime;
 
   @override
   Instant get asInstant => _instant;
