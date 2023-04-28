@@ -146,7 +146,7 @@ void main() {
   });
 
   test('toString()', () {
-    expect(nepalOffsetTime.toString(), "2000-01-02T03:04:05.000000006+0545");
+    expect(nepalOffsetTime.toString(), "2000-01-02T03:04:05.000000006+05:45");
   });
 
   test('operator== / hashCode', () {

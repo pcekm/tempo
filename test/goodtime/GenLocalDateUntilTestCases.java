@@ -8,7 +8,7 @@ import java.time.Period;
  *
  * To regenerate, run:
  *
- *    java GenLocalDateUntilTestCases.java > localdate_period_testcases.txt
+ *    java GenLocalDateUntilTestCases.java > local_date_period_testcases.txt
  */
 class GenLocalDateUntilTestCases {
 	private GenLocalDateUntilTestCases() {}
