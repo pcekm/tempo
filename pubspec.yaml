@@ -12,7 +12,10 @@ environment:
   sdk: '>=2.18.5 <3.0.0'
 
 dependencies:
+  archive: ^3.3.7
+  collection: ^1.17.1
   sprintf: ^7.0.0
+  string_scanner: ^1.2.0
 
 dev_dependencies:
   lints: ^2.0.0
