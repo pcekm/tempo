@@ -58,6 +58,14 @@ void main() {
     expect(stdZone.offset.inHours, 5);
   });
 
+  test('no DST', () {
+    var tz = PosixTz('FOO-3');
+    var zone = tz.timeZoneFor(offset(jun1, 3));
+    expect(zone.designation, 'FOO');
+    expect(zone.offset.inHours, 3);
+    expect(zone.isDst, false);
+  });
+
   test('Dublin time', () {
     // Ireland uses "winter time" instead of "summer time," so the
     // TZ string is backwards from what's usual:

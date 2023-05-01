@@ -11,10 +11,10 @@ part of '../../zonedb.dart';
 class PosixTz {
   final String _stdName;
   final Timespan _stdOffset;
-  final String _dstName;
-  final Timespan _dstOffset;
-  final _DstChangeTime _dstStartRule;
-  final _DstChangeTime _stdStartRule;
+  final String? _dstName;
+  final Timespan? _dstOffset;
+  final _DstChangeTime? _dstStartRule;
+  final _DstChangeTime? _stdStartRule;
 
   PosixTz._(
     this._stdName,
@@ -32,28 +32,24 @@ class PosixTz {
   factory PosixTz(String tzString) {
     String stdName;
     Timespan stdOffset;
-    String dstName;
+    String? dstName;
     Timespan? dstOffset;
-    _DstChangeTime dstStart;
-    _DstChangeTime dstEnd;
+    _DstChangeTime? dstStart;
+    _DstChangeTime? dstEnd;
 
     var s = StringScanner(tzString);
 
     s.scan(RegExp(r'\s*')); // Eat leading whitespace
-    stdName = _scanName(s);
+    stdName = _scanName(s, true)!;
     stdOffset = _scanOffset(s)!;
     dstName = _scanName(s, false);
-    if (dstName.isNotEmpty) {
+    if (dstName != null) {
       dstOffset = _scanOffset(s, false);
       dstOffset ??= Timespan(hours: 1) + stdOffset;
       s.expect(',');
       dstStart = _scanPartialDateTime(s);
       s.expect(',');
       dstEnd = _scanPartialDateTime(s);
-    } else {
-      dstOffset = Timespan();
-      dstStart = _DstChangeTime(0, 0, Weekday.sunday, LocalTime(0));
-      dstEnd = _DstChangeTime(0, 0, Weekday.sunday, LocalTime(0));
     }
 
     s.scan(RegExp(r'\s*')); // Eat trailing whitespace
@@ -69,7 +65,7 @@ class PosixTz {
     );
   }
 
-  static String _scanName(StringScanner s, [bool expect = true]) {
+  static String? _scanName(StringScanner s, [bool expect = true]) {
     if (s.scan(RegExp(r'[a-zA-Z]{3,}'))) {
       return s.lastMatch!.group(0)!;
     } else if (s.scan(RegExp(r'<([a-zA-Z0-9+-]{3,})>'))) {
@@ -78,7 +74,7 @@ class PosixTz {
       s.error(
           'Expected standard zone abbreviation [a-z] or <[a-z0-9+-]> of at least three characters.');
     } else {
-      return '';
+      return null;
     }
   }
 
@@ -118,18 +114,22 @@ class PosixTz {
   }
 
   TimeZone timeZoneFor(HasInstant instant) {
+    if (_dstName == null) {
+      return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
+    }
+
     var std =
         OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(_stdOffset))
             .toLocal();
-    var dst =
-        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(_dstOffset))
-            .toLocal();
-    var dstStart = _dstStartRule.forYear(std.year);
-    var stdStart = _stdStartRule.forYear(std.year);
+    var dst = OffsetDateTime.fromInstant(
+            instant, ZoneOffset.fromTimespan(_dstOffset!))
+        .toLocal();
+    var dstStart = _dstStartRule!.forYear(std.year);
+    var stdStart = _stdStartRule!.forYear(std.year);
 
     if (dstStart < stdStart) {
       if (std >= dstStart && dst < stdStart) {
-        return TimeZone(ZoneOffset.fromTimespan(_dstOffset), _dstName, true);
+        return TimeZone(ZoneOffset.fromTimespan(_dstOffset!), _dstName!, true);
       } else {
         return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
       }
@@ -139,7 +139,7 @@ class PosixTz {
       if (std >= stdStart && dst < dstStart) {
         return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
       } else {
-        return TimeZone(ZoneOffset.fromTimespan(_dstOffset), _dstName, true);
+        return TimeZone(ZoneOffset.fromTimespan(_dstOffset!), _dstName!, true);
       }
     }
   }
