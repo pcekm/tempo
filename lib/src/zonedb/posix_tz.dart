@@ -104,11 +104,8 @@ class PosixTz {
     var w = int.parse(s.lastMatch!.group(3)!);
     var weekday = Weekday.values[(w - 1) % 7 + 1];
     var time = LocalTime(2); // Time change defaults to 2 AM wall time.
-    if (s.scan(RegExp(r'/(\d+)(?::(\d+)?(?::(\d+))?)?'))) {
-      var hour = int.parse(s.lastMatch!.group(1)!);
-      var minute = int.parse(s.lastMatch!.group(2) ?? '0');
-      var second = int.parse(s.lastMatch!.group(3) ?? '0');
-      time = LocalTime(hour, minute, second);
+    if (s.scan('/')) {
+      time = LocalTime().plusTimespan(_scanOffset(s)!);
     }
     return _DstChangeTime(month, week, weekday, time);
   }
