@@ -13,6 +13,18 @@ void main() {
         Instant.fromUnix(Timespan(seconds: 946872306, nanoseconds: 123456789)),
   });
 
+  test('fromDateTime()', () {
+    var dt = DateTime.fromMicrosecondsSinceEpoch(1234567890);
+    expect(Instant.fromDateTime(dt).unixTimestamp,
+        Timespan(microseconds: 1234567890));
+  });
+
+  test('now() smoke test', () {
+    var dt = DateTime.now();
+    expect(Instant.fromDateTime(dt).unixTimestamp,
+        greaterThan(Timespan(seconds: 1682977179)));
+  });
+
   test('timespanUntil()', () {
     expect(timeline[-1].timespanUntil(timeline[1]), Timespan(seconds: 2));
     expect(timeline[1].timespanUntil(timeline[-1]), Timespan(seconds: -2));

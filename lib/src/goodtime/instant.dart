@@ -35,6 +35,18 @@ class Instant implements HasInstant {
   /// ```
   Instant.fromUnix(this.unixTimestamp);
 
+  /// Creates an instant from a [DateTime].
+  ///
+  /// This will have the same precision as the `DateTime` object.
+  Instant.fromDateTime(DateTime dateTime)
+      : this.fromUnix(Timespan(microseconds: dateTime.microsecondsSinceEpoch));
+
+  /// Creates an instant for the current time.
+  ///
+  /// The resolution will either be millisecond or microsecond depending on
+  /// the underlying platform.
+  Instant.now() : this.fromDateTime(DateTime.now());
+
   Instant._fromJulianDay(Timespan julian)
       : unixTimestamp =
             Timespan(days: julian.dayPart, nanoseconds: julian.nanosecondPart) -
