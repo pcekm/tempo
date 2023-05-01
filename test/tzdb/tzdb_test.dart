@@ -1,4 +1,4 @@
-import 'package:goodtime/zoneinfo.dart';
+import 'package:goodtime/zonedb.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-part of '../../zoneinfo.dart';
+part of '../../zonedb.dart';
 
 ZoneInfoRecord? lookupZoneInfo(String id) {
   var file = _zoneInfoData.findFile('zoneinfo/${_escapeId(id)}');

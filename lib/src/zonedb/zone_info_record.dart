@@ -1,4 +1,4 @@
-part of '../../zoneinfo.dart';
+part of '../../zonedb.dart';
 
 /// Contains a single zoneinfo record.
 ///

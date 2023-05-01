@@ -1,4 +1,4 @@
-part of '../../zoneinfo.dart';
+part of '../../zonedb.dart';
 
 class ZoneInfoFormatException implements Exception {
   final String message;
