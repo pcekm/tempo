@@ -1,4 +1,4 @@
-part of '../../tzdb.dart';
+part of '../../zoneinfo.dart';
 
 class TimeZone {
   final ZoneOffset offset;

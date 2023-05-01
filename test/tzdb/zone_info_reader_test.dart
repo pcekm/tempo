@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:goodtime/tzdb.dart';
+import 'package:goodtime/zoneinfo.dart';
 import 'package:test/test.dart';
 
 // America/Los_Angeles in version 2023c:
