@@ -1,4 +1,4 @@
-part of '../../zonedb.dart';
+part of '../zonedb.dart';
 
 /// Contains information about each time zone.
 class _ZoneDescriptionTable {

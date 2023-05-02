@@ -1,4 +1,4 @@
-part of '../../zonedb.dart';
+part of '../zonedb.dart';
 
 // TODO: Automate generation of this file.
 final Archive _zoneInfoData = ZipDecoder().decodeBytes(base64.decode(

@@ -10,8 +10,12 @@ import 'package:sprintf/sprintf.dart';
 import 'src/goodtime/common.dart';
 import 'src/goodtime/julian_day.dart';
 
-export 'zonedb.dart'
-    show allTimeZones, timeZonesByProximity, timeZonesForCountry;
+export 'src/zonedb.dart'
+    show
+        ZoneDescription,
+        allTimeZones,
+        timeZonesByProximity,
+        timeZonesForCountry;
 
 part 'src/goodtime/__period_arithmetic.dart';
 part 'src/goodtime/has_date_time.dart';

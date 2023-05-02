@@ -1,4 +1,4 @@
-part of '../../zonedb.dart';
+part of '../zonedb.dart';
 
 /// Contains and interprets a subset of Posix-formatted TZ environment
 /// variables.

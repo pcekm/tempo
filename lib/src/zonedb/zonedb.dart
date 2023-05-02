@@ -1,4 +1,4 @@
-part of '../../zonedb.dart';
+part of '../zonedb.dart';
 
 /// Looks up the time zone that applies to a given time zone id at a
 /// specific instant in time.
