@@ -41,10 +41,12 @@ class PosixTz {
 
     s.scan(RegExp(r'\s*')); // Eat leading whitespace
     stdName = _scanName(s, true)!;
-    stdOffset = _scanOffset(s)!;
+    // Negated because the TZ variable was designed such that positive
+    // numbers equal negative offsets. e.g. "MST7" means an offset of -7:
+    stdOffset = -_scanTimespan(s)!;
     dstName = _scanName(s, false);
     if (dstName != null) {
-      dstOffset = _scanOffset(s, false);
+      dstOffset = _scanTimespan(s, false);
       dstOffset ??= Timespan(hours: 1) + stdOffset;
       s.expect(',');
       dstStart = _scanPartialDateTime(s);
@@ -78,7 +80,7 @@ class PosixTz {
     }
   }
 
-  static Timespan? _scanOffset(StringScanner s, [bool expect = true]) {
+  static Timespan? _scanTimespan(StringScanner s, [bool expect = true]) {
     final re = RegExp(r'([+-]?\d+)(?::(\d+)?(?::(\d+))?)?');
     if (expect) {
       s.expect(re);
@@ -92,9 +94,7 @@ class PosixTz {
       minute = -minute;
       second = -second;
     }
-    // Negated because the TZ variable was designed such that positive
-    // numbers equal negative offsets. e.g. "MST7" means an offset of -7.
-    return -Timespan(hours: hour, minutes: minute, seconds: second);
+    return Timespan(hours: hour, minutes: minute, seconds: second);
   }
 
   static _DstChangeTime _scanPartialDateTime(StringScanner s) {
@@ -105,7 +105,7 @@ class PosixTz {
     var weekday = Weekday.values[(w - 1) % 7 + 1];
     var time = LocalTime(2); // Time change defaults to 2 AM wall time.
     if (s.scan('/')) {
-      time = LocalTime().plusTimespan(_scanOffset(s)!);
+      time = LocalTime().plusTimespan(_scanTimespan(s)!);
     }
     return _DstChangeTime(month, week, weekday, time);
   }

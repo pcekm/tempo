@@ -10,8 +10,7 @@ final dec31 = LocalDateTime(2023, 12, 31);
 
 class HasDesignation extends CustomMatcher {
   HasDesignation(Object? valueOrMatcher)
-      : super(
-            'A TimeZone with a designation of', 'designation', valueOrMatcher);
+      : super('TimeZone with a designation of', 'designation', valueOrMatcher);
 
   @override
   Object? featureValueOf(dynamic actual) => actual.designation;
@@ -19,7 +18,7 @@ class HasDesignation extends CustomMatcher {
 
 class HasOffsetInSeconds extends CustomMatcher {
   HasOffsetInSeconds(Object? valueOrMatcher)
-      : super('A TimeZone with an offset in seconds of', 'offset.inSeconds',
+      : super('TimeZone with an offset in seconds of', 'offset.inSeconds',
             valueOrMatcher);
 
   @override
@@ -28,7 +27,7 @@ class HasOffsetInSeconds extends CustomMatcher {
 
 class HasOffsetInHours extends CustomMatcher {
   HasOffsetInHours(Object? valueOrMatcher)
-      : super('A TimeZone with an offset in hours of', 'offset.inHours',
+      : super('TimeZone with an offset in hours of', 'offset.inHours',
             valueOrMatcher);
 
   @override
@@ -37,7 +36,7 @@ class HasOffsetInHours extends CustomMatcher {
 
 class HasIsDst extends CustomMatcher {
   HasIsDst(Object? valueOrMatcher)
-      : super('A TimeZone with isDst', 'isDst', valueOrMatcher);
+      : super('TimeZone with isDst', 'isDst', valueOrMatcher);
 
   @override
   Object? featureValueOf(dynamic actual) => actual.isDst;
