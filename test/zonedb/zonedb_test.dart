@@ -43,7 +43,7 @@ void main() {
   test('timeZonesForCountry()', () {
     var zones = timeZonesForCountry('ee');
     expect(zones, hasLength(1));
-    expect(zones![0], HasZoneId('Europe/Tallinn'));
+    expect(zones[0], HasZoneId('Europe/Tallinn'));
     zones = timeZonesForCountry('US');
     expect(zones, hasLength(greaterThan(10)));
     expect(zones, contains(HasZoneId('America/Juneau')));
