@@ -5,6 +5,7 @@ library goodtime;
 
 import 'dart:math';
 
+import 'package:goodtime/src/zonedb.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'src/goodtime/common.dart';
@@ -31,3 +32,4 @@ part 'src/goodtime/period.dart';
 part 'src/goodtime/timespan.dart';
 part 'src/goodtime/weekday.dart';
 part 'src/goodtime/zone_offset.dart';
+part 'src/goodtime/zoned_date_time.dart';
