@@ -1,17 +1,13 @@
 import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
       var d = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
-      expect(d.year, 2000, reason: 'Year mismatch');
-      expect(d.month, 1, reason: 'Month mismatch');
-      expect(d.day, 2, reason: 'Day mismatch');
-      expect(d.hour, 3, reason: 'Hour mismatch');
-      expect(d.minute, 4, reason: 'Minute mismatch');
-      expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.nanosecond, 6, reason: 'Nanosecond mismatch');
+      expect(d, hasDate(2000, 1, 2));
+      expect(d, hasTime(3, 4, 5, 6));
     });
 
     test('wrapping times', () {
@@ -36,42 +32,28 @@ void main() {
     group('fromDateTime()', () {
       test('fromDateTime()', () {
         var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6));
-        expect(d.year, 2000, reason: 'Year mismatch');
-        expect(d.month, 1, reason: 'Month mismatch');
-        expect(d.day, 2, reason: 'Day mismatch');
-        expect(d.hour, 3, reason: 'Hour mismatch');
-        expect(d.minute, 4, reason: 'Minute mismatch');
-        expect(d.second, 5, reason: 'Second mismatch');
+        expect(d, hasDate(2000, 1, 2));
         // JS platforms can't handle more than milliseconds.
-        expect(d.nanosecond, 006000000, reason: 'Nanosecond mismatch');
+        expect(d, hasTime(3, 4, 5, 006000000));
       });
 
       test('vm platforms', () {
         var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
-        expect(d.year, 2000, reason: 'Year mismatch');
-        expect(d.month, 1, reason: 'Month mismatch');
-        expect(d.day, 2, reason: 'Day mismatch');
-        expect(d.hour, 3, reason: 'Hour mismatch');
-        expect(d.minute, 4, reason: 'Minute mismatch');
-        expect(d.second, 5, reason: 'Second mismatch');
-        expect(d.nanosecond, 006007000, reason: 'Nanosecond mismatch');
+        expect(d, hasDate(2000, 1, 2));
+        expect(d, hasTime(3, 4, 5, 006007000));
       }, testOn: '!js');
     });
+
     test('combine()', () {
       var d =
           LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));
-      expect(d.year, 2000, reason: 'Year mismatch');
-      expect(d.month, 1, reason: 'Month mismatch');
-      expect(d.day, 2, reason: 'Day mismatch');
-      expect(d.hour, 3, reason: 'Hour mismatch');
-      expect(d.minute, 4, reason: 'Minute mismatch');
-      expect(d.second, 5, reason: 'Second mismatch');
-      expect(d.nanosecond, 6, reason: 'Nanosecond mismatch');
+      expect(d, hasDate(2000, 1, 2));
+      expect(d, hasTime(3, 4, 5, 6));
     });
 
     test('now() smoke test', () {
       var d = LocalDateTime.now();
-      expect(d.year, greaterThanOrEqualTo(2023));
+      expect(d, hasYear(greaterThanOrEqualTo(2023)));
     });
   });
 
@@ -96,26 +78,26 @@ void main() {
 
     test('morning', () {
       // A date which will live in infamy.
-      expect(LocalDateTime(1941, 12, 7).weekday, Weekday.sunday);
-      expect(LocalDateTime(2023, 4, 10).weekday, Weekday.monday);
-      expect(LocalDateTime(2023, 4, 11).weekday, Weekday.tuesday);
-      expect(LocalDateTime(2023, 4, 12).weekday, Weekday.wednesday);
-      expect(LocalDateTime(2023, 4, 13).weekday, Weekday.thursday);
-      expect(LocalDateTime(2023, 4, 14).weekday, Weekday.friday);
-      expect(LocalDateTime(2023, 4, 15).weekday, Weekday.saturday);
-      expect(LocalDateTime(2023, 4, 16).weekday, Weekday.sunday);
+      expect(LocalDateTime(1941, 12, 7), hasWeekday(Weekday.sunday));
+      expect(LocalDateTime(2023, 4, 10), hasWeekday(Weekday.monday));
+      expect(LocalDateTime(2023, 4, 11), hasWeekday(Weekday.tuesday));
+      expect(LocalDateTime(2023, 4, 12), hasWeekday(Weekday.wednesday));
+      expect(LocalDateTime(2023, 4, 13), hasWeekday(Weekday.thursday));
+      expect(LocalDateTime(2023, 4, 14), hasWeekday(Weekday.friday));
+      expect(LocalDateTime(2023, 4, 15), hasWeekday(Weekday.saturday));
+      expect(LocalDateTime(2023, 4, 16), hasWeekday(Weekday.sunday));
     });
 
     test('afternoon', () {
       // A date which will live in infamy.
-      expect(LocalDateTime(1941, 12, 7, 12).weekday, Weekday.sunday);
-      expect(LocalDateTime(2023, 4, 10, 12).weekday, Weekday.monday);
-      expect(LocalDateTime(2023, 4, 11, 12).weekday, Weekday.tuesday);
-      expect(LocalDateTime(2023, 4, 12, 12).weekday, Weekday.wednesday);
-      expect(LocalDateTime(2023, 4, 13, 12).weekday, Weekday.thursday);
-      expect(LocalDateTime(2023, 4, 14, 12).weekday, Weekday.friday);
-      expect(LocalDateTime(2023, 4, 15, 12).weekday, Weekday.saturday);
-      expect(LocalDateTime(2023, 4, 16, 12).weekday, Weekday.sunday);
+      expect(LocalDateTime(1941, 12, 7, 12), hasWeekday(Weekday.sunday));
+      expect(LocalDateTime(2023, 4, 10, 12), hasWeekday(Weekday.monday));
+      expect(LocalDateTime(2023, 4, 11, 12), hasWeekday(Weekday.tuesday));
+      expect(LocalDateTime(2023, 4, 12, 12), hasWeekday(Weekday.wednesday));
+      expect(LocalDateTime(2023, 4, 13, 12), hasWeekday(Weekday.thursday));
+      expect(LocalDateTime(2023, 4, 14, 12), hasWeekday(Weekday.friday));
+      expect(LocalDateTime(2023, 4, 15, 12), hasWeekday(Weekday.saturday));
+      expect(LocalDateTime(2023, 4, 16, 12), hasWeekday(Weekday.sunday));
     });
   });
 

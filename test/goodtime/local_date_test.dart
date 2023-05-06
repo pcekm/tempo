@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
       var d = LocalDate(2000, 1, 2);
-      expect(d.year, 2000, reason: 'Year mismatch');
-      expect(d.month, 1, reason: 'Month mismatch');
-      expect(d.day, 2, reason: 'Day mismatch');
+      expect(d, hasDate(2000, 1, 2));
     });
 
     test('Invalid dates', () {
@@ -45,14 +44,12 @@ void main() {
 
     test('fromDateTime()', () {
       var d = LocalDate.fromDateTime(DateTime(2000, 1, 2));
-      expect(d.year, 2000, reason: 'Year mismatch');
-      expect(d.month, 1, reason: 'Month mismatch');
-      expect(d.day, 2, reason: 'Day mismatch');
+      expect(d, hasDate(2000, 1, 2));
     });
 
     test('now() smoke test', () {
       var d = LocalDate.now();
-      expect(d.year, greaterThanOrEqualTo(2023));
+      expect(d, hasYear(greaterThanOrEqualTo(2023)));
     });
   });
 
@@ -130,14 +127,14 @@ void main() {
 
   test('weekday', () {
     // A date which will live in infamy.
-    expect(LocalDate(1941, 12, 7).weekday, Weekday.sunday);
-    expect(LocalDate(2023, 4, 10).weekday, Weekday.monday);
-    expect(LocalDate(2023, 4, 11).weekday, Weekday.tuesday);
-    expect(LocalDate(2023, 4, 12).weekday, Weekday.wednesday);
-    expect(LocalDate(2023, 4, 13).weekday, Weekday.thursday);
-    expect(LocalDate(2023, 4, 14).weekday, Weekday.friday);
-    expect(LocalDate(2023, 4, 15).weekday, Weekday.saturday);
-    expect(LocalDate(2023, 4, 16).weekday, Weekday.sunday);
+    expect(LocalDate(1941, 12, 7), hasWeekday(Weekday.sunday));
+    expect(LocalDate(2023, 4, 10), hasWeekday(Weekday.monday));
+    expect(LocalDate(2023, 4, 11), hasWeekday(Weekday.tuesday));
+    expect(LocalDate(2023, 4, 12), hasWeekday(Weekday.wednesday));
+    expect(LocalDate(2023, 4, 13), hasWeekday(Weekday.thursday));
+    expect(LocalDate(2023, 4, 14), hasWeekday(Weekday.friday));
+    expect(LocalDate(2023, 4, 15), hasWeekday(Weekday.saturday));
+    expect(LocalDate(2023, 4, 16), hasWeekday(Weekday.sunday));
   });
 
   test('toString()', () {

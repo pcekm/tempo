@@ -1,5 +1,6 @@
-import 'package:test/test.dart';
 import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/testing.dart';
+import 'package:test/test.dart';
 
 void main() {
   const int nano = 1000000000;
@@ -29,28 +30,18 @@ void main() {
         nepalTime.minute,
         nepalTime.second,
         nepalTime.nanosecond);
-    expect(dt.year, 2000, reason: 'year');
-    expect(dt.month, 1, reason: 'month');
-    expect(dt.day, 2, reason: 'day');
-    expect(dt.hour, 3, reason: 'hour');
-    expect(dt.minute, 4, reason: 'minute');
-    expect(dt.second, 5, reason: 'second');
-    expect(dt.nanosecond, 6, reason: 'nanosecond');
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
     expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt.asInstant, nepalInstant);
+    expect(dt, hasInstant(nepalInstant));
   });
 
   test('fromLocalDateTime()', () {
     var dt = OffsetDateTime.fromLocalDateTime(nepalTime, nepalOffset);
-    expect(dt.year, 2000, reason: 'year');
-    expect(dt.month, 1, reason: 'month');
-    expect(dt.day, 2, reason: 'day');
-    expect(dt.hour, 3, reason: 'hour');
-    expect(dt.minute, 4, reason: 'minute');
-    expect(dt.second, 5, reason: 'second');
-    expect(dt.nanosecond, 6, reason: 'nanosecond');
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
     expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt.asInstant, nepalInstant);
+    expect(dt, hasInstant(nepalInstant));
   });
 
   group('fromDateTime()', () {
@@ -76,15 +67,10 @@ void main() {
 
   test('fromInstant()', () {
     var dt = OffsetDateTime.fromInstant(nepalInstant, nepalOffset);
-    expect(dt.year, 2000, reason: 'year');
-    expect(dt.month, 1, reason: 'month');
-    expect(dt.day, 2, reason: 'day');
-    expect(dt.hour, 3, reason: 'hour');
-    expect(dt.minute, 4, reason: 'minute');
-    expect(dt.second, 5, reason: 'second');
-    expect(dt.nanosecond, 6, reason: 'nanosecond');
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
     expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt.asInstant, nepalInstant);
+    expect(dt, hasInstant(nepalInstant));
   });
 
   test('toLocal()', () {

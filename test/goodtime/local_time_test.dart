@@ -1,14 +1,12 @@
 import 'package:goodtime/goodtime.dart';
+import 'package:goodtime/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
       var t = LocalTime(3, 4, 5, 6);
-      expect(t.hour, 3, reason: 'Hour mismatch');
-      expect(t.minute, 4, reason: 'Minute mismatch');
-      expect(t.second, 5, reason: 'Second mismatch');
-      expect(t.nanosecond, 6, reason: 'Nanosecond mismatch');
+      expect(t, hasTime(3, 4, 5, 6));
     });
 
     test('Default examples', () {
@@ -28,30 +26,24 @@ void main() {
         // No nanoseconds in a DateTime.
         var dt = DateTime(2000, 1, 2, 3, 4, 5, 6);
         var t = LocalTime.fromDateTime(dt);
-        expect(t.hour, 3, reason: 'Hour mismatch');
-        expect(t.minute, 4, reason: 'Minute mismatch');
-        expect(t.second, 5, reason: 'Second mismatch');
         // Only test milliseconds, since that's all js can do.
-        expect(t.nanosecond, 6000000, reason: 'Nanosecond mismatch');
+        expect(t, hasTime(3, 4, 5, 6000000));
       });
 
       test('vm platforms', () {
         // No nanoseconds in a DateTime.
         var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
         var t = LocalTime.fromDateTime(dt);
-        expect(t.hour, 3, reason: 'Hour mismatch');
-        expect(t.minute, 4, reason: 'Minute mismatch');
-        expect(t.second, 5, reason: 'Second mismatch');
-        expect(t.nanosecond, 6007000, reason: 'Nanosecond mismatch');
+        expect(t, hasTime(3, 4, 5, 6007000));
       }, testOn: '!js');
     });
 
     test('now() smoke test', () {
       var t = LocalTime.now();
-      expect(t.hour, greaterThanOrEqualTo(0));
-      expect(t.minute, greaterThanOrEqualTo(0));
-      expect(t.second, greaterThanOrEqualTo(0));
-      expect(t.nanosecond, greaterThanOrEqualTo(0));
+      expect(t, hasHour(greaterThanOrEqualTo(0)));
+      expect(t, hasMinute(greaterThanOrEqualTo(0)));
+      expect(t, hasSecond(greaterThanOrEqualTo(0)));
+      expect(t, hasNanosecond(greaterThanOrEqualTo(0)));
     });
   });
 

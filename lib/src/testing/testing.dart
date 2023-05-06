@@ -50,7 +50,7 @@ Matcher hasHour(Object? matcher) => _HasHour(matcher);
 class _HasWeekday extends CustomMatcher {
   _HasWeekday(matcher) : super('Has weekday that is', 'weekday', matcher);
   @override
-  int featureValueOf(dynamic actual) => actual.weekday;
+  Weekday featureValueOf(dynamic actual) => actual.weekday;
 }
 
 /// Matches the weekday from a [HasDate].
