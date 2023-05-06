@@ -42,24 +42,45 @@ void main() {
 
   group('timeZoneFor()', () {
     test('standard time', () {
-      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 2023, 1, 1));
+      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 2000, 1, 1));
       expect(tz.designation, 'PST');
       expect(tz.isDst, false);
       expect(tz.offset, ZoneOffset(-8));
     });
 
     test('daylight savings', () {
-      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-7), 2023, 6, 1));
+      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-7), 2000, 6, 1));
       expect(tz.designation, 'PDT');
       expect(tz.isDst, true);
       expect(tz.offset, ZoneOffset(-7));
     });
 
-    test('falls back to posix TZ', () {
+    test('before table falls back to posix TZ - std time', () {
+      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 1500, 1, 1));
+      expect(tz.designation, 'PST');
+      expect(tz.isDst, false);
+      expect(tz.offset, ZoneOffset(-8));
+    });
+
+    test('before table falls back to posix TZ - dst', () {
+      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 1500, 6, 1));
+      expect(tz.designation, 'PDT');
+      expect(tz.isDst, true);
+      expect(tz.offset, ZoneOffset(-7));
+    });
+
+    test('after table falls back to posix TZ - std time', () {
       var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 2500, 1, 1));
       expect(tz.designation, 'PST');
       expect(tz.isDst, false);
       expect(tz.offset, ZoneOffset(-8));
+    });
+
+    test('after table falls back to posix TZ - dst', () {
+      var tz = zi.timeZoneFor(OffsetDateTime(ZoneOffset(-8), 2500, 6, 1));
+      expect(tz.designation, 'PDT');
+      expect(tz.isDst, true);
+      expect(tz.offset, ZoneOffset(-7));
     });
   });
 }

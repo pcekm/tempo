@@ -30,10 +30,10 @@ class ZoneInfoRecord {
   /// Returns the time offset and designation for an [Instant].
   TimeZone timeZoneFor(HasInstant instant) {
     var i = lowerBound(_transitionTimes, instant);
-    if (i == _transitionTimes.length) {
+    if (i == 0 || i == _transitionTimes.length) {
       return _posixTz.timeZoneFor(instant);
     }
-    var timeType = _localTimeTypes[_transitionTypes[i]];
+    var timeType = _localTimeTypes[_transitionTypes[i - 1]];
     return TimeZone(
       timeType.utOffset,
       _designations[timeType.index]!,
