@@ -3,16 +3,13 @@ part of '../../goodtime.dart';
 /// An ISO 8601 date with no timezone.
 class LocalDate
     implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
-  /// The year.
-  ///
-  /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
-  /// This is also called astronomical year numbering.
+  @override
   final int year;
 
-  /// The month from 1 to 12.
+  @override
   final int month;
 
-  /// The day starting at 1.
+  @override
   final int day;
 
   /// Constructs a [LocalDate] from individual parts.
