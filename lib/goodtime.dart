@@ -6,7 +6,6 @@ library goodtime;
 import 'dart:math';
 
 import 'package:goodtime/src/zonedb.dart';
-import 'package:sprintf/sprintf.dart';
 
 import 'src/goodtime/common.dart';
 import 'src/goodtime/julian_day.dart';
