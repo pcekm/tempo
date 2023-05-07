@@ -96,7 +96,7 @@ class Instant implements HasInstant {
     var parts = julianDayToGregorian(_julianDay);
     var dateTime = LocalDateTime(
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
-    return '${dateTime.toString()}Z';
+    return _iso8601DateTime(dateTime, ZoneOffset(0), true);
   }
 
   @override

@@ -161,7 +161,7 @@ class OffsetDateTime
   ///
   /// For example, `2023-01-02T03:04:05-0700`.
   @override
-  String toString() => '$_dateTime$offset';
+  String toString() => _iso8601DateTime(this, offset);
 
   /// The equality operator.
   ///

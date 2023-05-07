@@ -1,7 +1,8 @@
 part of '../../goodtime.dart';
 
 /// An ISO 8601 date with no timezone.
-class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
+class LocalDate
+    implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   /// The year.
   ///
   /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
@@ -59,11 +60,13 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
-  /// Gets the day of the week.
+  @override
   Weekday get weekday => weekdayForJulianDay(_julianDay);
 
-  /// The number of days since the beginning of the year. This will range from
-  /// 1 to 366.
+  @override
+  DateTime toDateTime() => DateTime(year, month, day);
+
+  @override
   int get ordinalDay =>
       _julianDay.inDays - LocalDate(year)._julianDay.inDays + 1;
 
@@ -214,10 +217,7 @@ class LocalDate implements Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   ///
   /// For example, 2000-01-02.
   @override
-  String toString() {
-    var format = "%${(year < 1 || year > 9999) ? '+05' : '04'}d-%02d-%02d";
-    return sprintf(format, [year, month, day]);
-  }
+  String toString() => _iso8601Date(this);
 
   // Throws an error if this date is invalid.
   void _validate() {

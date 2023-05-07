@@ -152,6 +152,10 @@ void main() {
     expect(LocalDate(2023, 12, 31).ordinalDay, 365);
   });
 
+  test('toDateTime', () {
+    expect(LocalDate(2000, 3, 4).toDateTime(), DateTime(2000, 3, 4));
+  });
+
   test('isLeapYear', () {
     expect(LocalDate(1900).isLeapYear, false, reason: 'year = 1900');
     expect(LocalDate(1904).isLeapYear, true, reason: 'year = 1904');

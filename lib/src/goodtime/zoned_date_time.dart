@@ -214,8 +214,9 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   @override
   bool operator >=(HasInstant other) => _dateTime >= other;
 
+  /// Returns this as an ISO 8601-formatted string with an offset.
   @override
-  String toString() => _dateTime.toString();
+  String toString() => _iso8601DateTime(this, offset);
 
   @override
   bool operator ==(Object other) =>

@@ -76,10 +76,10 @@ void main() {
   });
 
   test('toString()', () {
-    expect(timeline[-1].toString(), '1969-12-31T23:59:59.000000000Z');
-    expect(timeline[0].toString(), '1970-01-01T00:00:00.000000000Z');
-    expect(timeline[1].toString(), '1970-01-01T00:00:01.000000000Z');
-    expect(timeline[1].toString(), '1970-01-01T00:00:01.000000000Z');
+    expect(timeline[-1].toString(), '1969-12-31T23:59:59Z');
+    expect(timeline[0].toString(), '1970-01-01T00:00Z');
+    expect(timeline[1].toString(), '1970-01-01T00:00:01Z');
+    expect(timeline[1].toString(), '1970-01-01T00:00:01Z');
     expect(timeline[946872306].toString(), '2000-01-03T04:05:06.123456789Z');
   });
 
@@ -88,9 +88,9 @@ void main() {
         Instant.fromUnix(
                 Timespan(seconds: 253402300799, nanoseconds: 999999999))
             .toString(),
-        "9999-12-31T23:59:59.999999999Z");
+        '9999-12-31T23:59:59.999999999Z');
     expect(Instant.fromUnix(Timespan(seconds: -377705116800)).toString(),
-        "-9999-01-01T00:00:00.000000000Z");
+        '-9999-01-01T00:00Z');
   });
 
   test('operator==', () {

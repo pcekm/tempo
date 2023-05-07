@@ -131,6 +131,13 @@ void main() {
   });
 
   test('toString()', () {
+    expect(LocalTime(1, 0).toString(), '01:00');
+    expect(LocalTime(1, 2).toString(), '01:02');
+    expect(LocalTime(1, 2, 3).toString(), '01:02:03');
+    expect(LocalTime(1, 2, 3, 400000000).toString(), '01:02:03.4');
+    expect(LocalTime(1, 2, 3, 4000000).toString(), '01:02:03.004');
+    expect(LocalTime(1, 2, 3, 4000).toString(), '01:02:03.000004');
     expect(LocalTime(1, 2, 3, 4).toString(), '01:02:03.000000004');
+    expect(LocalTime(23, 59, 59, 999999999).toString(), '23:59:59.999999999');
   });
 }

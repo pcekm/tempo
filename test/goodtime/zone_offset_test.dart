@@ -40,11 +40,12 @@ void main() {
   });
 
   test('toString()', () {
-    expect(ZoneOffset(5).toString(), '+05');
-    expect(ZoneOffset(-3).toString(), '-03');
-    expect(ZoneOffset(05, 45).toString(), '+05:45');
-    expect(ZoneOffset(-03, -30).toString(), '-03:30');
-    expect(ZoneOffset(03, 05).toString(), '+03:05');
-    expect(ZoneOffset(-3, -4, -5).toString(), '-03:04:05');
+    expect(ZoneOffset(0).toString(), '+0000');
+    expect(ZoneOffset(5).toString(), '+0500');
+    expect(ZoneOffset(-3).toString(), '-0300');
+    expect(ZoneOffset(05, 45).toString(), '+0545');
+    expect(ZoneOffset(-03, -30).toString(), '-0330');
+    expect(ZoneOffset(03, 05).toString(), '+0305');
+    expect(ZoneOffset(-3, -4, -5).toString(), '-030405');
   });
 }

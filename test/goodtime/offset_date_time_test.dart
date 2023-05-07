@@ -132,7 +132,9 @@ void main() {
   });
 
   test('toString()', () {
-    expect(nepalOffsetTime.toString(), "2000-01-02T03:04:05.000000006+05:45");
+    expect(OffsetDateTime(ZoneOffset(-7), 2020, 3, 4).toString(),
+        '2020-03-04T00:00-0700');
+    expect(nepalOffsetTime.toString(), '2000-01-02T03:04:05.000000006+0545');
   });
 
   test('operator== / hashCode', () {

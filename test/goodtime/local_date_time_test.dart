@@ -235,11 +235,10 @@ void main() {
   test('toString()', () {
     expect(LocalDateTime(2023, 4, 10, 1, 2, 3, 4).toString(),
         '2023-04-10T01:02:03.000000004');
-    expect(LocalDateTime(1).toString(), '0001-01-01T00:00:00.000000000');
-    expect(
-        LocalDateTime(0).toString(), '+0000-01-01T00:00:00.000000000'); // 1 BC
-    expect(LocalDateTime(-4711).toString(), '-4711-01-01T00:00:00.000000000');
-    expect(LocalDateTime(9999).toString(), '9999-01-01T00:00:00.000000000');
-    expect(LocalDateTime(10000).toString(), '+10000-01-01T00:00:00.000000000');
+    expect(LocalDateTime(1).toString(), '0001-01-01T00:00');
+    expect(LocalDateTime(0).toString(), '+0000-01-01T00:00'); // 1 BC
+    expect(LocalDateTime(-4711).toString(), '-4711-01-01T00:00');
+    expect(LocalDateTime(9999).toString(), '9999-01-01T00:00');
+    expect(LocalDateTime(10000).toString(), '+10000-01-01T00:00');
   });
 }

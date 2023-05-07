@@ -233,5 +233,5 @@ class LocalDateTime
   ///
   /// For example, 2000-01-02T12:00:01.000000009.
   @override
-  String toString() => '${date}T$time';
+  String toString() => _iso8601DateTime(this);
 }

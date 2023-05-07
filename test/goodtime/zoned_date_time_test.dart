@@ -294,6 +294,15 @@ void main() {
     });
   });
 
+  test('toString()', () {
+    expect(ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4).toString(),
+        '2000-01-02T03:04-0800');
+    expect(ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4).toString(),
+        '2000-01-02T03:04+0200');
+    expect(ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6).toString(),
+        '2000-01-02T03:04:05.000000006+0200');
+  });
+
   group('equality and hashCode', () {
     // Same instant, two adjacent time zones (EST, CET):
     var dt1 = ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 4, 4, 5, 6);

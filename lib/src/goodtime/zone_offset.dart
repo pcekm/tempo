@@ -58,18 +58,7 @@ class ZoneOffset {
   int get inHours => hours;
 
   @override
-  String toString() {
-    var parts = [
-      sprintf('%+03d', [hours])
-    ];
-    if (minutes != 0 || seconds != 0) {
-      parts.add(sprintf('%02d', [minutes.abs()]));
-    }
-    if (seconds != 0) {
-      parts.add(sprintf('%02d', [seconds.abs()]));
-    }
-    return parts.join(':');
-  }
+  String toString() => _iso8601ZoneOffset(this);
 
   /// Equality operator.
   ///

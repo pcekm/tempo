@@ -136,6 +136,5 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   ///
   /// For example, 04:30:55.123456789.
   @override
-  String toString() =>
-      sprintf('%02d:%02d:%02d.%09d', [hour, minute, second, nanosecond]);
+  String toString() => _iso8601Time(this);
 }

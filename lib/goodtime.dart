@@ -19,6 +19,7 @@ export 'src/zonedb.dart'
         timeZonesForCountry;
 
 part 'src/goodtime/__period_arithmetic.dart';
+part 'src/goodtime/iso8601.dart';
 part 'src/goodtime/has_date_time.dart';
 part 'src/goodtime/has_date.dart';
 part 'src/goodtime/has_instant.dart';
