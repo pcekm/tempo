@@ -53,6 +53,45 @@ void main() {
     });
   });
 
+  group('parse()', () {
+    test('normal', () {
+      expect(LocalDate.parse('2000-03-04'), hasDate(2000, 3, 4));
+    });
+
+    test('positive', () {
+      expect(LocalDate.parse('+0000-03-04'), hasDate(0, 3, 4));
+    });
+
+    test('negative', () {
+      expect(LocalDate.parse('-1000-02-03'), hasDate(-1000, 2, 3));
+    });
+
+    test('year month', () {
+      expect(LocalDate.parse('2000-02'), hasDate(2000, 2, 1));
+    });
+
+    test('no separators', () {
+      expect(LocalDate.parse('20000203'), hasDate(2000, 2, 3));
+    });
+
+    test('invalid', () {
+      const badDates = [
+        '',
+        '0-1-2',
+        '200003',
+        '1000-1',
+        '1000-01-',
+        '100-02-03',
+        '1000-02-03-',
+        '1000-02-3',
+        '1000-02-03junk'
+      ];
+      for (var s in badDates) {
+        expect(() => LocalDate.parse(s), throwsFormatException, reason: s);
+      }
+    });
+  });
+
   group('replace()', () {
     test('year', () {
       expect(LocalDate(2023, 1, 2).replace(year: 1998), LocalDate(1998, 1, 2));

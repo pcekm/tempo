@@ -5,10 +5,11 @@ library goodtime;
 
 import 'dart:math';
 
-import 'package:goodtime/src/zonedb.dart';
+import 'package:string_scanner/string_scanner.dart';
 
 import 'src/goodtime/common.dart';
 import 'src/goodtime/julian_day.dart';
+import 'src/zonedb.dart';
 
 export 'src/zonedb.dart'
     show

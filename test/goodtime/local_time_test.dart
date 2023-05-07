@@ -47,6 +47,45 @@ void main() {
     });
   });
 
+  group('parse()', () {
+    test('complete', () {
+      expect(LocalTime.parse('01:02:03.000000004'), hasTime(1, 2, 3, 4));
+      expect(LocalTime.parse('010203.000000004'), hasTime(1, 2, 3, 4));
+    });
+
+    test('fraction truncation', () {
+      expect(LocalTime.parse('00:00:00.0000000019'), hasTime(0, 0, 0, 1));
+    });
+
+    test('fewer fractional digits', () {
+      expect(LocalTime.parse('00:00:00.1'), hasTime(0, 0, 0, 100000000));
+    });
+
+    test('hour minute', () {
+      expect(LocalTime.parse('01:02'), hasTime(1, 2));
+      expect(LocalTime.parse('0102'), hasTime(1, 2));
+    });
+
+    test('hour minute second', () {
+      expect(LocalTime.parse('01:02:03'), hasTime(1, 2, 3));
+      expect(LocalTime.parse('010203'), hasTime(1, 2, 3));
+    });
+
+    test('T prefix', () {
+      expect(LocalTime.parse('T01'), hasTime(1));
+      expect(LocalTime.parse('T0102'), hasTime(1, 2));
+      expect(LocalTime.parse('T010203'), hasTime(1, 2, 3));
+      expect(LocalTime.parse('T010203.000000004'), hasTime(1, 2, 3, 4));
+    });
+
+    test('invalid', () {
+      const bad = ['', '0102junk'];
+      for (var s in bad) {
+        expect(() => LocalTime.parse(s), throwsFormatException, reason: s);
+      }
+    });
+  });
+
   test('replace()', () {
     var t = LocalTime(1, 2, 3, 4);
     expect(t.replace(hour: 10), LocalTime(10, 2, 3, 4));

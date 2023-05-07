@@ -23,6 +23,41 @@ void main() {
         ZoneOffset(0, -29, -59));
   });
 
+  group('parse()', () {
+    test('complete', () {
+      expect(ZoneOffset.parse('+02:03:04'), ZoneOffset(2, 3, 4));
+      expect(ZoneOffset.parse('+020304'), ZoneOffset(2, 3, 4));
+    });
+
+    test('negative', () {
+      expect(ZoneOffset.parse('-02:03:04'), ZoneOffset(-2, -3, -4));
+      expect(ZoneOffset.parse('-020304'), ZoneOffset(-2, -3, -4));
+    });
+
+    test('hour minute', () {
+      expect(ZoneOffset.parse('+02:03'), ZoneOffset(2, 3));
+      expect(ZoneOffset.parse('+0203'), ZoneOffset(2, 3));
+    });
+
+    test('hour only', () {
+      expect(ZoneOffset.parse('+02'), ZoneOffset(2));
+      expect(ZoneOffset.parse('+02'), ZoneOffset(2));
+    });
+
+    test('zulu', () {
+      expect(ZoneOffset.parse('+00'), ZoneOffset(0));
+      expect(ZoneOffset.parse('-00'), ZoneOffset(0));
+      expect(ZoneOffset.parse('Z'), ZoneOffset(0));
+    });
+
+    test('invalid', () {
+      const bad = ['', '1', '01', 'x', '01x'];
+      for (var s in bad) {
+        expect(() => ZoneOffset.parse(s), throwsFormatException, reason: s);
+      }
+    });
+  });
+
   test('inSeconds', () {
     expect(ZoneOffset(1, 2, 3).inSeconds, 3723);
   });

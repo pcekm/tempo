@@ -38,6 +38,9 @@ class LocalDate
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);
 
+  /// Parses an ISO 8601 date string.
+  factory LocalDate.parse(String date) => _parseIso8601Date(date);
+
   /// Returns a new date with one or more fields replaced. Uses the largest
   /// valid day if the resulting month is shorter.
   ///

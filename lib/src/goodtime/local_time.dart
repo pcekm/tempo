@@ -55,6 +55,9 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
       : this(dateTime.hour, dateTime.minute, dateTime.second,
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
 
+  /// Parses an ISO 8601 time string.
+  factory LocalTime.parse(String time) => _parseIso8601Time(time);
+
   /// Returns a new time with one or more fields replaced.
   ///
   /// ```dart

@@ -48,6 +48,12 @@ class ZoneOffset {
     return ZoneOffset.fromDuration(DateTime.now().timeZoneOffset);
   }
 
+  /// Parses an ISO 8601 zone offset string.
+  ///
+  /// Normally these don't occur by themselves. This is mostly here for
+  /// testing purposes.
+  factory ZoneOffset.parse(String offset) => _parseIso8601Offset(offset);
+
   /// The offset in the a whole number of seconds, rounded towards zero.
   int get inSeconds => hours * 3600 + minutes * 60 + seconds;
 

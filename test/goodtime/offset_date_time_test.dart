@@ -73,6 +73,39 @@ void main() {
     expect(dt, hasInstant(nepalInstant));
   });
 
+  group('parse()', () {
+    test('all fields', () {
+      var dt = OffsetDateTime.parse('1000-02-03T04:05:06.000000007+08:09:10');
+      expect(dt, hasDate(1000, 2, 3));
+      expect(dt, hasTime(4, 5, 6, 7));
+      expect(dt.offset, ZoneOffset(8, 9, 10));
+    });
+
+    test('no offset', () {
+      var dt = OffsetDateTime.parse('1000-02-03T04:05:06.000000007');
+      expect(dt, hasDate(1000, 2, 3));
+      expect(dt, hasTime(4, 5, 6));
+      expect(dt.offset, ZoneOffset(0));
+    });
+
+    test('just date', () {
+      var dt = OffsetDateTime.parse('1000-02-03');
+      expect(dt, hasDate(1000, 2, 3));
+      expect(dt, hasTime(0));
+      expect(dt.offset, ZoneOffset(0));
+    });
+
+    test('positive', () {
+      var dt = OffsetDateTime.parse('+0000-02-03');
+      expect(dt, hasDate(0, 2, 3));
+    });
+
+    test('negative', () {
+      var dt = OffsetDateTime.parse('-1000-02-03');
+      expect(dt, hasDate(-1000, 2, 3));
+    });
+  });
+
   test('toLocal()', () {
     expect(nepalOffsetTime.toLocal(), nepalTime);
   });

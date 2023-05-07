@@ -57,6 +57,12 @@ void main() {
     });
   });
 
+  test('parse()', () {
+    var dt = LocalDateTime.parse('2000-03-04T05:06:07.000000008-1011');
+    expect(dt, hasDate(2000, 3, 4));
+    expect(dt, hasTime(5, 6, 7, 8));
+  });
+
   test('replace()', () {
     var dt = LocalDateTime(1, 2, 3, 4, 5, 6, 7);
     var repl = dt.replace(
@@ -72,10 +78,6 @@ void main() {
   });
 
   group('weekday', () {
-    // In the current implementation, morning and afternoon aren't treated
-    // any differently. But in case some future me decides to switch to
-    // fractional Julian days, test both.
-
     test('morning', () {
       // A date which will live in infamy.
       expect(LocalDateTime(1941, 12, 7), hasWeekday(Weekday.sunday));

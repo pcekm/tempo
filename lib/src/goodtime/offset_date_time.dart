@@ -58,6 +58,10 @@ class OffsetDateTime
         _dateTime = _mkDateTime(hasInstant.asInstant, offset ?? ZoneOffset(0)),
         _instant = hasInstant.asInstant;
 
+  /// Parses an [OffsetDateTime] from an ISO-8601 formatted string.
+  factory OffsetDateTime.parse(String isoString) =>
+      _parseIso8160DateTime(isoString);
+
   OffsetDateTime._(this._dateTime, this._instant, this.offset);
 
   final LocalDateTime _dateTime;

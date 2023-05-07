@@ -82,6 +82,10 @@ class LocalDateTime
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
+  /// Parses an ISO 8601 datetime string. Discards the zone offset (if any).
+  factory LocalDateTime.parse(String dateTime) =>
+      _parseIso8160DateTime(dateTime).toLocal();
+
   Timespan get _julianDay => gregorianToJulianDay(Gregorian(
       year,
       month,
