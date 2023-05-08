@@ -1,6 +1,33 @@
-/// Support for doing something awesome.
+/// A date and time library that replaces the standard
+/// `dart:core` [DateTime] and [Duration] classes.
 ///
-/// More dartdocs go here.
+/// This is heavily inspired by the Java 8+ time package,
+/// although there are plenty of differences.
+///
+/// ## Local dates and times
+///
+/// * [LocalTime]
+/// * [LocalDate]
+/// * [LocalDateTime]
+///
+/// ## Absolute times
+///
+/// * [Instant]
+/// * [OffsetDateTime]
+/// * [ZonedDateTime]
+///
+/// ## Relative times
+///
+/// * [Timespan]
+/// * [Period]
+///
+/// ## Time zones
+///
+/// * [ZoneDescription]
+/// * [allTimeZones]
+/// * [timeZonesByProximity]
+/// * [timeZonesForCountry]
+///
 library tempo;
 
 import 'dart:math';
