@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:goodtime/goodtime.dart';
-import 'package:goodtime/testing.dart';
+import 'package:tempo/tempo.dart';
+import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -413,7 +413,7 @@ void main() {
     test('golden file', () {
       var dateRe = RegExp(r'(\d+)-(\d+)-(\d+)');
       var periodRe = RegExp(r'P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?');
-      var file = File('test/goodtime/local_date_period_until_testcases.txt');
+      var file = File('test/tempo/local_date_period_until_testcases.txt');
       for (var line in file.readAsLinesSync()) {
         var parts = line.split(' ');
         var d1Match = dateRe.firstMatch(parts[0]);

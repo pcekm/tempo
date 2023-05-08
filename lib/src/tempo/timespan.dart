@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// A duration of time with nanosecond precision.
 ///

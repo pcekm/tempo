@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// Interface implemented by any class that is tied to a specific [Instant]
 /// in time.

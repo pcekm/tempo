@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// Interface implemented by classes that can add and subtract [Period]s.
 // Avoid exporting this interface. It exists mainly to avoid repeating

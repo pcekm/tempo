@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// Interface implemented by objects that have a date on the
 /// ISO 8601 calendar.

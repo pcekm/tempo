@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// A point in time in a specific time zone.
 ///

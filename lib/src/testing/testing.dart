@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../../goodtime.dart';
+import '../../tempo.dart';
 
 class _HasInstant extends CustomMatcher {
   _HasInstant(matcher) : super('Has instant that is', 'instant', matcher);

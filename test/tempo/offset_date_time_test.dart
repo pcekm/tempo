@@ -1,5 +1,5 @@
-import 'package:goodtime/goodtime.dart';
-import 'package:goodtime/testing.dart';
+import 'package:tempo/tempo.dart';
+import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
 
 void main() {

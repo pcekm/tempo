@@ -1,4 +1,4 @@
-import 'package:goodtime/goodtime.dart';
+import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
 const int nano = 1000000000;

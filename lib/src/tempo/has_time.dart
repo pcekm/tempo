@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// Interface implemented by classes that provide the time of day.
 abstract class HasTime {

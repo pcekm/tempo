@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// Pads an integer up to [digits]. Negative signs are not counted as a digit.
 String _zeroPad(int n, [int digits = 2]) {

@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:goodtime/goodtime.dart';
-import 'package:goodtime/testing.dart';
+import 'package:tempo/tempo.dart';
+import 'package:tempo/testing.dart';
 
 class _HasDst extends CustomMatcher {
   _HasDst(matcher) : super('Has isDst that is', 'isDst', matcher);

@@ -1,11 +1,11 @@
-name: goodtime
+name: tempo
 description: >-
   A complete time and date solution for Dart. Time periods: add and subtract
   months or years and land on the same day. Local and zoned dates and times.
   Arbitrary time zones. And more.
 
 version: 0.9.0
-repository: https://github.com/pcekm/goodtime
+repository: https://github.com/pcekm/tempo
 
 
 environment:

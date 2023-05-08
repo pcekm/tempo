@@ -1,5 +1,5 @@
-import 'package:goodtime/goodtime.dart';
-import 'package:goodtime/src/zonedb.dart';
+import 'package:tempo/tempo.dart';
+import 'package:tempo/src/zonedb.dart';
 import 'package:test/test.dart';
 
 class HasZoneId extends CustomMatcher {

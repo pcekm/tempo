@@ -1,4 +1,4 @@
-part of '../../goodtime.dart';
+part of '../../tempo.dart';
 
 /// An ISO 8601 date with no timezone.
 class LocalDate
