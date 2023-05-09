@@ -238,6 +238,14 @@ void main() {
     });
   });
 
+  test('timespanUntil', () {
+    var dt1 = ZonedDateTime.fromInstant(
+        Instant.fromUnix(Timespan(seconds: 2000)), 'America/Los Angeles');
+    var dt2 = ZonedDateTime.fromInstant(
+        Instant.fromUnix(Timespan(seconds: 3000)), 'Australia/Sydney');
+    expect(dt1.timespanUntil(dt2), Timespan(seconds: 1000));
+  });
+
   group('Timespan arithmetic', () {
     test('plusTimespan', () {
       var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);

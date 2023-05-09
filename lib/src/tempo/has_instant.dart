@@ -17,4 +17,7 @@ abstract class HasInstant implements Comparable<HasInstant> {
 
   /// Less than or equals operator.
   bool operator <=(HasInstant other);
+
+  /// Finds the amount of time between this and another instant in time.
+  Timespan timespanUntil(HasInstant other);
 }

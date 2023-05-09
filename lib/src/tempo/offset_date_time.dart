@@ -123,7 +123,7 @@ class OffsetDateTime
   @override
   int get nanosecond => _dateTime.nanosecond;
 
-  /// Returns the amount of time between this and another instant in time.
+  @override
   Timespan timespanUntil(HasInstant other) => _instant.timespanUntil(other);
 
   /// Adds a [Timespan].

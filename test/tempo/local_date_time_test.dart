@@ -109,13 +109,19 @@ void main() {
     expect(dt.toDateTime(), want);
   });
 
-  test('timespanUntil():', () {
+  test('timespanUntil', () {
     expect(
         LocalDateTime(2000).timespanUntil(LocalDateTime(2001, 1, 1, 0, 0, 1)),
         Timespan(days: 366, seconds: 1));
     expect(
         LocalDateTime(2000).timespanUntil(LocalDateTime(1999, 1, 1, 0, 0, 1)),
         -Timespan(days: 364, hours: 23, minutes: 59, seconds: 59));
+  });
+
+  test('periodUntil', () {
+    expect(
+        LocalDateTime(2000, 1, 1, 4, 13).periodUntil(LocalDateTime(2001, 2, 2)),
+        Period(years: 1, months: 1, days: 1));
   });
 
   test('plusTimespan', () {

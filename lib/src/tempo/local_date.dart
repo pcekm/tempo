@@ -82,7 +82,7 @@ class LocalDate
   /// months and days—all positive or all negative.
   ///
   /// To count the total number of days between two dates use
-  /// [timespanUntil()].
+  /// [timespanUntil].
   ///
   /// ```dart
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
@@ -96,17 +96,18 @@ class LocalDate
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  Period periodUntil(LocalDate other) {
+  Period periodUntil(HasDate other) {
+    var otherDate = LocalDate(other.year, other.month, other.day);
     late int sign;
     late LocalDate d1;
     late LocalDate d2;
-    if (other._julianDay.inDays >= _julianDay.inDays) {
+    if (otherDate._julianDay.inDays >= _julianDay.inDays) {
       sign = 1;
       d1 = this;
-      d2 = other;
+      d2 = otherDate;
     } else {
       sign = -1;
-      d1 = other;
+      d1 = otherDate;
       d2 = this;
     }
     var months = _absoluteMonth(d2) - _absoluteMonth(d1);

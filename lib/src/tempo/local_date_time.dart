@@ -169,6 +169,31 @@ class LocalDateTime
   /// Finds the timespan between [this] and [other].
   Timespan timespanUntil(LocalDateTime other) => other._julianDay - _julianDay;
 
+  /// Finds the [Period] between this and another [HasDate].
+  ///
+  /// The time component (if any) is ignored.
+  ///
+  /// It first finds the number of months by advancing the smaller date
+  /// until it is within 1 month of the larger. Then it finds the number
+  /// of days between them. The final result is normalized into years,
+  /// months and days—all positive or all negative.
+  ///
+  /// To count the total amount of time, use [timespanUntil].
+  ///
+  /// ```dart
+  /// LocalDateTime(2000, 1, 1, 12, 20).periodUntil(LocalDateT(2000, 3, 2)) ==
+  ///     Period(months: 2, days: 1);
+  /// LocalDateTime(2000, 3, 2).periodUntil(LocalDateTime(2000, 1, 1)) ==
+  ///     Period(months: -2, days: -1);
+  /// LocalDateTime(2000, 1, 2).periodUntil(LocalDateTime(2000, 3, 1)) ==
+  ///     Period(months: 1, days: 28);
+  /// LocalDateTime(2001, 1, 2).periodUntil(LocalDateTime(2001, 3, 1)) ==
+  ///     Period(months: 1, days: 27);
+  /// LocalDateTime(2000, 1, 1).periodUntil(LocalDateTime(2010, 2, 3)) ==
+  ///     Period(years: 10, months: 1, days: 2);
+  /// ```
+  Period periodUntil(HasDate other) => date.periodUntil(other);
+
   /// Adds a [Period] of time.
   ///
   /// This acts on the date parts in exactly the same way as

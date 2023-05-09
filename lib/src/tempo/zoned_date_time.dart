@@ -69,7 +69,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   }
 
   /// What's going on here:
-  /// We have a chicken and egg problem. We need an Instant to determine
+  /// There's a chicken and egg problem. We need an Instant to determine
   /// the correct time zone (that's how they're defined in ARIN's data),
   /// but we don't know the instant without knowing the time zone.
   /// Instead, start at the previous day and skip forward. This is
@@ -127,6 +127,9 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   @override
   Instant get asInstant => _dateTime.asInstant;
+
+  @override
+  Timespan timespanUntil(HasInstant other) => asInstant.timespanUntil(other);
 
   /// Adds a [Timespan].
   ///
