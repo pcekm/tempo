@@ -65,9 +65,7 @@ class ZoneInfoReader {
     }
 
     // Read the data block.
-    var transitionTimes = _nextInt64List(header.timeCnt)
-        .map((t) => Instant.fromUnix(Timespan(seconds: t)))
-        .toList();
+    var transitionTimes = _nextInstantList(header.timeCnt);
     var transitionTypes = _nextUint8List(header.timeCnt);
     var localTimeTypes = _nextLocalTimeTypeList(header.typeCnt);
     var designations = _nextTimeZoneDesignations(header.charCnt);
@@ -98,16 +96,19 @@ class ZoneInfoReader {
   int _nextUint8() => _data.getUint8(_thenAdvance(1));
   int _nextUint32() => _data.getUint32(_thenAdvance(4));
   int _nextInt32() => _data.getInt32(_thenAdvance(4));
-  int _nextInt64() => _data.getInt64(_thenAdvance(8));
 
   Uint8List _nextUint8List(int len) =>
       Uint8List.sublistView(_data, _pos, _pos += len);
 
-  Int64List _nextInt64List(int len) {
+  List<Instant> _nextInstantList(int len) {
     // Don't just create a view on _bytes. That would not fix the byte order.
-    var list = Int64List(len);
+    var list = <Instant>[];
     for (int i = 0; i < len; ++i) {
-      list[i] = _nextInt64();
+      var high = _nextInt32();
+      var low = _nextInt32();
+      // This will technically lose some precision on JS, but it's still
+      // way mmore than enough.
+      list.add(Instant.fromUnix(Timespan(seconds: (high << 32) + low)));
     }
     return list;
   }
@@ -145,10 +146,7 @@ class ZoneInfoReader {
 
 class _Header {
   static const int tzifMagic = 0x545a6966; // 'TZif'
-
-  static const int version1 = 0;
   static const int version2 = 0x32;
-  static const int version3 = 0x33;
 
   final int magic;
   final int version;

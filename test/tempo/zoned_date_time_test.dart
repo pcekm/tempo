@@ -167,13 +167,21 @@ void main() {
       expect(got.zoneId, 'America/Denver');
     });
 
-    test('fromDateTime', () {
+    test('fromDateTime() native', () {
       var got = ZonedDateTime.fromDateTime(
           DateTime.utc(2000, 1, 2, 3, 4, 5, 6, 7), 'UTC');
       expect(got, hasDate(2000, 1, 2));
       expect(got, hasTime(3, 4, 5, 6007000));
       expect(got.zoneId, 'UTC');
-    });
+    }, testOn: '!js');
+
+    test('fromDateTime() js', () {
+      var got = ZonedDateTime.fromDateTime(
+          DateTime.utc(2000, 1, 2, 3, 4, 5, 6), 'UTC');
+      expect(got, hasDate(2000, 1, 2));
+      expect(got, hasTime(3, 4, 5, 6000000));
+      expect(got.zoneId, 'UTC');
+    }, testOn: 'js');
   });
 
   group('time zone info', () {

@@ -74,7 +74,7 @@ absolute moment in time. For example:
 - Log timestamps (`Instant` in particular)
 
 ```dart
-var instant = Instant.fromUnixTimestamp(Timespan(seconds: 946872306));
+var instant = Instant.fromUnix(Timespan(seconds: 946872306));
 instant.toString() == '2000-01-03T04:05:06Z';
 
 var odt = OffsetDateTime(ZoneOffset(-1), 2000, 1, 3, 3, 5, 6);
