@@ -1,6 +1,6 @@
 A complete time and date solution that replaces Dart's core
 [`DateTime`][DateTime] class with a rich set of date and time
-classes with advanced arithmetic features and full time zone
+classes advanced arithmetic features and full time zone
 support.
 
 ## Features
