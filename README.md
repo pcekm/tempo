@@ -7,29 +7,29 @@ support.
 
 Everything [`DateTime`][DateTime] can do, plus:
 
-* Local and zoned date and time classes
-* Period arithmetic:
+- Local and zoned date and time classes
+- Period arithmetic:
   - Add and subtract months or years without changing the day or time
   - Count the number of years, months and days between two dates
-* Create and parse ISO 8601 strings
-* Easy conversion to and from [`DateTime`][DateTime]
-* Lookup time zones by name, country and geographic coordinates
-* Nanosecond precision
+- Create and parse ISO 8601 strings
+- Easy conversion to and from [`DateTime`][DateTime]
+- Lookup time zones by name, country and geographic coordinates
+- Nanosecond precision
 
 ## Usage
 
 This package can be broken down into four main categories:
 
-* Local dates and times 
-* Absolute dates and times
-* Periods and Timespans
-* Time zone lookups
+- Local dates and times
+- Absolute dates and times
+- Periods and Timespans
+- Time zone lookups
 
-### Local dates and times {#local}
+### Local dates and times
 
-* [`LocalDate`][LocalDate]
-* [`LocalTime`][LocalTime]
-* [`LocalDateTime`][LocalDateTime]
+- [`LocalDate`][LocalDate]
+- [`LocalTime`][LocalTime]
+- [`LocalDateTime`][LocalDateTime]
 
 These are naïve types without time zones that rely on
 external context to provide meaning. Think of them like
@@ -40,9 +40,9 @@ of the clock and the observer.
 Use them when the time zone is obvious from the context, or
 actively distracting. For example:
 
- * Personal reminders
- * Alarm clocks
- * Bus schedules
+- Personal reminders
+- Alarm clocks
+- Bus schedules
 
 ```dart
 var dt = LocalDateTime(2023, 1, 1, 12, 30);
@@ -55,11 +55,11 @@ LocalDateTime.fromParts(date, time) ==
 
 ### Absolute dates and times
 
-* [`Instant`][Instant]
-* [`OffsetDateTime`][OffsetDateTime]
-* [`Timespan`][Timespan]
+- [`Instant`][Instant]
+- [`OffsetDateTime`][OffsetDateTime]
+- [`Timespan`][Timespan]
 
-Unlike the [local](#local) classes, these are tied to an absolute
+Unlike the [local](#local-dates-and-times) classes, these are tied to an absolute
 moment in time in [UTC][UTC], and to a specific location or time zone.
 (In the case of `Instant`, that time zone is UTC itself).
 
@@ -67,9 +67,9 @@ Use them when the time zone is not obvious, when coordinating
 between different geographic locations, or when you need an
 absolute moment in time. For example:
 
- * Video chat or conference call schedule
- * Shared calendars
- * Log timestamps (`Instant` in particular)
+- Video chat or conference call schedule
+- Shared calendars
+- Log timestamps (`Instant` in particular)
 
 ```dart
 var instant = Instant.fromUnixTimestamp(Timespan(seconds: 946872306));
@@ -87,12 +87,12 @@ zdt.offset == ZoneOffset(-8);
 
 ### Periods and Timespans
 
-* [`Period`][Period]
-* [`Timespan`][Timespan]
+- [`Period`][Period]
+- [`Timespan`][Timespan]
 
 `Period` and `Timespan` represent relative times. In other words, "how long" between two times. They replace [`Duration`][Duration]
 in the Dart core library. `Timespan` always represents an exact
-amount of time, while the time covered by a `Period` is more fluid. 
+amount of time, while the time covered by a `Period` is more fluid.
 
 Use `Timespan` when you want to work with an exact number of days,
 hours, minutes, seconds, or nanoseconds. For example:
@@ -123,9 +123,9 @@ dt.plusPeriod(period) == LocalDate(2023, 2, 28);
 
 ### Time zone lookups
 
-* [`allTimeZones`][allTimeZones]
-* [`timeZonesByProximity`][timeZonesByProximity]
-* [`timeZonesForCountry`][timeZonesForCountry]
+- [`allTimeZones`][allTimeZones]
+- [`timeZonesByProximity`][timeZonesByProximity]
+- [`timeZonesForCountry`][timeZonesForCountry]
 
 These functions provide different ways of listing the available
 time zones. They all return a list of
@@ -141,15 +141,12 @@ useful set of [`Matcher`][Matcher]s for help with your unit tests.
 
 ## Additional information
 
-* [File a bug](https://github.com/pcekm/tempo/issues/new/choose)
+- [File a bug](https://github.com/pcekm/tempo/issues/new/choose)
 
 [UTC]: https://en.wikipedia.org/wiki/UTC
-
 [DateTime]: https://api.dart.dev/stable/dart-core/DateTime-class.html
 [Duration]: https://api.dart.dev/stable/dart-core/Duration-class.html
-
 [testing]: https://pub.dev/documentation/tempo/latest/testing/
-
 [LocalDateTime]: https://pub.dev/documentation/tempo/latest/tempo/LocalDateTime-class.html
 [LocalDate]: https://pub.dev/documentation/tempo/latest/tempo/LocalDate-class.html
 [LocalTime]: https://pub.dev/documentation/tempo/latest/tempo/LocalTime-class.html
