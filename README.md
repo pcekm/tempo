@@ -1,8 +1,8 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pcekm/tempo/dart.yml)
 
 A complete time and date solution that replaces Dart's core
-[`DateTime`][DateTime] class with a rich set of date and time
-classes advanced arithmetic features and full time zone
+[`DateTime`][DateTime] with a rich set of date and time
+classes, advanced arithmetic features and full time zone
 support.
 
 ## Features
@@ -18,137 +18,152 @@ Everything [`DateTime`][DateTime] can do, plus:
 - Lookup time zones by name, country and geographic coordinates
 - Nanosecond precision
 
-## Usage
-
-This package can be broken down into four main categories:
-
-- Local dates and times
-- Absolute dates and times
-- Periods and Timespans
-- Time zone lookups
-
-### Local dates and times
-
-- [`LocalDate`][LocalDate]
-- [`LocalTime`][LocalTime]
-- [`LocalDateTime`][LocalDateTime]
-
-These are naïve types without time zones that rely on
-external context to provide meaning. Think of them like
-a clock or a calendar on a wall. Nobody asks what time zone
-a wall clock is displaying—it's obvious from the location
-of the clock and the observer.
-
-Use them when the time zone is obvious from the context, or
-actively distracting. For example:
-
-- Personal reminders
-- Alarm clocks
-- Bus schedules
+## Quick start
 
 ```dart
-var dt = LocalDateTime(2023, 1, 1, 12, 30);
-dt.toString() == '2023-01-01T12:30';
-var date = LocalDate(2023, 2, 3);
-var time = LocalTime(12, 30, 15);
-LocalDateTime.fromParts(date, time) ==
-  LocalDateTime(2023, 2, 3, 12, 30, 15);
+import 'package:tempo/tempo.dart';
 ```
 
-### Absolute dates and times
-
-- [`Instant`][Instant]
-- [`OffsetDateTime`][OffsetDateTime]
-- [`Timespan`][Timespan]
-
-Unlike the [local](#local-dates-and-times) classes, these are tied to an absolute
-moment in time in [UTC][UTC], and to a specific location or time zone.
-(In the case of `Instant`, that time zone is UTC itself).
-
-Use them when the time zone is not obvious, when coordinating
-between different geographic locations, or when you need an
-absolute moment in time. For example:
-
-- Video chat or conference call schedule
-- Shared calendars
-- Log timestamps (`Instant` in particular)
+We'll use a local datetime to get started, but all of the classes largely
+work the same. First, these all create the exact same date and time
+of May 1, 2023 at 12:00 PM:
 
 ```dart
-var instant = Instant.fromUnix(Timespan(seconds: 946872306));
-instant.toString() == '2000-01-03T04:05:06Z';
-
-var odt = OffsetDateTime(ZoneOffset(-1), 2000, 1, 3, 3, 5, 6);
-odt.toString() == '2000-01-03T03:05:06-0100';
-odt.toInstant() == instant;
-
-var zdt = ZonedDateTime.fromInstant(instant, "America/Los Angeles");
-zdt.toString() == '2000-01-02T20:05:06-0800';
-zdt.timeZone == 'PST';
-zdt.offset == ZoneOffset(-8);
+LocalDateTime(2023, 5, 1, 12, 0);
+LocalDateTime.parse('2023-05-01T12:00');
+LocalDateTime.fromDateTime(DateTime(2023, 5, 1, 12, 0));
 ```
 
-### Periods and Timespans
-
-- [`Period`][Period]
-- [`Timespan`][Timespan]
-
-`Period` and `Timespan` represent relative times. In other words, "how long" between two times. They replace [`Duration`][Duration]
-in the Dart core library. `Timespan` always represents an exact
-amount of time, while the time covered by a `Period` is more fluid.
-
-Use `Timespan` when you want to work with an exact number of days,
-hours, minutes, seconds, or nanoseconds. For example:
+You can also get the current date and time:
 
 ```dart
-var span = Timespan(days: 10, hours: 2);
-var dt = LocalDateTime(2023, 1, 1, 10);
-dt.plusTimespan(span) == LocalDateTime(2023, 1, 11, 12);
+LocalDateTime.now();
 ```
 
-Use `Period` when you want to work with years, months or days
-without changing the day or time (more than necessary). For example:
+And you can convert back to a Dart core [`DateTime`][DateTime] if necessary:
 
 ```dart
-var period = Period(years: 1, months: 3);
-var dt = LocalDate(2023, 1, 1);
-dt.plusPeriod(period) == LocalDate(2024, 4, 1);
+LocalDateTime(2023, 5, 1, 12, 0).toDateTime() == DateTime(2023, 5, 1, 12, 0);
 ```
 
-In cases where the starting day would be invalid in the resulting
-month, the day will be adjusted to the end of the month. For example:
+Add a fixed [`Timespan`][Timespan] of 30 days, 3 minutes (`Timespan` replaces
+the Dart core [`Duration`][Duration] class):
 
 ```dart
+var dt = LocalDateTime(2023, 5, 1, 12, 0);
+var span = Timespan(days: 30, minutes: 3);
+dt.plusTimespan(span) == LocalDateTime(2023, 5, 31, 12, 3);
+```
+
+Find the amount of time between two dates:
+
+```dart
+var dt1 = LocalDateTime(2023, 5, 1, 12, 0);
+var dt2 = LocalDateTime(2023, 6, 1, 14, 3);
+dt1.timespanUntil(dt2) == Timespan(days: 31, hours: 2, minutes: 3);
+```
+
+Comparisons:
+
+```dart
+var dt1 = LocalDateTime(2023, 5, 6, 12, 0);
+var dt2 = LocalDateTime(2023, 5, 6, 13, 0);
+dt1 != dt2;
+dt1 < dt2;
+dt2 > dt1;
+dt1.compareTo(dt2) == -1;
+```
+
+Add a [`Period`][Period] of 1 month. Unlike `Timespan`, the exact
+amount of time a `Period` covers varies. Some months are shorter than others:
+
+```dart
+var dt = LocalDateTime(2023, 5, 1, 12, 0);
 var period = Period(months: 1);
-var dt = LocalDate(2023, 1, 31);
-dt.plusPeriod(period) == LocalDate(2023, 2, 28);
+dt.plusPeriod(period) == LocalDateTime(2023, 6, 1, 12, 0);
 ```
 
-### Time zone lookups
+Find the [`Period`][Period] between one [`LocalDate`][LocalDate] and another
+(this works for any combination of `LocalDate` and `LocalDateTime`):
 
-- [`allTimeZones`][allTimeZones]
-- [`timeZonesByProximity`][timeZonesByProximity]
-- [`timeZonesForCountry`][timeZonesForCountry]
+```dart
+var date1 = LocalDate(2023, 1, 1);
+var date2 = LocalDate(2024, 3, 2);
+date1.periodUntil(date2) == Period(years: 1, months: 2, days: 1);
+```
 
-These functions provide different ways of listing the available
-time zones. They all return a list of
-[`ZoneDescription`][ZoneDescription] objects, which contains an
-ID string suitable for passing to [`ZonedDateTime`][ZonedDateTime]
-along with other information that may be helpful in choosing
-a time zone.
+An [`OffsetDateTime`][OffsetDateTime] with a fixed offset from [UTC][UTC]:
+
+```dart
+var offset = ZoneOffset(-7);
+OffsetDateTime(offset, 2000, 4, 21, 12, 30);
+```
+
+A [`ZonedDateTime`][ZonedDateTime] with a proper time zone:
+
+```dart
+ZonedDateTime('America/Los Angeles', 2023, 5, 9, 10, 47);
+```
+
+Both [`OffsetDateTime`][OffsetDateTime] and [`ZonedDateTime`][ZonedDateTime]
+contain an offset from [UTC][UTC] and represent an absolute moment in time.
+This moment is stored in an [`Instant`][Instant]:
+
+```dart
+Instant.now();
+Instant.fromUnix(Timespan(seconds: 1683654985));
+OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).asInstant;
+ZonedDateTime('America/Los Angeles', 2023, 1, 2, 3).asInstant;
+```
+
+You can get a list of time zones nearest to a geographical
+location, optionally filtered by country. All of these functions return
+a list of [`ZoneDescription`][ZoneDescription]:
+
+```dart
+timeZonesByProximity(latitude, longitude);
+timeZonesByProximity(latitude, longitude, country: 'US');
+```
+
+You can list all time zones in a given country:
+
+```dart
+timeZonesForCountry('CA');
+```
+
+Or you can just list them all:
+
+```dart
+allTimeZones();
+```
 
 ## Testing
 
-This package also contains a [`testing`][testing] library with a
-useful set of [`Matcher`][Matcher]s for help with your unit tests.
+This package also contains a [`testing`][testing] library with a useful set
+of matchers for your unit tests that produce helpful error messages.
+
+```dart
+import 'package:tempo/testing.dart';
+
+var dt = LocalDateTime(2020, 1, 2, 3, 4);
+expect(dt, hasYear(2020));
+expect(dt, hasHour(4));
+expect(dt, hasDate(2020, 1, 2));
+expect(dt, hasTime(3, 4));
+```
 
 ## Additional information
 
-- [File a bug](https://github.com/pcekm/tempo/issues/new/choose)
+- [Tempo API documentation][tempo]
+- [Testing API documentation][testing]
+- [File a bug][bug]
 
+[tempo]: https://pub.dev/documentation/tempo/latest
+[testing]: https://pub.dev/documentation/tempo/latest/testing/
+[bug]: https://github.com/pcekm/tempo/issues/new/choose
 [UTC]: https://en.wikipedia.org/wiki/UTC
 [DateTime]: https://api.dart.dev/stable/dart-core/DateTime-class.html
 [Duration]: https://api.dart.dev/stable/dart-core/Duration-class.html
-[testing]: https://pub.dev/documentation/tempo/latest/testing/
 [LocalDateTime]: https://pub.dev/documentation/tempo/latest/tempo/LocalDateTime-class.html
 [LocalDate]: https://pub.dev/documentation/tempo/latest/tempo/LocalDate-class.html
 [LocalTime]: https://pub.dev/documentation/tempo/latest/tempo/LocalTime-class.html
