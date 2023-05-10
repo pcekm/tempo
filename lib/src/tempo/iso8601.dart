@@ -144,3 +144,58 @@ String _iso8601DateTime(HasDateTime dateTime,
   }
   return s;
 }
+
+/// An ISO 8601 period.
+class _IsoPeriod {
+  int years = 0;
+  int months = 0;
+  int days = 0;
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
+  int nanoseconds = 0;
+}
+
+/// Scans an ISO 8601 period. Only supports fractional seconds.
+_IsoPeriod _parseIso8601Period(String periodString) {
+  var s = StringScanner(periodString);
+  s.expect('P');
+  int num = 0;
+  bool scanPart(String type) {
+    if (!s.scan(RegExp('([+-]?\\d+)$type'))) {
+      return false;
+    }
+    num = int.parse(s.lastMatch!.group(1)!);
+    return true;
+  }
+
+  var period = _IsoPeriod();
+  period.years = scanPart('Y') ? num : 0;
+  period.months = scanPart('M') ? num : 0;
+  period.days = scanPart('W') ? 7 * num : 0;
+  period.days += scanPart('D') ? num : 0;
+
+  if (!s.scan('T')) {
+    s.expectDone();
+    return period;
+  }
+
+  period.hours = scanPart('H') ? num : 0;
+  period.minutes = scanPart('M') ? num : 0;
+
+  if (s.scan(RegExp(r'([+-]?\d+)(?:\.(\d+))?S'))) {
+    var secs = s.lastMatch?.group(1) ?? '0';
+    var sign = secs.startsWith('-') ? -1 : 1;
+    if (secs == '-') {
+      secs = '0';
+    }
+    period.seconds = int.parse(secs);
+    var frac = s.lastMatch?.group(2) ?? '0';
+    frac = frac.substring(0, min(frac.length, 9));
+    frac = frac.padRight(9, '0');
+    period.nanoseconds = sign * int.parse(frac);
+  }
+
+  s.expectDone();
+  return period;
+}

@@ -2,6 +2,13 @@ import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('parse', () {
+    expect(Period.parse('P1Y2M3D'), Period(years: 1, months: 2, days: 3));
+    expect(Period.parse('P-1Y-2M-3D'), Period(years: -1, months: -2, days: -3));
+    expect(Period.parse('P2W'), Period(days: 14));
+    expect(Period.parse('P3DT1H'), Period(days: 3));
+  });
+
   test('normalize()', () {
     expect(Period(years: 1, months: 13, days: 3).normalize(),
         Period(years: 2, months: 1, days: 3));

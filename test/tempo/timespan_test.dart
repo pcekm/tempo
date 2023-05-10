@@ -90,6 +90,21 @@ void main() {
     });
   });
 
+  test('parse', () {
+    expect(Timespan.parse('P1DT2H3M4S'),
+        Timespan(days: 1, hours: 2, minutes: 3, seconds: 4));
+    expect(Timespan.parse('P-1DT-2H-3M-4S'),
+        -Timespan(days: 1, hours: 2, minutes: 3, seconds: 4));
+    expect(Timespan.parse('P1YT2H'), Timespan(hours: 2),
+        reason: "Didn't ignore years");
+    expect(
+        Timespan.parse('PT1.2S'), Timespan(seconds: 1, nanoseconds: 200000000));
+    expect(Timespan.parse('PT-1.2S'),
+        -Timespan(seconds: 1, nanoseconds: 200000000));
+    expect(Timespan.parse('PT0.2S'), Timespan(nanoseconds: 200000000));
+    expect(Timespan.parse('PT-0.2S'), Timespan(nanoseconds: -200000000));
+  });
+
   group('conversion', () {
     test('inDays', () {
       expect(Timespan().inDays, 0);

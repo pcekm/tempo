@@ -136,6 +136,26 @@ class Timespan implements Comparable<Timespan> {
   factory Timespan.fromDuration(Duration duration) =>
       Timespan(microseconds: duration.inMicroseconds);
 
+  /// Parses an ISO 8601 period string.
+  ///
+  /// Any years, months or weeks fields will be ignored.
+  ///
+  /// ```dart
+  /// Timespan.parse('PT1H2M3S') == Timespan(hours: 1, minutes: 2, seconds: 3);
+  /// Timespan.parse('PT3.2S') == Timespan(seconds: 3, nanoseconds: 200000000);
+  /// Timespan.parse('P1DT3M') == Timespan(days: 1, minutes: 3);
+  /// Timespan.parse('P1YT3S') == Timespan(seconds: 3);  // Ignores years.
+  /// ```
+  factory Timespan.parse(String periodString) {
+    var fields = _parseIso8601Period(periodString);
+    return Timespan(
+        days: fields.days,
+        hours: fields.hours,
+        minutes: fields.minutes,
+        seconds: fields.seconds,
+        nanoseconds: fields.nanoseconds);
+  }
+
   /// Gets the timespan in days.
   ///
   /// This is equvalent to [dayPart] and included for consistency.

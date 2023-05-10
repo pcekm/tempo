@@ -25,6 +25,20 @@ class Period {
   /// Creates a period of years, months, and/or days.
   const Period({this.years = 0, this.months = 0, this.days = 0});
 
+  /// Parses an ISO 8601 period string.
+  ///
+  /// Ignores the time portion of the string (if any).
+  ///
+  /// ```dart
+  /// Period.parse('P1Y2M3D') == Period(years: 1, months: 2, days: 3);
+  /// Period.parse('P1DT3S') == Period(days: 1);  // Ignores seconds.
+  /// ```
+  factory Period.parse(String periodString) {
+    var fields = _parseIso8601Period(periodString);
+    return Period(
+        years: fields.years, months: fields.months, days: fields.days);
+  }
+
   /// Returns an equivalent period in which months is less than 12. This does
   /// not attempt to convert days to months or years, which would be ambiguous.
   ///
