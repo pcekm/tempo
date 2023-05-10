@@ -54,14 +54,9 @@ class ZoneOffset {
   /// testing purposes.
   factory ZoneOffset.parse(String offset) => _parseIso8601Offset(offset);
 
-  /// The offset in the a whole number of seconds, rounded towards zero.
-  int get inSeconds => hours * 3600 + minutes * 60 + seconds;
-
-  /// The offset in the a whole number of minutes, rounded towards zero.
-  int get inMinutes => hours * 60 + minutes;
-
-  /// The offset the a whole number of hours, rounded towards zero.
-  int get inHours => hours;
+  /// Converts this to a [Timespan].
+  Timespan get asTimespan =>
+      Timespan(hours: hours, minutes: minutes, seconds: seconds);
 
   @override
   String toString() => _iso8601ZoneOffset(this);

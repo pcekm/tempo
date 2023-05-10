@@ -5,7 +5,7 @@ class OffsetDateTime
     implements HasInstant, HasDateTime, _PeriodArithmetic<OffsetDateTime> {
   static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
     var parts = julianDayToGregorian(
-        instant.plusTimespan(Timespan(minutes: offset.inMinutes))._julianDay);
+        instant.plusTimespan(offset.asTimespan)._julianDay);
     return LocalDateTime(
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
@@ -23,7 +23,7 @@ class OffsetDateTime
         LocalDateTime(year, month, day, hour, minute, second, nanosecond);
     var instant = Instant._fromJulianDay(gregorianToJulianDay(Gregorian(
             year, month, day, dateTime.time.nanosecondsSinceMidnight)))
-        .minusTimespan(Timespan(minutes: offset.inMinutes));
+        .minusTimespan(offset.asTimespan);
     return OffsetDateTime._(dateTime, instant, offset);
   }
 

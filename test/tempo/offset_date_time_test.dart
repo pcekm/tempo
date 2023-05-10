@@ -14,26 +14,39 @@ void main() {
       Instant.fromUnix(Timespan(seconds: 946761545, nanoseconds: 6));
 
   // Newfoundland in the winter is UTC-0330:
-  final ndtOffset = ZoneOffset(-3, -30);
-  final ndtTime = OffsetDateTime(ndtOffset, 2001);
+  final nstOffset = ZoneOffset(-3, -30);
+  final nstTime = OffsetDateTime(nstOffset, 2001);
 
   // Difference between nepalTime and ndtTime:
   final delta = Timespan(days: 365, seconds: 22254, nanoseconds: nano - 6);
 
-  test('Default constructor', () {
-    var dt = OffsetDateTime(
-        nepalOffset,
-        nepalTime.year,
-        nepalTime.month,
-        nepalTime.day,
-        nepalTime.hour,
-        nepalTime.minute,
-        nepalTime.second,
-        nepalTime.nanosecond);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
-    expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
+  group('Default constructor', () {
+    test('hour+minute offset', () {
+      var dt = OffsetDateTime(
+          nepalOffset,
+          nepalTime.year,
+          nepalTime.month,
+          nepalTime.day,
+          nepalTime.hour,
+          nepalTime.minute,
+          nepalTime.second,
+          nepalTime.nanosecond);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
+
+    test('hour+minute+second offset', () {
+      var dt = OffsetDateTime(ZoneOffset(1, 2, 3), 1970);
+      expect(dt, hasDate(1970, 1, 1));
+      expect(dt, hasTime(0));
+      expect(dt.offset, ZoneOffset(1, 2, 3));
+      expect(
+          dt,
+          hasInstant(
+              Instant.fromUnix(-Timespan(hours: 1, minutes: 2, seconds: 3))));
+    });
   });
 
   test('fromLocalDateTime()', () {
@@ -65,12 +78,23 @@ void main() {
     expect(got.year, greaterThanOrEqualTo(2023));
   });
 
-  test('fromInstant()', () {
-    var dt = OffsetDateTime.fromInstant(nepalInstant, nepalOffset);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
-    expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
+  group('fromInstant()', () {
+    test('hour+minute offset', () {
+      var dt = OffsetDateTime.fromInstant(nepalInstant, nepalOffset);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
+
+    test('hour+minute+second offset', () {
+      var instant = Instant.fromUnix(Timespan(seconds: 0));
+      var dt = OffsetDateTime.fromInstant(instant, ZoneOffset(1, 2, 3));
+      expect(dt, hasDate(1970, 1, 1));
+      expect(dt, hasTime(1, 2, 3));
+      expect(dt.offset, ZoneOffset(1, 2, 3));
+      expect(dt, hasInstant(instant));
+    });
   });
 
   group('parse()', () {
@@ -117,50 +141,50 @@ void main() {
   });
 
   test('timespanUntil()', () {
-    expect(nepalOffsetTime.timespanUntil(ndtTime), delta);
+    expect(nepalOffsetTime.timespanUntil(nstTime), delta);
   });
 
   test('plusTimespan()', () {
     var got = nepalOffsetTime.plusTimespan(delta);
-    expect(got.asInstant, ndtTime.asInstant);
+    expect(got.asInstant, nstTime.asInstant);
   });
 
   test('minusTimespan()', () {
-    var got = ndtTime.minusTimespan(delta);
+    var got = nstTime.minusTimespan(delta);
     expect(got.asInstant, nepalOffsetTime.asInstant);
   });
 
   test('plusPeriod()', () {
-    expect(ndtTime.plusPeriod(Period(months: 1)),
-        OffsetDateTime(ndtOffset, 2001, 2, 1));
+    expect(nstTime.plusPeriod(Period(months: 1)),
+        OffsetDateTime(nstOffset, 2001, 2, 1));
   });
 
   test('minusPeriod()', () {
-    expect(ndtTime.minusPeriod(Period(months: 1)),
-        OffsetDateTime(ndtOffset, 2000, 12, 1));
+    expect(nstTime.minusPeriod(Period(months: 1)),
+        OffsetDateTime(nstOffset, 2000, 12, 1));
   });
 
   test('compareTo()', () {
-    expect(nepalOffsetTime.compareTo(ndtTime), -1);
+    expect(nepalOffsetTime.compareTo(nstTime), -1);
   });
 
   test('operator>()', () {
-    expect(ndtTime > nepalOffsetTime, true);
-    expect(ndtTime > ndtTime, false);
+    expect(nstTime > nepalOffsetTime, true);
+    expect(nstTime > nstTime, false);
   });
 
   test('operator>=()', () {
-    expect(ndtTime >= nepalOffsetTime, true);
-    expect(ndtTime >= ndtTime, true);
+    expect(nstTime >= nepalOffsetTime, true);
+    expect(nstTime >= nstTime, true);
   });
 
   test('operator<()', () {
-    expect(nepalOffsetTime < ndtTime, true);
+    expect(nepalOffsetTime < nstTime, true);
     expect(nepalOffsetTime < nepalOffsetTime, false);
   });
 
   test('operator<=()', () {
-    expect(nepalOffsetTime <= ndtTime, true);
+    expect(nepalOffsetTime <= nstTime, true);
     expect(nepalOffsetTime <= nepalOffsetTime, true);
   });
 

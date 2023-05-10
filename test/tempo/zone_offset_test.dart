@@ -58,16 +58,9 @@ void main() {
     });
   });
 
-  test('inSeconds', () {
-    expect(ZoneOffset(1, 2, 3).inSeconds, 3723);
-  });
-
-  test('inMinutes', () {
-    expect(ZoneOffset(1, 2, 59).inMinutes, 62);
-  });
-
-  test('inHours', () {
-    expect(ZoneOffset(1, 59, 59).inHours, 1);
+  test('asTimespan', () {
+    expect(ZoneOffset(1, 2, 3).asTimespan,
+        Timespan(hours: 1, minutes: 2, seconds: 3));
   });
 
   test('local() smoke test', () {

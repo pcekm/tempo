@@ -18,20 +18,20 @@ class HasDesignation extends CustomMatcher {
 
 class HasOffsetInSeconds extends CustomMatcher {
   HasOffsetInSeconds(Object? valueOrMatcher)
-      : super('TimeZone with an offset in seconds of', 'offset.inSeconds',
-            valueOrMatcher);
+      : super('TimeZone with an offset in seconds of',
+            'offset.asTimespan.inSeconds', valueOrMatcher);
 
   @override
-  Object? featureValueOf(dynamic actual) => actual.offset.inSeconds;
+  Object? featureValueOf(dynamic actual) => actual.offset.asTimespan.inSeconds;
 }
 
 class HasOffsetInHours extends CustomMatcher {
   HasOffsetInHours(Object? valueOrMatcher)
-      : super('TimeZone with an offset in hours of', 'offset.inHours',
-            valueOrMatcher);
+      : super('TimeZone with an offset in hours of',
+            'offset.asTimespan.inHours', valueOrMatcher);
 
   @override
-  Object? featureValueOf(dynamic actual) => actual.offset.inHours;
+  Object? featureValueOf(dynamic actual) => actual.offset.asTimespan.inHours;
 }
 
 class HasIsDst extends CustomMatcher {
