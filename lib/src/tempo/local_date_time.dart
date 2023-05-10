@@ -1,6 +1,6 @@
 part of '../../tempo.dart';
 
-/// Contains an ISO 8601 date and time with no time zone.
+/// A date and time with no time zone.
 ///
 /// This is a combination of [LocalDate] and [LocalTime]. The individual
 /// parts can be retrieved with [date] and [time].
@@ -83,6 +83,11 @@ class LocalDateTime
   }
 
   /// Parses an ISO 8601 datetime string. Discards the zone offset (if any).
+  ///
+  /// ```dart
+  /// var dt = LocalDateTime.parse('2020-03-04T05:06');
+  /// dt == LocalDateTime(2020, 3, 4, 5, 6);
+  /// ```
   factory LocalDateTime.parse(String dateTime) =>
       _parseIso8160DateTime(dateTime).toLocal();
 
@@ -122,43 +127,30 @@ class LocalDateTime
             nanosecond: nanosecond));
   }
 
-  /// The year.
-  ///
-  /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
-  /// This is also called astronomical year numbering.
   @override
   int get year => date.year;
 
-  /// The month from 1 to 12.
   @override
   int get month => date.month;
 
-  /// The day starting at 1.
   @override
   int get day => date.day;
 
-  /// Gets the day of the week.
   @override
   Weekday get weekday => date.weekday;
 
-  /// The number of days since the beginning of the year. This will range from
-  /// 1 to 366.
   @override
   int get ordinalDay => date.ordinalDay;
 
-  /// The hour from 0 to 23.
   @override
   int get hour => time.hour;
 
-  /// The minute from 0 to 59.
   @override
   int get minute => time.minute;
 
-  /// The second from 0 to 59.
   @override
   int get second => time.second;
 
-  /// The nanoseconds from 0 to 999,999,999.
   @override
   int get nanosecond => time.nanosecond;
 
@@ -167,6 +159,12 @@ class LocalDateTime
       DateTime(year, month, day, hour, minute, second, 0, nanosecond ~/ 1000);
 
   /// Finds the timespan between [this] and [other].
+  ///
+  /// ```dart
+  /// LocalDateTime dt1 = LocalDateTime(2000, 1, 1, 2);
+  /// LocalDateTime dt2 = LocalDateTime(2000, 2, 2, 3);
+  /// dt1.timespanUntil(dt2) == Timespan(days: 32, hours: 1);
+  /// ```
   Timespan timespanUntil(LocalDateTime other) => other._julianDay - _julianDay;
 
   /// Finds the [Period] between this and another [HasDate].
@@ -181,7 +179,7 @@ class LocalDateTime
   /// To count the total amount of time, use [timespanUntil].
   ///
   /// ```dart
-  /// LocalDateTime(2000, 1, 1, 12, 20).periodUntil(LocalDateT(2000, 3, 2)) ==
+  /// LocalDateTime(2000, 1, 1, 12, 20).periodUntil(LocalDate(2000, 3, 2)) ==
   ///     Period(months: 2, days: 1);
   /// LocalDateTime(2000, 3, 2).periodUntil(LocalDateTime(2000, 1, 1)) ==
   ///     Period(months: -2, days: -1);
@@ -222,17 +220,21 @@ class LocalDateTime
 
   /// Adds a [Timespan].
   ///
-  /// This acts on the time parts exactly like [LocalTime.plusTimespan()]
-  /// and increments or decrements the date if the amount is at least
-  /// 1 day or negative.
+  /// ```dart
+  /// var dt = LocalDateTime(2000, 1, 1);
+  /// var timespan = Timespan(days: 30, hours: 1);
+  /// dt.plusTimespan(timespan) == LocalDateTime(2000, 1, 31, 1);
+  /// ```
   LocalDateTime plusTimespan(Timespan amount) =>
       LocalDateTime._fromJulianDay(_julianDay + amount);
 
   /// Subtracts a [Timespan].
   ///
-  /// This acts on the time parts exactly like [LocalTime.minusTimespan()]
-  /// and increments or decrements the date if the amount is at least
-  /// 1 day or positive.
+  /// ```dart
+  /// var dt = LocalDateTime(2000, 2, 1);
+  /// var timespan = Timespan(days: 30, hours: 1);
+  /// dt.minusTimespan(timespan) == LocalDateTime(2000, 1, 1, 23);
+  /// ```
   LocalDateTime minusTimespan(Timespan amount) =>
       LocalDateTime._fromJulianDay(_julianDay - amount);
 

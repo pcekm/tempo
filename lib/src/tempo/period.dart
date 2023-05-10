@@ -13,15 +13,17 @@ part of '../../tempo.dart';
 /// d2.timespanUntil(d2) == Timespan(days: 29);
 /// ```
 class Period {
+  /// The number of years in the period.
   final int years;
+
+  /// The number of months in the period.
   final int months;
+
+  /// The number of days in the period.
   final int days;
 
+  /// Creates a period of years, months, and/or days.
   const Period({this.years = 0, this.months = 0, this.days = 0});
-
-  /// Provided for convenience and readability. Equivalent to
-  /// Period(days: 7 * weeks).
-  const Period.ofWeeks(int weeks) : this(days: 7 * weeks);
 
   /// Returns an equivalent period in which months is less than 12. This does
   /// not attempt to convert days to months or years, which would be ambiguous.
@@ -34,6 +36,7 @@ class Period {
   Period normalize() => Period(
       years: years + months ~/ 12, months: months.remainder(12), days: days);
 
+  /// Negates all elements in the period.
   Period operator -() {
     return Period(years: -years, months: -months, days: -days);
   }
@@ -46,12 +49,13 @@ class Period {
   /// them to days would be ambiguous.
   ///
   /// Furthermore, even though a period of 1 year is unambiguously the same
-  /// amount of time as 12 months, they would still be unequal.
+  /// amount of time as 12 months, they would still compare unequal. To
+  /// determine if two periods are equivalent, [normalize] them first.
   ///
   /// ```dart
   /// Period(days: 30) != Period(months: 1);
   /// Period(years: 1) != Period(months: 12);
-  ///
+  /// Period(years: 1).normalize() == Period(months: 12).normalize();
   /// ```
   @override
   bool operator ==(Object other) =>
@@ -63,6 +67,11 @@ class Period {
   @override
   int get hashCode => Object.hash(years, months, days);
 
+  /// Formats the period as an ISO 8601 string.
+  ///
+  /// ```dart
+  /// Period(years: 1, months: 2, days: 3).toString == 'P1Y2M3D';
+  /// ```
   @override
   String toString() {
     if (days == 0 && months == 0 && years == 0) {

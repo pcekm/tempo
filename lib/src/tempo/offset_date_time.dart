@@ -10,7 +10,7 @@ class OffsetDateTime
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
-  /// Constructs an [OffsetDateTime] from an offset, and the individual
+  /// Constructs an [OffsetDateTime] from an offset and the individual
   /// components of the date and time.
   factory OffsetDateTime(ZoneOffset offset, int year,
       [int month = 1,
@@ -21,9 +21,16 @@ class OffsetDateTime
       int nanosecond = 0]) {
     var dateTime =
         LocalDateTime(year, month, day, hour, minute, second, nanosecond);
-    var instant = Instant._fromJulianDay(gregorianToJulianDay(Gregorian(
-            year, month, day, dateTime.time.nanosecondsSinceMidnight)))
-        .minusTimespan(offset.asTimespan);
+    var instant = Instant._fromJulianDay(
+      gregorianToJulianDay(
+        Gregorian(
+          year,
+          month,
+          day,
+          dateTime.time.nanosecondsSinceMidnight,
+        ),
+      ),
+    ).minusTimespan(offset.asTimespan);
     return OffsetDateTime._(dateTime, instant, offset);
   }
 
@@ -59,6 +66,11 @@ class OffsetDateTime
         _instant = hasInstant.asInstant;
 
   /// Parses an [OffsetDateTime] from an ISO-8601 formatted string.
+  ///
+  /// ```dart
+  /// OffsetDateTime.parse('2000-01-02T03:04+0545') ==
+  ///   OffsetDateTime(ZoneOffset(5, 45), 2000, 1, 2, 3, 4);
+  /// ```
   factory OffsetDateTime.parse(String isoString) =>
       _parseIso8160DateTime(isoString);
 
@@ -83,43 +95,30 @@ class OffsetDateTime
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
       _instant.unixTimestamp.inMicroseconds);
 
-  /// The year.
-  ///
-  /// May be zero or negative. Zero means -1 BCE, -1 means -2 BCE, etc.
-  /// This is also called astronomical year numbering.
   @override
   int get year => _dateTime.year;
 
-  /// The month from 1 to 12.
   @override
   int get month => _dateTime.month;
 
-  /// The day starting at 1.
   @override
   int get day => _dateTime.day;
 
-  /// Gets the_dateTime of the week.
   @override
   Weekday get weekday => _dateTime.weekday;
 
-  /// The number of days since the beginning of the year. This will range from
-  /// 1 to 366.
   @override
   int get ordinalDay => _dateTime.ordinalDay;
 
-  /// The hour from 0 to 23.
   @override
   int get hour => _dateTime.hour;
 
-  /// The minute from 0 to 59.
   @override
   int get minute => _dateTime.minute;
 
-  /// The second from 0 to 59.
   @override
   int get second => _dateTime.second;
 
-  /// The nanoseconds from 0 to 999,999,999.
   @override
   int get nanosecond => _dateTime.nanosecond;
 
@@ -127,12 +126,32 @@ class OffsetDateTime
   Timespan timespanUntil(HasInstant other) => _instant.timespanUntil(other);
 
   /// Adds a [Timespan].
-  OffsetDateTime plusTimespan(Timespan span) =>
-      OffsetDateTime.fromInstant(_instant.plusTimespan(span), offset);
+  ///
+  /// This increments the underlying [Instant] by exactly [timespan].
+  /// See also [plusPeriod].
+  ///
+  /// ```dart
+  /// var timespan = Timespan(hours: 1, minutes: 1);
+  /// var dt = OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 12, 0);
+  /// dt.plusTimespan(timespan) ==
+  ///   OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 13, 1);
+  /// ```
+  OffsetDateTime plusTimespan(Timespan timespan) =>
+      OffsetDateTime.fromInstant(_instant.plusTimespan(timespan), offset);
 
   /// Subtracts a [Timespan].
-  OffsetDateTime minusTimespan(Timespan span) =>
-      OffsetDateTime.fromInstant(_instant.minusTimespan(span), offset);
+  ///
+  /// This decrements the underlying [Instant] by exactly [timespan].
+  /// See also [minusPeriod].
+  ///
+  /// ```dart
+  /// var timespan = Timespan(hours: 1, minutes: 1);
+  /// var dt = OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 12, 0);
+  /// dt.minusTimespan(timespan) ==
+  ///   OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 11, 59);
+  /// ```
+  OffsetDateTime minusTimespan(Timespan timespan) =>
+      OffsetDateTime.fromInstant(_instant.minusTimespan(timespan), offset);
 
   @override
   OffsetDateTime plusPeriod(Period period) =>
@@ -145,25 +164,24 @@ class OffsetDateTime
   @override
   int compareTo(HasInstant other) => _instant.compareTo(other);
 
-  /// Greater than operator.
   @override
   bool operator >(HasInstant other) => compareTo(other) > 0;
 
-  /// Greater than or equals operator.
   @override
   bool operator >=(HasInstant other) => compareTo(other) >= 0;
 
-  /// Less than operator.
   @override
   bool operator <(HasInstant other) => compareTo(other) < 0;
 
-  /// Less than or equals operator.
   @override
   bool operator <=(HasInstant other) => compareTo(other) <= 0;
 
   /// Formats this as an ISO 8601 date time with offset.
   ///
-  /// For example, `2023-01-02T03:04:05-0700`.
+  /// ```dart
+  /// OffsetDateTime(ZoneOffset(-7), 2023, 1, 2, 3, 4, 5).toString() ==
+  ///   '2023-01-02T03:04:05-0700'
+  /// ```
   @override
   String toString() => _iso8601DateTime(this, offset);
 

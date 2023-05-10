@@ -1,9 +1,16 @@
 part of '../../tempo.dart';
 
-/// Represents a single instant in time.
+/// Represents a single instant in time as a [Timespan] since
+/// January 1, 1970 UTC.
 ///
-/// Leap second handling
-/// [UTC-SLS](https://www.cl.cam.ac.uk/~mgk25/time/utc-sls/).
+/// In general, this will be more useful when converted to an
+/// [OffsetDateTime] or a [ZonedDateTime].
+///
+/// ```dart
+/// var instant = Instant.now();
+/// OffsetDateTime.fromInstant(instant, ZoneOffset(-7));
+/// ZonedDateTime.fromInstant(instant, 'America/Phoenix');
+/// ```
 class Instant implements HasInstant {
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
@@ -58,6 +65,7 @@ class Instant implements HasInstant {
   Timespan get _julianDay => unixTimestamp + _julianOffset;
 
   /// Returns the amount of time between this and another instant in time.
+  @override
   Timespan timespanUntil(HasInstant other) =>
       other.asInstant.unixTimestamp - unixTimestamp;
 

@@ -1,6 +1,6 @@
 part of '../../tempo.dart';
 
-/// An ISO 8601 date with no timezone.
+/// A date with no timezone.
 class LocalDate
     implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   @override
@@ -17,6 +17,7 @@ class LocalDate
   /// The [year] uses ISO 8601, or astronomical year numbering and may be
   /// zero or negative. When negative, year equates to year - 1 BCE. Throws
   /// an exception if [month] or [day] is invalid.
+  // TODO: Just coerce invalid args into a proper date.
   LocalDate([this.year = 0, this.month = 1, this.day = 1]) {
     _validate();
   }
@@ -36,6 +37,11 @@ class LocalDate
       : this(dateTime.year, dateTime.month, dateTime.day);
 
   /// Parses an ISO 8601 date string.
+  ///
+  /// ```dart
+  /// var date = LocalDate.parse('2000-06-05');
+  /// date == LocalDate(2000, 6, 5);
+  /// ```
   factory LocalDate.parse(String date) => _parseIso8601Date(date);
 
   /// Returns a new date with one or more fields replaced. Uses the largest

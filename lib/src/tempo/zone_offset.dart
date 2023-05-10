@@ -4,7 +4,7 @@ part of '../../tempo.dart';
 ///
 /// Zone offsets can range from UTC-23:59:59 to UTC+23:59:59, although as
 /// of this writing, the largest offset in use is UTC+14:00 for the
-/// easternmost islands of Kiribati.
+/// island of Kiritimati.
 class ZoneOffset {
   /// UTC offset hours `[-23 to +23]`.
   final int hours;
@@ -58,6 +58,12 @@ class ZoneOffset {
   Timespan get asTimespan =>
       Timespan(hours: hours, minutes: minutes, seconds: seconds);
 
+  /// Converts this to an ISO 8601 zone offset string.
+  ///
+  /// ```dart
+  /// ZoneOffset(-8).toString() == '-0800';
+  /// ZoneOffset(5, 45).toString() == '+0545';
+  /// ```
   @override
   String toString() => _iso8601ZoneOffset(this);
 

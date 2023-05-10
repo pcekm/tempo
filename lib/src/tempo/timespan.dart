@@ -4,12 +4,12 @@ part of '../../tempo.dart';
 ///
 /// This represents a duration of time equal to
 ///
-/// [dayPart] + [nanosecondPart] / nanoseconds_per_day
+/// [dayPart] + [nanosecondPart] * `10^-9`
 ///
 /// The component numbers will always be normalized as follows:
 ///
-///   * -1 < [nanosecondPart] < 1
-///   * [dayPart].sign == [nanosecondPart].sign
+///   - `-10^9` < [nanosecondPart] < `10^9`
+///   - [dayPart].sign == [nanosecondPart].sign
 ///
 /// There are two important differences between this and [Duration]:
 /// precision and longest representable timespan. This has nanosecond
@@ -65,13 +65,13 @@ class Timespan implements Comparable<Timespan> {
 
   Timespan._(this.dayPart, this.nanosecondPart);
 
-  // Constructs a timespan from days + fraction.
-  //
-  // Either days or fraction may be negative and any value, but the result
-  // will be normalized as follows:
-  //
-  //   - -1 < nanosecondPart < 1
-  //   - dayPart.sign == nanosecondPart.sign
+  /// Constructs a timespan from days + fraction.
+  ///
+  /// Either days or fraction may be negative and any value, but the result
+  /// will be normalized as follows:
+  ///
+  ///   - `-10^9` < [nanosecondPart] < `10^9`
+  ///   - [dayPart].sign == [nanosecondPart].sign
   factory Timespan._fromParts(int days, int fraction) {
     days += fraction ~/ _nanosecondsPerDay;
     fraction = fraction.remainder(_nanosecondsPerDay);
@@ -93,7 +93,7 @@ class Timespan implements Comparable<Timespan> {
   /// Any fields may be positive or negative, but the result will always
   /// be normalized as follows:
   ///
-  ///   - -1 < [nanosecondPart] < 1
+  ///   - `-10^9` < [nanosecondPart] < `10^9`
   ///   - [dayPart].sign == [nanosecondPart].sign
   factory Timespan(
       {int days = 0,
@@ -201,7 +201,7 @@ class Timespan implements Comparable<Timespan> {
 
   /// Returns the absolute value of this [Timespan].
   Timespan abs() {
-    // Important: this is only true because the both parts are normalized
+    // Important: this is only true because both parts are normalized
     // with matching signs.
     return Timespan._fromParts(dayPart.abs(), nanosecondPart.abs());
   }

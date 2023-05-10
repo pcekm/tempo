@@ -1,8 +1,6 @@
 part of '../../tempo.dart';
 
-/// A point in time in a specific time zone.
-///
-///
+/// A date and time in a specific time zone.
 class ZonedDateTime implements HasDateTime, HasInstant {
   final OffsetDateTime _dateTime;
   final TimeZone _timeZone;
@@ -23,17 +21,13 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// Throws [ArgumentError] if [zoneId] is invalid.
   ///
-  /// Some dates and times are impossible in a given time zone.
+  /// Some dates and times are impossible or ambiguous in a given time zone.
   /// When switching to daylight savings, the local time "springs forward"
-  /// usually by one hour at 2 AM. So a time of, say, 2:15 doesn't exist.
+  /// skipping an hour. When switching back to standard time, the local time
+  /// "falls back," repeating the same hour.
   ///
-  /// Other dates and times are ambiguous in a given time zone. When switching
-  /// back to standard time, the local time "falls back," repeating the same
-  /// hour again. So a time of, say, 1:15 happens twice.
-  ///
-  /// The exact behavior of this constructor in these situations is currently
-  /// unspecified and may change in the future. However, the result will
-  /// be close.
+  /// The exact behavior of in these situations is currently unspecified
+  /// and may change in the future. However, the result will be close.
   factory ZonedDateTime(String zoneId, int year,
           [int month = 1,
           int day = 1,
@@ -95,8 +89,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
     return candidate;
   }
 
-  /// The common designation for the current time zone (e.g. UTC, PST,
-  /// PDT, CET, CEST).
+  /// The common designation for the time zone (e.g. UTC, PST, PDT, CET, CEST).
   ///
   /// These strings are not necessarily unique but are commonly used and
   /// understood. See [zoneId] for a unique identifier.
@@ -117,9 +110,9 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// Converts this to an [OffsetDateTime] with the same offset.
   OffsetDateTime toOffset() => _dateTime;
 
-  /// Converts this to a standard Dart [DateTime] **in the system time zone**.
+  /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///
-  /// Unfortunately, [DateTime] only supports two time zones: "system" and UTC,
+  /// Unfortunately, [DateTime] only supports two time zones: "local" and UTC,
   /// so this conversion loses the time zone.
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
@@ -154,7 +147,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// Adds a [Period].
   ///
   /// This works like [LocalDateTime.plusPeriod], but has the same limitations
-  /// as the [LocalDateTime()] constructor. The result may be adjusted if
+  /// as the [ZonedDateTime()] constructor. The result may be adjusted if
   /// it lands in the gap during a switch to daylight savings, or it may be
   /// ambiguous if it lands in the hour that repeats during a switch
   /// back to standard time.
@@ -166,7 +159,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// Subtracts a [Period].
   ///
   /// This works like [LocalDateTime.minusPeriod], but has the same limitations
-  /// as the [LocalDateTime()] constructor. The result may be adjusted if
+  /// as the [ZonedDateTime()] constructor. The result may be adjusted if
   /// it lands in the gap during a switch to daylight savings, or it may be
   /// ambiguous if it lands in the hour that repeats during a switch
   /// back to standard time.
@@ -218,9 +211,31 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   bool operator >=(HasInstant other) => _dateTime >= other;
 
   /// Returns this as an ISO 8601-formatted string with an offset.
+  ///
+  /// ```dart
+  /// ZonedDateTime('America/Los Angeles', 2000, 1, 1, 12, 30).toString() ==
+  ///     '2000-01-01T12:30-0800';
+  /// ZonedDateTime('America/Los Angeles', 2000, 6, 1, 12, 30).toString() ==
+  ///     '2000-06-01T12:30-0700';
+  /// ```
   @override
   String toString() => _iso8601DateTime(this, offset);
 
+  /// The equality operator.
+  ///
+  /// Two [OffsetDateTime]s compare equal if and only if they have the same
+  /// date _and_ the same offset. If you want to know if two represent the
+  /// same moment in time, use [compareTo] or [asInstant].
+  ///
+  /// ```dart
+  /// // Same moment in time; different zone offsets:
+  /// var d1 = ZonedDateTime('America/Denver', 2023, 1, 1);
+  /// var d2 = ZonedDateTime('America/Los Angeles', 2022, 12, 31, 23);
+  ///
+  /// d1 != d2;
+  /// d1.compareTo(d2) == 0;
+  /// d1.asInstant == d2.asInstant;
+  /// ```
   @override
   bool operator ==(Object other) =>
       other is ZonedDateTime &&

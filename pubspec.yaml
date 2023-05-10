@@ -1,9 +1,8 @@
 name: tempo
 description: >-
   A complete time and date solution that replaces Dart's core
-  DateTime class with a rich set of date and time
-  classes, advanced arithmetic features and full time zone
-  support.
+  DateTime with a rich set of date and time classes, advanced
+  arithmetic features and full time zone support.
 
 version: 1.0.0
 repository: https://github.com/pcekm/tempo

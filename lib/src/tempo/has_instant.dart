@@ -20,4 +20,12 @@ abstract class HasInstant implements Comparable<HasInstant> {
 
   /// Finds the amount of time between this and another instant in time.
   Timespan timespanUntil(HasInstant other);
+
+  /// Compares this to another [HasInstant].
+  ///
+  /// Returns a negative integer if [this] comes before [other],
+  /// a positive integer if [this] comes after [other], and
+  /// zero if [this] and [other] are at the exact same moment.
+  @override
+  int compareTo(HasInstant other);
 }

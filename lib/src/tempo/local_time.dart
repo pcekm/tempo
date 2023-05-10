@@ -1,10 +1,9 @@
 part of '../../tempo.dart';
 
-/// Represents a time of day without a time zone.
+/// A time of day without a time zone.
 ///
 /// Internally this stores the time in [nanosecondsSinceMidnight], which
-/// means it can represent any time down to the nanosecond. This does
-/// not support leap seconds.
+/// means it can represent any time down to the nanosecond.
 class LocalTime implements Comparable<LocalTime>, HasTime {
   static const int _nano = 1000000000;
 
@@ -21,11 +20,13 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   /// The time in nanoseconds relative to midnight.
   final int nanosecondsSinceMidnight;
 
-  /// Constructs a new [LocalTime]. If the provided values are bigger than
-  /// expected (e.g. minute = 61), the residues will increment the overall time
-  /// accordingly. Much like a real clock, this will wrap around if the
-  /// total is longer than a day. It will also wrap in the other direction
-  /// if the result is negative.
+  /// Constructs a new [LocalTime].
+  ///
+  /// If the provided values are bigger than expected (e.g. minute = 61),
+  /// the residues will increment the overall time accordingly. Much
+  /// like a real clock, this will wrap around if the total is longer
+  /// than a day. It will also wrap in the other direction if the result
+  /// is negative.
   ///
   /// ```dart
   /// LocalTime(12, 60, 0) == LocalTime(13, 0, 0);
@@ -56,6 +57,11 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
 
   /// Parses an ISO 8601 time string.
+  ///
+  /// ```dart
+  /// LocalTime.parse('01:02:03.000000004') == LocalTime(1, 2, 3, 4);
+  /// LocalTime.parse('T010203') == LocalTime(1, 2, 3);
+  /// ```
   factory LocalTime.parse(String time) => _parseIso8601Time(time);
 
   /// Returns a new time with one or more fields replaced.
@@ -72,21 +78,17 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
     return LocalTime(hour, minute, second, nanosecond);
   }
 
-  /// The hour from 0 to 23.
   @override
   int get hour =>
       (nanosecondsSinceMidnight ~/ (_secsPerHour * _nano)) % _hoursPerDay;
 
-  /// The minute from 0 to 59.
   @override
   int get minute =>
       (nanosecondsSinceMidnight ~/ (_secsPerMinute * _nano)) % _minsPerHour;
 
-  /// Seconds from 0 to 59.
   @override
   int get second => (nanosecondsSinceMidnight ~/ _nano) % _secsPerMinute;
 
-  /// Nanoseconds from 0 to 999,999,999.
   @override
   int get nanosecond => nanosecondsSinceMidnight % _nsPerS;
 
@@ -137,7 +139,10 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
 
   /// Returns the time in ISO 8601 format.
   ///
-  /// For example, 04:30:55.123456789.
+  /// ```dart
+  /// LocalTime(9, 45).toString() == '09:45';
+  /// LocalTime(4, 30, 55, 123456789).toString() == '04:30:55.123456789';
+  /// ```
   @override
   String toString() => _iso8601Time(this);
 }

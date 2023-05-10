@@ -68,10 +68,22 @@ class ZoneDescription {
   static final _latLongRe =
       RegExp(r'^([+-])(\d{2})(\d{2})(\d{2})?([+-])(\d{3})(\d{2})(\d{2})?$');
 
+  /// A string that uniquely identifies the time zone.
+  ///
+  /// Use this with [ZonedDateTime].
   String zoneId;
+
+  /// The countries that use this time zone.
   Set<String> countries;
+
+  /// The latitude of the city this time zone is named for.
   double latitude;
+
+  /// The longitude of the city this time zone is named for.
   double longitude;
+
+  /// Additional comments that may help an end user decide if this is
+  /// the time zone they're looking for.
   String comments;
 
   ZoneDescription(this.zoneId, this.countries, this.latitude, this.longitude,
@@ -109,8 +121,8 @@ class ZoneDescription {
   /// Returns the "distance" between two coordinates for sorting purposes.
   ///
   /// As a generic "distance from a to b" calculation it's absolutely terrible.
-  /// The numbers this returns are useless for anything other than
-  /// sorting time zones.
+  /// The numbers this returns are useless for anything other than sorting
+  /// time zones.
   ///
   /// It assumes that geographic coordinates are actually points on a
   /// cartesian plane and returns the square of the distance between
@@ -120,15 +132,15 @@ class ZoneDescription {
   /// Similar formulas that actually work OK in the general case do exist.
   /// These apply a cosine correction to account for fact that distance
   /// changes between degrees of longitude depending on the latitude. This
-  /// does _not_ do that. The sort works acceptably without it, because
-  /// time zones that extend to the poles follow lines of longitude.
+  /// does _not_ do that. The sort works acceptably without it because
+  /// time zones that extend to the poles usually follow lines of longitude.
   static double _distance(
       double lat1, double long1, double lat2, double long2) {
-    // lat1 = 180 - lat1;
+    const longitudeWeight = 2;
     long1 %= 360;
-    // lat2 = 180 - lat2;
     long2 %= 360;
-    return (pow(lat2 - lat1, 2) + pow(2 * (long2 - long1), 2)).toDouble();
+    return (pow(lat2 - lat1, 2) + pow(longitudeWeight * (long2 - long1), 2))
+        .toDouble();
   }
 
   @override

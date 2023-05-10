@@ -15,7 +15,7 @@ abstract class HasDate {
   /// The day starting at 1.
   int get day;
 
-  /// Gets the day of the week.
+  /// The day of the week.
   Weekday get weekday;
 
   /// The number of days since the beginning of the year. This will range from
