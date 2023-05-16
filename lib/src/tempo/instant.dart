@@ -11,6 +11,7 @@ part of '../../tempo.dart';
 /// OffsetDateTime.fromInstant(instant, ZoneOffset(-7));
 /// ZonedDateTime.fromInstant(instant, 'America/Phoenix');
 /// ```
+@immutable
 class Instant implements HasInstant {
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
@@ -63,6 +64,10 @@ class Instant implements HasInstant {
   Instant get asInstant => this;
 
   Timespan get _julianDay => unixTimestamp + _julianOffset;
+
+  @override
+  OffsetDateTime atOffset(ZoneOffset offset) =>
+      OffsetDateTime.fromInstant(this, offset);
 
   /// Returns the amount of time between this and another instant in time.
   @override

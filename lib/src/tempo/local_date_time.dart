@@ -4,6 +4,7 @@ part of '../../tempo.dart';
 ///
 /// This is a combination of [LocalDate] and [LocalTime]. The individual
 /// parts can be retrieved with [date] and [time].
+@immutable
 class LocalDateTime
     implements
         Comparable<LocalDateTime>,

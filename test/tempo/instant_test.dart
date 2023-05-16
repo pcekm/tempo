@@ -31,6 +31,11 @@ void main() {
         greaterThan(Timespan(seconds: 1682977179)));
   });
 
+  test('atOffset()', () {
+    expect(Instant.fromUnix(Timespan()).atOffset(ZoneOffset(1)),
+        OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+  });
+
   test('timespanUntil()', () {
     expect(timeline[-1].timespanUntil(timeline[1]), Timespan(seconds: 2));
     expect(timeline[1].timespanUntil(timeline[-1]), Timespan(seconds: -2));

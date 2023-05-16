@@ -219,6 +219,11 @@ void main() {
       expect(odt.offset, ZoneOffset(-5));
     });
 
+    test('atOffset()', () {
+      expect(ZonedDateTime('UTC', 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
+          OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+    });
+
     test('toDateTime', () {
       // A bit involved: Create a date in UTC, convert it to a local DateTime,
       // then convert that back to UTC. Unfortunately it's not possible to

@@ -18,6 +18,9 @@ abstract class HasInstant implements Comparable<HasInstant> {
   /// Less than or equals operator.
   bool operator <=(HasInstant other);
 
+  /// Converts this to an [OffsetDateTime] with the given [offset].
+  OffsetDateTime atOffset(ZoneOffset offset);
+
   /// Finds the amount of time between this and another instant in time.
   Timespan timespanUntil(HasInstant other);
 

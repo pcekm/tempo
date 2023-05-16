@@ -1,6 +1,7 @@
 part of '../../tempo.dart';
 
 /// A date and time in a specific time zone.
+@immutable
 class ZonedDateTime implements HasDateTime, HasInstant {
   final OffsetDateTime _dateTime;
   final TimeZone _timeZone;
@@ -109,6 +110,10 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   /// Converts this to an [OffsetDateTime] with the same offset.
   OffsetDateTime toOffset() => _dateTime;
+
+  @override
+  OffsetDateTime atOffset(ZoneOffset offset) =>
+      OffsetDateTime.fromInstant(this, offset);
 
   /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///

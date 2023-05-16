@@ -124,6 +124,7 @@ library tempo;
 
 import 'dart:math';
 
+import 'package:meta/meta.dart';
 import 'package:string_scanner/string_scanner.dart';
 
 import 'src/tempo/common.dart';
@@ -138,14 +139,14 @@ export 'src/zonedb.dart'
         timeZonesForCountry;
 
 part 'src/tempo/__period_arithmetic.dart';
-part 'src/tempo/iso8601.dart';
-part 'src/tempo/has_date_time.dart';
 part 'src/tempo/has_date.dart';
+part 'src/tempo/has_date_time.dart';
 part 'src/tempo/has_instant.dart';
 part 'src/tempo/has_time.dart';
 part 'src/tempo/instant.dart';
-part 'src/tempo/local_date_time.dart';
+part 'src/tempo/iso8601.dart';
 part 'src/tempo/local_date.dart';
+part 'src/tempo/local_date_time.dart';
 part 'src/tempo/local_time.dart';
 part 'src/tempo/offset_date_time.dart';
 part 'src/tempo/period.dart';

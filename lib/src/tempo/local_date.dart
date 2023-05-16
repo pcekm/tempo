@@ -1,6 +1,7 @@
 part of '../../tempo.dart';
 
 /// A date with no timezone.
+@immutable
 class LocalDate
     implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
   @override

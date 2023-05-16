@@ -12,6 +12,7 @@ part of '../../tempo.dart';
 /// d1.periodUntil(d2) == Period(months: 1, days: 1);
 /// d2.timespanUntil(d2) == Timespan(days: 29);
 /// ```
+@immutable
 class Period {
   /// The number of years in the period.
   final int years;

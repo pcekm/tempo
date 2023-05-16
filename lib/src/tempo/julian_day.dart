@@ -1,7 +1,10 @@
+import 'package:meta/meta.dart';
+
 import '../../tempo.dart';
 
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.
+@immutable
 class Gregorian {
   final int year;
   final int month;

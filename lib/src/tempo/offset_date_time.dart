@@ -1,6 +1,7 @@
 part of '../../tempo.dart';
 
 /// A date and time at a fixed offset from UTC.
+@immutable
 class OffsetDateTime
     implements HasInstant, HasDateTime, _PeriodArithmetic<OffsetDateTime> {
   static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
@@ -81,6 +82,10 @@ class OffsetDateTime
 
   /// The amount the time zone is offset from UTC.
   final ZoneOffset offset;
+
+  @override
+  OffsetDateTime atOffset(ZoneOffset offset) =>
+      OffsetDateTime.fromInstant(this, offset);
 
   /// Converts this to a [LocalDateTime].
   ///

@@ -130,6 +130,11 @@ void main() {
     });
   });
 
+  test('atOffset()', () {
+    expect(OffsetDateTime(ZoneOffset(0), 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
+        OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+  });
+
   test('toLocal()', () {
     expect(nepalOffsetTime.toLocal(), nepalTime);
   });

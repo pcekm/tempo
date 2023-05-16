@@ -4,6 +4,7 @@ part of '../../tempo.dart';
 ///
 /// Internally this stores the time in [nanosecondsSinceMidnight], which
 /// means it can represent any time down to the nanosecond.
+@immutable
 class LocalTime implements Comparable<LocalTime>, HasTime {
   static const int _nano = 1000000000;
 

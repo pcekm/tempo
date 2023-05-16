@@ -31,6 +31,7 @@ part of '../../tempo.dart';
 /// With that said, other factors will limit the practical maximum. In
 /// particular, conversion operations like [inMicroseconds] and date
 /// arithmetic could overflow.
+@immutable
 class Timespan implements Comparable<Timespan> {
   static const int _hoursPerDay = 24;
   static const int _minutesPerHour = 60;
