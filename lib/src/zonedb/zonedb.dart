@@ -29,7 +29,7 @@ String _humanizeId(String name) =>
 
 /// Provides a list of all possible time zones in unspecified order.
 List<ZoneDescription> allTimeZones() =>
-    _ZoneDescriptionTable()._zoneDescriptions;
+    ZoneDescriptionTable().zoneDescriptions.asList();
 
 /// Provides a list of time zones sorted by proximity to a given set of
 /// geographic coordinates. Optionally filters by country.
@@ -43,7 +43,7 @@ List<ZoneDescription> allTimeZones() =>
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
 List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
         [String? country]) =>
-    _ZoneDescriptionTable().byProximity(latitude, longitude, country);
+    ZoneDescriptionTable().byProximity(latitude, longitude, country);
 
 /// Provides a list of time zones relevant to a specific country.
 ///
@@ -51,4 +51,4 @@ List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
 List<ZoneDescription> timeZonesForCountry(String country) =>
-    _ZoneDescriptionTable().forCountry(country);
+    ZoneDescriptionTable().forCountry(country);

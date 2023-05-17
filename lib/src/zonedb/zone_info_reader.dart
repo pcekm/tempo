@@ -77,14 +77,13 @@ class ZoneInfoReader {
     ++_pos;
     var tzString = _nextString(_bytes.length, 0x0a);
 
-    return ZoneInfoRecord(
-      _zoneName,
-      transitionTimes,
-      transitionTypes,
-      localTimeTypes,
-      designations,
-      PosixTz(tzString),
-    );
+    return ZoneInfoRecord((b) => b
+      ..name = _zoneName
+      ..transitionTimes = transitionTimes
+      ..transitionTypes = transitionTypes
+      ..localTimeTypes = localTimeTypes
+      ..designations = designations
+      ..posixTz = PosixTz(tzString).toBuilder());
   }
 
   int _thenAdvance(int n) {
@@ -113,7 +112,7 @@ class ZoneInfoReader {
     return list;
   }
 
-  List<_LocalTimeTypeBlock> _nextLocalTimeTypeList(int len) =>
+  List<LocalTimeTypeBlock> _nextLocalTimeTypeList(int len) =>
       List.generate(len, (i) => _nextLocalTimeTypeBlock());
 
   Map<int, String> _nextTimeZoneDesignations(int charCnt) {
@@ -134,10 +133,11 @@ class ZoneInfoReader {
     return AsciiDecoder(allowInvalid: true).convert(stringBytes.toList());
   }
 
-  _LocalTimeTypeBlock _nextLocalTimeTypeBlock() => _LocalTimeTypeBlock(
-        ZoneOffset(0, 0, _nextInt32()),
-        _nextUint8() == 1,
-        _nextUint8(),
+  LocalTimeTypeBlock _nextLocalTimeTypeBlock() => LocalTimeTypeBlock(
+        (b) => b
+          ..utOffset = ZoneOffset(0, 0, _nextInt32())
+          ..isDst = _nextUint8() == 1
+          ..index = _nextUint8(),
       );
 
   @override

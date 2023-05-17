@@ -8,63 +8,48 @@ part of '../zonedb.dart';
 ///
 /// See the [tzset(3)](https://man7.org/linux/man-pages/man3/tzset.3.html)
 /// manpage for details.
-class PosixTz {
-  final String _stdName;
-  final Timespan _stdOffset;
-  final String? _dstName;
-  final Timespan? _dstOffset;
-  final _DstChangeTime? _dstStartRule;
-  final _DstChangeTime? _stdStartRule;
+abstract class PosixTz implements Built<PosixTz, PosixTzBuilder> {
+  static Serializer<PosixTz> get serializer => _$posixTzSerializer;
 
-  PosixTz._(
-    this._stdName,
-    this._stdOffset,
-    this._dstName,
-    this._dstOffset,
-    this._dstStartRule,
-    this._stdStartRule,
-  );
+  String get stdName;
+  Timespan get stdOffset;
+  String? get dstName;
+  Timespan? get dstOffset;
+  ChangeTime? get dstStartRule;
+  ChangeTime? get stdStartRule;
+
+  PosixTz._();
+  factory PosixTz._fromBuilder([void Function(PosixTzBuilder) updates]) =
+      _$PosixTz;
 
   /// Constructs a posix timezone specifier from a TZ string.
   ///
   /// See the [tzset(3)](https://man7.org/linux/man-pages/man3/tzset.3.html)
   /// manpage for the format.
   factory PosixTz(String tzString) {
-    String stdName;
-    Timespan stdOffset;
-    String? dstName;
-    Timespan? dstOffset;
-    _DstChangeTime? dstStart;
-    _DstChangeTime? dstEnd;
+    var b = PosixTzBuilder();
 
     var s = StringScanner(tzString);
 
     s.scan(RegExp(r'\s*')); // Eat leading whitespace
-    stdName = _scanName(s, true)!;
+    b.stdName = _scanName(s, true)!;
     // Negated because the TZ variable was designed such that positive
     // numbers equal negative offsets. e.g. "MST7" means an offset of -7:
-    stdOffset = -_scanTimespan(s)!;
-    dstName = _scanName(s, false);
-    if (dstName != null) {
-      dstOffset = _scanTimespan(s, false);
-      dstOffset ??= Timespan(hours: 1) + stdOffset;
+    b.stdOffset = -_scanTimespan(s)!;
+    b.dstName = _scanName(s, false);
+    if (b.dstName != null) {
+      b.dstOffset = _scanTimespan(s, false);
+      b.dstOffset ??= Timespan(hours: 1) + b.stdOffset!;
       s.expect(',');
-      dstStart = _scanPartialDateTime(s);
+      b.dstStartRule = _scanPartialDateTime(s).toBuilder();
       s.expect(',');
-      dstEnd = _scanPartialDateTime(s);
+      b.stdStartRule = _scanPartialDateTime(s).toBuilder();
     }
 
     s.scan(RegExp(r'\s*')); // Eat trailing whitespace
     s.expectDone();
 
-    return PosixTz._(
-      stdName,
-      stdOffset,
-      dstName,
-      dstOffset,
-      dstStart,
-      dstEnd,
-    );
+    return b.build();
   }
 
   static String? _scanName(StringScanner s, [bool expect = true]) {
@@ -97,7 +82,7 @@ class PosixTz {
     return Timespan(hours: hour, minutes: minute, seconds: second);
   }
 
-  static _DstChangeTime _scanPartialDateTime(StringScanner s) {
+  static ChangeTime _scanPartialDateTime(StringScanner s) {
     s.expect(RegExp(r'M(\d+)\.(\d+)\.(\d+)'));
     var month = int.parse(s.lastMatch!.group(1)!);
     var week = int.parse(s.lastMatch!.group(2)!);
@@ -107,76 +92,41 @@ class PosixTz {
     if (s.scan('/')) {
       time = LocalTime().plusTimespan(_scanTimespan(s)!);
     }
-    return _DstChangeTime(month, week, weekday, time);
+    return ChangeTime((b) => b
+      ..month = month
+      ..week = week
+      ..weekday = weekday
+      ..time = time);
   }
 
   TimeZone timeZoneFor(HasInstant instant) {
-    if (_dstName == null) {
-      return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
+    if (dstName == null) {
+      return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
     }
 
     var std =
-        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(_stdOffset))
+        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(stdOffset))
             .toLocal();
-    var dst = OffsetDateTime.fromInstant(
-            instant, ZoneOffset.fromTimespan(_dstOffset!))
-        .toLocal();
-    var dstStart = _dstStartRule!.forYear(std.year);
-    var stdStart = _stdStartRule!.forYear(std.year);
+    var dst =
+        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(dstOffset!))
+            .toLocal();
+    var dstStart = dstStartRule!.forYear(std.year);
+    var stdStart = stdStartRule!.forYear(std.year);
 
     if (dstStart < stdStart) {
       if (std >= dstStart && dst < stdStart) {
-        return TimeZone(ZoneOffset.fromTimespan(_dstOffset!), _dstName!, true);
+        return TimeZone(ZoneOffset.fromTimespan(dstOffset!), dstName!, true);
       } else {
-        return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
+        return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
       }
     } else {
       // "Winter time." Hello, Ireland.
       // var lastDstStart = dstStartRule.forYear(std.year - 1);
       if (std >= stdStart && dst < dstStart) {
-        return TimeZone(ZoneOffset.fromTimespan(_stdOffset), _stdName, false);
+        return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
       } else {
-        return TimeZone(ZoneOffset.fromTimespan(_dstOffset!), _dstName!, true);
+        return TimeZone(ZoneOffset.fromTimespan(dstOffset!), dstName!, true);
       }
     }
   }
-}
-
-/// A time at which a switch to or from daylight savings occurrs.
-class _DstChangeTime {
-  final int month;
-  final int week;
-  final Weekday weekday;
-  final LocalTime time;
-
-  _DstChangeTime(this.month, this.week, this.weekday, this.time);
-
-  LocalDateTime forYear(int year) {
-    var startOfWeek = LocalDateTime(
-        year, month, 7 * (week - 1) + 1, time.hour, time.minute, time.second);
-    var changeTime = startOfWeek.plusTimespan(
-        Timespan(days: (weekday.index - startOfWeek.weekday.index) % 7));
-    if (changeTime.month != month) {
-      // This will only occur for week == 5, which means "the last day"
-      // of the same month. Since the shortest month has exactly 4 * 7 = 28
-      // days, then if skipping to the 5th week rolls over to the next month
-      // we will always have to subtract exactly one week.
-      changeTime = changeTime.minusTimespan(Timespan(days: 7));
-    }
-    return changeTime;
-  }
-
-  @override
-  String toString() => '$month.$week.$weekday/$time';
-
-  @override
-  bool operator ==(Object other) =>
-      other is _DstChangeTime &&
-      month == other.month &&
-      week == other.week &&
-      weekday == other.weekday &&
-      time == other.time;
-
-  @override
-  int get hashCode => Object.hash(month, week, weekday, time);
 }

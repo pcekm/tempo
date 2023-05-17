@@ -12,3 +12,5 @@ pubspec.lock
 *.sublime-*
 .vscode
 doc/api
+
+*.g.dart
