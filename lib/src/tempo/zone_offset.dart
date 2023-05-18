@@ -26,20 +26,29 @@ class ZoneOffset {
   ///    * `-59 <= seconds <= 59`
   ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
   ///      [hours]).
-  ///
   ZoneOffset(int hours, [int minutes = 0, int seconds = 0])
       : this.fromDuration(
             Duration(hours: hours, minutes: minutes, seconds: seconds));
 
   /// Constructs a new ZoneOffset from a Duration.
   ///
-  /// This will be normalized as described in [ZoneOffset].
+  /// Will be normalized such that
+  ///    * `-23 <= hours <= 23`
+  ///    * `-59 <= minutes <= 59`
+  ///    * `-59 <= seconds <= 59`
+  ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
+  ///      [hours]).
   ZoneOffset.fromDuration(Duration amount)
       : this.fromTimespan(Timespan.fromDuration(amount));
 
   /// Constructs a new ZoneOffset from a Timespan.
   ///
-  /// This will be normalized as described in [ZoneOffset].
+  /// Will be normalized such that
+  ///    * `-23 <= hours <= 23`
+  ///    * `-59 <= minutes <= 59`
+  ///    * `-59 <= seconds <= 59`
+  ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
+  ///      [hours]).
   ZoneOffset.fromTimespan(Timespan amount)
       : this._(amount.inHours.remainder(24), amount.inMinutes.remainder(60),
             amount.inSeconds.remainder(60));

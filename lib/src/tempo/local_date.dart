@@ -4,6 +4,12 @@ part of '../../tempo.dart';
 @immutable
 class LocalDate
     implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
+  /// The earliest supported date.
+  static final LocalDate minimum = LocalDate(-9999, 1, 1);
+
+  /// The latest supported date.
+  static final LocalDate maximum = LocalDate(9999, 12, 31);
+
   @override
   final int year;
 

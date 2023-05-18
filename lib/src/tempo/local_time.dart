@@ -6,6 +6,12 @@ part of '../../tempo.dart';
 /// means it can represent any time down to the nanosecond.
 @immutable
 class LocalTime implements Comparable<LocalTime>, HasTime {
+  /// The earliest possible time.
+  static final LocalTime minimum = LocalTime(0);
+
+  /// The latest possible time.
+  static final LocalTime maximum = LocalTime(23, 59, 59, _nano - 1);
+
   static const int _nano = 1000000000;
 
   static const int _nsPerS = 1000000000;

@@ -1,6 +1,7 @@
 import 'package:tempo/tempo.dart';
-import 'package:tempo/src/zonedb.dart';
 import 'package:test/test.dart';
+
+import '../../tool/gen_zone_data/posix_tz.dart';
 
 final jan1 = LocalDateTime(2023, 1, 1);
 final feb19 = LocalDateTime(2023, 2, 19); // 3rd Sunday in Feb
@@ -47,6 +48,8 @@ OffsetDateTime offset(LocalDateTime dt, int hours, [int minutes = 0]) =>
     OffsetDateTime.fromLocalDateTime(dt, ZoneOffset(hours, minutes));
 
 void main() {
+  // TODO: Just test the parsing. The logic is delegated to another class.
+
   test('correct std just before dst', () {
     var tz = PosixTz('PST8PDT,M2.3.0,M7.2.1');
     var stdZone = tz.timeZoneFor(

@@ -1,10 +1,16 @@
 import 'dart:io';
-import 'package:tempo/tempo.dart';
-import 'package:tempo/src/zonedb.dart';
+
+import 'package:built_collection/built_collection.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
-import 'package:collection/collection.dart';
+import 'package:tempo/timezone.dart';
+
+import 'gen_zone_data/zone_info_reader.dart';
+import 'gen_zone_data/zone_tab_reader.dart';
 
 // make CFLAGS=-DHAVE_GETTEXT=0 TOPDIR="$(pwd)/install" TZDATA_TEXT=  install
+
+const String zoneTabFilename = 'zone1970.tab';
 
 void main(List<String> args) {
   if (args.length != 1) {
@@ -20,8 +26,13 @@ void main(List<String> args) {
   try {
     buildDatabase(path, tempDir);
     var zoneInfoDir = Directory(p.join(tempDir.path, 'usr/share/zoneinfo'));
-    var records = readZoneInfoRecords(zoneInfoDir);
-    print(records);
+    var zoneInfo = readZoneInfoRecords(zoneInfoDir);
+    var zoneTab = readZoneTab1970(
+        File(p.join(zoneInfoDir.path, zoneTabFilename)).readAsBytesSync());
+    var zoneTabByCountry = byCountry(zoneTab);
+
+    print(template(
+        zoneInfo.toString(), zoneTab.toString(), zoneTabByCountry.toString()));
   } finally {
     tempDir.deleteSync(recursive: true);
   }
@@ -48,14 +59,37 @@ void buildDatabase(String dbPath, Directory tempDir) {
   }
 }
 
-Map<String, ZoneInfoRecord> readZoneInfoRecords(Directory zoneInfoDir) {
-  var records = <String, ZoneInfoRecord>{};
+BuiltMap<String, ZoneRules> readZoneInfoRecords(Directory zoneInfoDir) {
+  var b = MapBuilder<String, ZoneRules>();
   for (var ent in zoneInfoDir.listSync(recursive: true)) {
     if (ent is! File || ent.path.endsWith('.tab')) {
       continue;
     }
     var zoneId = p.relative(ent.path, from: zoneInfoDir.path);
-    records[zoneId] = ZoneInfoReader(zoneId, ent.readAsBytesSync()).read();
+    b[zoneId] = ZoneInfoReader(ent.readAsBytesSync()).read();
   }
-  return records;
+  return b.build();
 }
+
+BuiltMap<String, ZoneTabRow> byCountry(BuiltList<ZoneTabRow> zoneTab) {
+  var b = MapBuilder<String, ZoneTabRow>();
+  for (var row in zoneTab) {
+    for (var country in row.countries) {
+      b[country] = row;
+    }
+  }
+  return b.build();
+}
+
+String template(String zoneRules, String zoneTab, String zoneTabByCountry) =>
+    DartFormatter().format("""// AUTOMATICALLY GENERATED: DO NOT EDIT
+
+part of 'database.dart';
+
+BuiltMap<String, ZoneRules> _zoneRules = '''$zoneRules''';
+
+BuiltList<ZoneTabRow> _zoneTab = '''$zoneTab''';
+
+BuiltListMultimap<String, ZoneTabRow> _zoneTabByCountry =
+    '''$zoneTabByCountry''';
+""");

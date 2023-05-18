@@ -148,6 +148,7 @@ part 'src/tempo/iso8601.dart';
 part 'src/tempo/local_date.dart';
 part 'src/tempo/local_date_time.dart';
 part 'src/tempo/local_time.dart';
+part 'src/tempo/named_zone_offset.dart';
 part 'src/tempo/offset_date_time.dart';
 part 'src/tempo/period.dart';
 part 'src/tempo/timespan.dart';

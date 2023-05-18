@@ -10,6 +10,14 @@ class LocalDateTime
         Comparable<LocalDateTime>,
         HasDateTime,
         _PeriodArithmetic<LocalDateTime> {
+  /// The earliest possible datetime.
+  static final LocalDateTime minimum =
+      LocalDateTime.combine(LocalDate.minimum, LocalTime.minimum);
+
+  /// The latest possible datetime.
+  static final LocalDateTime maximum =
+      LocalDateTime.combine(LocalDate.maximum, LocalTime.maximum);
+
   static const int _nsPerMicrosecond = 1000;
   static const int _nsPerMillisecond = 1000000;
   static const int _nsPerSecond = 1000000000;

@@ -4,6 +4,14 @@ part of '../../tempo.dart';
 @immutable
 class OffsetDateTime
     implements HasInstant, HasDateTime, _PeriodArithmetic<OffsetDateTime> {
+  /// The earliest possible datetime.
+  static final OffsetDateTime minimum =
+      OffsetDateTime.fromLocalDateTime(LocalDateTime.minimum, ZoneOffset(0));
+
+  /// The latest possible datetime.
+  static final OffsetDateTime maximum =
+      OffsetDateTime.fromLocalDateTime(LocalDateTime.maximum, ZoneOffset(0));
+
   static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
     var parts = julianDayToGregorian(
         instant.plusTimespan(offset.asTimespan)._julianDay);

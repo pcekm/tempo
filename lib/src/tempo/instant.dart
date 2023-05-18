@@ -13,6 +13,15 @@ part of '../../tempo.dart';
 /// ```
 @immutable
 class Instant implements HasInstant {
+  /// The earliest supported instant.
+  static final Instant minimum =
+      OffsetDateTime(ZoneOffset(0), -9999, 1, 1).asInstant;
+
+  /// The latest supported instant.
+  static final Instant maximum =
+      OffsetDateTime(ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999)
+          .asInstant;
+
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
   /// The amount of time since midnight, January 1, 1970 UTC.

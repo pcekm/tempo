@@ -27,6 +27,9 @@ class TimeZone {
   /// Constructs a [TimeZone].
   TimeZone(this.offset, this.designation, this.isDst);
 
+  TimeZone._fromOffset(NamedZoneOffset offset)
+      : this(offset, offset.name, offset.isDst);
+
   @override
   String toString() => '[$designation, $offset, ${isDst ? "DST" : "STD"}]';
 

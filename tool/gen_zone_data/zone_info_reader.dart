@@ -1,4 +1,12 @@
-part of '../zonedb.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:tempo/tempo.dart';
+import 'package:tempo/timezone.dart';
+
+import 'local_time_type_block.dart';
+import 'posix_tz.dart';
+import 'zone_info_reader_result.dart';
 
 class ZoneInfoFormatException implements Exception {
   final String message;
@@ -18,22 +26,21 @@ class ZoneInfoFormatException implements Exception {
 /// [tzfile(5)](https://linux.die.net/man/5/tzfile) manpage, and in
 /// [RFC 8536](https://www.rfc-editor.org/rfc/rfc8536.html).
 class ZoneInfoReader {
-  final String _zoneName;
   final UnmodifiableUint8ListView _bytes;
   final UnmodifiableByteDataView _data;
 
   int _pos = 0;
 
-  ZoneInfoReader(String zoneName, Uint8List bytes)
-      : _zoneName = zoneName,
-        _bytes = UnmodifiableUint8ListView(bytes),
+  ZoneInfoReader(Uint8List bytes)
+      : _bytes = UnmodifiableUint8ListView(bytes),
         _data = UnmodifiableByteDataView(ByteData.sublistView(bytes));
 
-  ZoneInfoRecord read() {
-    _pos = 0;
-
+  ZoneRules read() {
     _skipV1Part();
-    return _readV2Part();
+
+    return ZoneRules((b) => b
+      ..transitions.addAll(_readZoneTransitions())
+      ..rule = _readZoneTransitionRule().toBuilder());
   }
 
   // Skips over the first part of the file, which is there for backwards
@@ -56,7 +63,7 @@ class ZoneInfoReader {
   }
 
   // Reads the V2+ part of the file.
-  ZoneInfoRecord _readV2Part() {
+  List<ZoneTransition> _readZoneTransitions() {
     // Read the v2+v3 header.
     var header = _Header.read(this);
     if (header.version < _Header.version2) {
@@ -68,22 +75,52 @@ class ZoneInfoReader {
     var transitionTimes = _nextInstantList(header.timeCnt);
     var transitionTypes = _nextUint8List(header.timeCnt);
     var localTimeTypes = _nextLocalTimeTypeList(header.typeCnt);
-    var designations = _nextTimeZoneDesignations(header.charCnt);
+    var designations = _nextUint8List(header.charCnt);
     _pos += header.leapCnt;
     _pos += header.isStdCnt;
     _pos += header.isUtCnt;
 
-    // Read the footer.
-    ++_pos;
-    var tzString = _nextString(_bytes.length, 0x0a);
+    return _zoneTransitions(
+        transitionTimes, transitionTypes, localTimeTypes, designations);
+  }
 
-    return ZoneInfoRecord((b) => b
-      ..name = _zoneName
-      ..transitionTimes = transitionTimes
-      ..transitionTypes = transitionTypes
-      ..localTimeTypes = localTimeTypes
-      ..designations = designations
-      ..posixTz = PosixTz(tzString).toBuilder());
+  List<ZoneTransition> _zoneTransitions(
+      List<Instant> transitionTimes,
+      Uint8List transitionTypes,
+      List<LocalTimeTypeBlock> localTimeTypes,
+      Uint8List designations) {
+    var first = ZoneTransition((b) => b
+      ..transitionTime = Instant.minimum
+      ..isDst = localTimeTypes[0].isDst
+      ..offset = NamedZoneOffset.fromZoneOffset(
+          _nullTermString(designations, localTimeTypes[0].index),
+          localTimeTypes[0].isDst,
+          localTimeTypes[0].utOffset));
+    return [first] +
+        List.generate(transitionTimes.length, (i) {
+          var ltt = localTimeTypes[transitionTypes[i]];
+          var designation = _nullTermString(designations, ltt.index);
+          return ZoneTransition((b) => b
+            ..transitionTime = transitionTimes[i]
+            ..offset = NamedZoneOffset.fromZoneOffset(
+                designation, ltt.isDst, ltt.utOffset)
+            ..isDst = ltt.isDst);
+        });
+  }
+
+  /// Reads a null-terminated string starting at [index].
+  String _nullTermString(Uint8List bytes, int index, [int terminator = 0]) =>
+      // TODO: File a dart SDK bug about _UnmodifiableListMixin null error
+      // when omitting the second arg of sublist():
+      AsciiDecoder().convert(bytes
+          .sublist(index, bytes.length)
+          .takeWhile((c) => c != terminator)
+          .toList());
+
+  ZoneTransitionRule _readZoneTransitionRule() {
+    ++_pos;
+    var tz = PosixTz(_nextString(_bytes.length, 0x0a));
+    return tz.rule;
   }
 
   int _thenAdvance(int n) {
@@ -95,6 +132,7 @@ class ZoneInfoReader {
   int _nextUint8() => _data.getUint8(_thenAdvance(1));
   int _nextUint32() => _data.getUint32(_thenAdvance(4));
   int _nextInt32() => _data.getInt32(_thenAdvance(4));
+  int _nextInt64() => _data.getInt64(_thenAdvance(8));
 
   Uint8List _nextUint8List(int len) =>
       Uint8List.sublistView(_data, _pos, _pos += len);
@@ -103,11 +141,7 @@ class ZoneInfoReader {
     // Don't just create a view on _bytes. That would not fix the byte order.
     var list = <Instant>[];
     for (int i = 0; i < len; ++i) {
-      var high = _nextInt32();
-      var low = _nextInt32();
-      // This will technically lose some precision on JS, but it's still
-      // way mmore than enough.
-      list.add(Instant.fromUnix(Timespan(seconds: (high << 32) + low)));
+      list.add(Instant.fromUnix(Timespan(seconds: _nextInt64())));
     }
     return list;
   }
@@ -115,22 +149,10 @@ class ZoneInfoReader {
   List<LocalTimeTypeBlock> _nextLocalTimeTypeList(int len) =>
       List.generate(len, (i) => _nextLocalTimeTypeBlock());
 
-  Map<int, String> _nextTimeZoneDesignations(int charCnt) {
-    var result = <int, String>{};
-    final int start = _pos;
-    final int end = _pos + charCnt;
-    while (_pos < end) {
-      int idx = _pos - start;
-      result[idx] = _nextString(end);
-    }
-    return result;
-  }
-
   String _nextString(int maxIndex, [int terminator = 0]) {
-    var stringBytes =
-        _bytes.sublist(_pos, maxIndex).takeWhile((c) => c != terminator);
+    var stringBytes = _nullTermString(_bytes, _pos, terminator);
     _pos += stringBytes.length + 1;
-    return AsciiDecoder(allowInvalid: true).convert(stringBytes.toList());
+    return stringBytes;
   }
 
   LocalTimeTypeBlock _nextLocalTimeTypeBlock() => LocalTimeTypeBlock(

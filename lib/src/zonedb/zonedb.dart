@@ -8,28 +8,27 @@ part of '../zonedb.dart';
 ///
 /// Returns `null` if no matching zone is found.
 TimeZone? lookupTimeZone(String zoneId, HasInstant instant) {
-  return _lookupZoneInfo(zoneId)?.timeZoneFor(instant);
-}
-
-ZoneInfoRecord? _lookupZoneInfo(String id) {
-  var file = _zoneInfoData.findFile('zoneinfo/${_escapeId(id)}');
-  if (file == null) {
+  var rules = Database().zoneRulesFor(zoneId);
+  if (rules == null) {
     return null;
   }
-  return ZoneInfoReader(_humanizeId(id), file.content).read();
+  return TimeZone._fromOffset(rules.offsetFor(instant));
 }
-
-// Normalizes, converts spaces to underscores in a zone id.
-String _escapeId(String name) =>
-    name.trim().replaceAll(RegExp(r'(\s|_)+'), '_');
 
 // Normalizes and humanizes a zone id.
 String _humanizeId(String name) =>
     name.trim().replaceAll(RegExp(r'(\s|_)+'), ' ');
 
+ZoneDescription _zoneTabRowToDesc(ZoneTabRow row) => ZoneDescription((b) => b
+  ..zoneId = row.zoneId
+  ..countries.addAll(row.countries)
+  ..latitude = row.latitude
+  ..longitude = row.longitude
+  ..comments = row.comments);
+
 /// Provides a list of all possible time zones in unspecified order.
 List<ZoneDescription> allTimeZones() =>
-    ZoneDescriptionTable().zoneDescriptions.asList();
+    Database().allZoneRules().map(_zoneTabRowToDesc).toList();
 
 /// Provides a list of time zones sorted by proximity to a given set of
 /// geographic coordinates. Optionally filters by country.
@@ -43,7 +42,10 @@ List<ZoneDescription> allTimeZones() =>
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
 List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
         [String? country]) =>
-    ZoneDescriptionTable().byProximity(latitude, longitude, country);
+    Database()
+        .byProximity(latitude, longitude, country)
+        .map(_zoneTabRowToDesc)
+        .toList();
 
 /// Provides a list of time zones relevant to a specific country.
 ///
@@ -51,4 +53,4 @@ List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
 List<ZoneDescription> timeZonesForCountry(String country) =>
-    ZoneDescriptionTable().forCountry(country);
+    Database().forCountry(country).map(_zoneTabRowToDesc).toList();

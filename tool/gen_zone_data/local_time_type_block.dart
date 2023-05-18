@@ -1,10 +1,10 @@
-part of '../zonedb.dart';
+import 'package:built_value/built_value.dart';
+import 'package:tempo/tempo.dart';
+
+part 'local_time_type_block.g.dart';
 
 abstract class LocalTimeTypeBlock
     implements Built<LocalTimeTypeBlock, LocalTimeTypeBlockBuilder> {
-  static Serializer<LocalTimeTypeBlock> get serializer =>
-      _$localTimeTypeBlockSerializer;
-
   ZoneOffset get utOffset;
   bool get isDst;
   int get index;

@@ -1,4 +1,7 @@
-part of '../zonedb.dart';
+import 'package:string_scanner/string_scanner.dart';
+import 'package:tempo/src/zonedb.dart';
+import 'package:tempo/tempo.dart';
+import 'package:tempo/timezone.dart';
 
 /// Contains and interprets a subset of Posix-formatted TZ environment
 /// variables.
@@ -8,26 +11,17 @@ part of '../zonedb.dart';
 ///
 /// See the [tzset(3)](https://man7.org/linux/man-pages/man3/tzset.3.html)
 /// manpage for details.
-abstract class PosixTz implements Built<PosixTz, PosixTzBuilder> {
-  static Serializer<PosixTz> get serializer => _$posixTzSerializer;
+class PosixTz {
+  final ZoneTransitionRule rule;
 
-  String get stdName;
-  Timespan get stdOffset;
-  String? get dstName;
-  Timespan? get dstOffset;
-  ChangeTime? get dstStartRule;
-  ChangeTime? get stdStartRule;
-
-  PosixTz._();
-  factory PosixTz._fromBuilder([void Function(PosixTzBuilder) updates]) =
-      _$PosixTz;
+  PosixTz._(this.rule);
 
   /// Constructs a posix timezone specifier from a TZ string.
   ///
   /// See the [tzset(3)](https://man7.org/linux/man-pages/man3/tzset.3.html)
   /// manpage for the format.
   factory PosixTz(String tzString) {
-    var b = PosixTzBuilder();
+    var b = ZoneTransitionRuleBuilder();
 
     var s = StringScanner(tzString);
 
@@ -35,11 +29,12 @@ abstract class PosixTz implements Built<PosixTz, PosixTzBuilder> {
     b.stdName = _scanName(s, true)!;
     // Negated because the TZ variable was designed such that positive
     // numbers equal negative offsets. e.g. "MST7" means an offset of -7:
-    b.stdOffset = -_scanTimespan(s)!;
+    var stdOffset = -_scanTimespan(s, true)!;
+    b.stdOffset = _toOffset(stdOffset);
     b.dstName = _scanName(s, false);
     if (b.dstName != null) {
-      b.dstOffset = _scanTimespan(s, false);
-      b.dstOffset ??= Timespan(hours: 1) + b.stdOffset!;
+      b.dstOffset = _toOffset(_scanTimespan(s, false));
+      b.dstOffset ??= _toOffset(Timespan(hours: 1) + stdOffset);
       s.expect(',');
       b.dstStartRule = _scanPartialDateTime(s).toBuilder();
       s.expect(',');
@@ -49,7 +44,7 @@ abstract class PosixTz implements Built<PosixTz, PosixTzBuilder> {
     s.scan(RegExp(r'\s*')); // Eat trailing whitespace
     s.expectDone();
 
-    return b.build();
+    return PosixTz._(b.build());
   }
 
   static String? _scanName(StringScanner s, [bool expect = true]) {
@@ -82,51 +77,33 @@ abstract class PosixTz implements Built<PosixTz, PosixTzBuilder> {
     return Timespan(hours: hour, minutes: minute, seconds: second);
   }
 
-  static ChangeTime _scanPartialDateTime(StringScanner s) {
+  static TimeChangeRule _scanPartialDateTime(StringScanner s) {
     s.expect(RegExp(r'M(\d+)\.(\d+)\.(\d+)'));
     var month = int.parse(s.lastMatch!.group(1)!);
     var week = int.parse(s.lastMatch!.group(2)!);
     var w = int.parse(s.lastMatch!.group(3)!);
-    var weekday = Weekday.values[(w - 1) % 7 + 1];
+    var day = Weekday.values[(w - 1) % 7 + 1];
     var time = LocalTime(2); // Time change defaults to 2 AM wall time.
     if (s.scan('/')) {
       time = LocalTime().plusTimespan(_scanTimespan(s)!);
     }
-    return ChangeTime((b) => b
+    return TimeChangeRule((b) => b
       ..month = month
       ..week = week
-      ..weekday = weekday
+      ..day = day
       ..time = time);
   }
 
+  /// Converts [Timespan] to [ZoneOffset] handling nulls.
+  static ZoneOffset? _toOffset(Timespan? span) {
+    if (span == null) {
+      return null;
+    }
+    return ZoneOffset.fromTimespan(span);
+  }
+
   TimeZone timeZoneFor(HasInstant instant) {
-    if (dstName == null) {
-      return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
-    }
-
-    var std =
-        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(stdOffset))
-            .toLocal();
-    var dst =
-        OffsetDateTime.fromInstant(instant, ZoneOffset.fromTimespan(dstOffset!))
-            .toLocal();
-    var dstStart = dstStartRule!.forYear(std.year);
-    var stdStart = stdStartRule!.forYear(std.year);
-
-    if (dstStart < stdStart) {
-      if (std >= dstStart && dst < stdStart) {
-        return TimeZone(ZoneOffset.fromTimespan(dstOffset!), dstName!, true);
-      } else {
-        return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
-      }
-    } else {
-      // "Winter time." Hello, Ireland.
-      // var lastDstStart = dstStartRule.forYear(std.year - 1);
-      if (std >= stdStart && dst < dstStart) {
-        return TimeZone(ZoneOffset.fromTimespan(stdOffset), stdName, false);
-      } else {
-        return TimeZone(ZoneOffset.fromTimespan(dstOffset!), dstName!, true);
-      }
-    }
+    var offset = rule.offsetFor(instant);
+    return TimeZone(offset, offset.name, offset.isDst);
   }
 }

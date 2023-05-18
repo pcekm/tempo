@@ -3,6 +3,14 @@ part of '../../tempo.dart';
 /// A date and time in a specific time zone.
 @immutable
 class ZonedDateTime implements HasDateTime, HasInstant {
+  /// The earliest possible datetime.
+  static final ZonedDateTime minimum =
+      ZonedDateTime.fromInstant(Instant.minimum, 'GMT');
+
+  /// The latest possible datetime.
+  static final ZonedDateTime maximum =
+      ZonedDateTime.fromInstant(Instant.maximum, 'GMT');
+
   final OffsetDateTime _dateTime;
   final TimeZone _timeZone;
 
