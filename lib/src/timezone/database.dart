@@ -6,11 +6,11 @@ import 'package:collection/collection.dart';
 import 'zone_rules.dart';
 import 'zone_tab_row.dart';
 
-BuiltMap<String, ZoneRules> _zoneRules = BuiltMap.build((b) => b);
+import 'serializers.dart';
+import 'dart:convert';
+import 'zone_info.dart';
 
-BuiltList<ZoneTabRow> _zoneTab = BuiltList();
-
-BuiltListMultimap<String, ZoneTabRow> _zoneTabByCountry = BuiltListMultimap();
+part 'database.data.dart';
 
 /// Contains all known time zones, and provides methods for finding them.
 class Database {
@@ -20,10 +20,10 @@ class Database {
   /// For example, "America/Los_Angeles" and "Europe/Tallinn".
   ///
   /// Returns `null` if no matching zone is found.
-  ZoneRules? zoneRulesFor(String zoneId) => _zoneRules[zoneId];
+  ZoneRules? zoneRulesFor(String zoneId) => _zoneInfo.rules[zoneId];
 
   /// Returns all possible time zones in unspecified order.
-  Iterable<ZoneTabRow> allZoneRules() => _zoneTab;
+  Iterable<ZoneTabRow> allZoneRules() => _zoneInfo.zoneTab;
 
   /// Provides a list of time zones sorted by proximity to a given set of
   /// geographic coordinates. Optionally filters by country.
@@ -37,7 +37,7 @@ class Database {
   /// For example, US = United States, CA = Canada, EE = Estonia, etc.
   List<ZoneTabRow> byProximity(double latitude, double longitude,
       [String? country]) {
-    var zones = _zoneTab.toList();
+    var zones = _zoneInfo.zoneTab.toList();
     if (country != null) {
       zones = forCountry(country).toList();
     }
@@ -51,7 +51,7 @@ class Database {
   /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
   /// For example, US = United States, CA = Canada, EE = Estonia, etc.
   List<ZoneTabRow> forCountry(String country) =>
-      _zoneTabByCountry[country].toList();
+      _zoneInfo.zoneTabByCountry[country.toUpperCase()].toList();
 
   /// Returns a [Comparator] that compares two ZoneDescriptions by their
   /// proximity to the specified geographic coordinates.

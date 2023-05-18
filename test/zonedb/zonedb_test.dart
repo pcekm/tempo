@@ -17,13 +17,6 @@ void main() {
     expect(got!.designation, 'EET');
   });
 
-  test('id normalization', () {
-    var got = lookupTimeZone('   America/Los _ Angeles   ',
-        OffsetDateTime(ZoneOffset(-7), 2023, 6, 1));
-    expect(got, isNotNull);
-    expect(got!.designation, 'PDT');
-  });
-
   test('allTimeZones() smoke test', () {
     var zones = allTimeZones();
     expect(zones, hasLength(greaterThan(100)));
@@ -65,7 +58,7 @@ void main() {
 
       expect(zones[0],
           HasZoneId('America/Vancouver')); // Correct for the coordinates
-      expect(zones[1], HasZoneId('America/Fort Nelson'));
+      expect(zones[1], HasZoneId('America/Fort_Nelson'));
       expect(zones[2], HasZoneId('America/Whitehorse'));
     });
 

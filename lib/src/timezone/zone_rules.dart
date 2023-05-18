@@ -7,6 +7,8 @@ import '../../tempo.dart';
 import 'zone_transition.dart';
 import 'zone_transition_rule.dart';
 
+import 'dart:math';
+
 part 'zone_rules.g.dart';
 
 /// Time zone rules for a specific location.
@@ -26,16 +28,15 @@ abstract class ZoneRules implements Built<ZoneRules, ZoneRulesBuilder> {
 
   /// Finds the zone offset that applies at the given [instant].
   NamedZoneOffset offsetFor(HasInstant instant) {
-    // var i = lowerBound(transitions, instant);
     var i = transitions.toList().lowerBoundBy<HasInstant>(
-        ZoneTransition((b) => b..transitionTime = instant.asInstant),
+        ZoneTransition((b) => b
+          ..transitionTime = instant.asInstant
+          ..offset = NamedZoneOffset('', false, 0)
+          ..isDst = false),
         (t) => t.transitionTime);
-    if (i == 0) {
-      return NamedZoneOffset('UTC', false, 0);
-    }
     if (i == transitions.length) {
       return rule.offsetFor(instant);
     }
-    return transitions[i].offset;
+    return transitions[max(0, i - 1)].offset;
   }
 }

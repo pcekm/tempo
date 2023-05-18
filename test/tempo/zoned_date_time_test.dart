@@ -16,19 +16,19 @@ void main() {
     test('fromInstant', () {
       var instant =
           Instant.fromUnix(Timespan(seconds: 1672657445, nanoseconds: 6));
-      var dt = ZonedDateTime.fromInstant(instant, "America/Los Angeles");
+      var dt = ZonedDateTime.fromInstant(instant, "America/Los_Angeles");
       expect(dt, hasDate(2023, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt, isNotDst);
       expect(dt.timeZone, 'PST');
-      expect(dt.zoneId, 'America/Los Angeles');
+      expect(dt.zoneId, 'America/Los_Angeles');
     });
 
     group('default (from components)', () {
       group('west', () {
         test('normal std', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 1, 1, 2, 3, 4, 5);
+              ZonedDateTime('America/Los_Angeles', 2023, 1, 1, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -40,7 +40,7 @@ void main() {
         });
         test('normal dst', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 6, 1, 2, 3, 4, 5);
+              ZonedDateTime('America/Los_Angeles', 2023, 6, 1, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -53,7 +53,7 @@ void main() {
 
         test('spring forward into null space', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 3, 12, 2, 3, 4, 5);
+              ZonedDateTime('America/Los_Angeles', 2023, 3, 12, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -64,7 +64,7 @@ void main() {
 
         test('fall back into ambiguity', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 11, 5, 1, 3, 4, 5);
+              ZonedDateTime('America/Los_Angeles', 2023, 11, 5, 1, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -75,7 +75,7 @@ void main() {
 
         test('spring forward over time change', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 3, 12, 3, 4, 5, 6);
+              ZonedDateTime('America/Los_Angeles', 2023, 3, 12, 3, 4, 5, 6);
 
           expect(got, hasHour(3));
           expect(got, isDst);
@@ -87,7 +87,7 @@ void main() {
 
         test('fall back over time change', () {
           var got =
-              ZonedDateTime('America/Los Angeles', 2023, 11, 5, 2, 3, 4, 5);
+              ZonedDateTime('America/Los_Angeles', 2023, 11, 5, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -203,7 +203,7 @@ void main() {
 
   group('conversions', () {
     test('toLocal', () {
-      var local = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6)
+      var local = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6)
           .toLocal();
       expect(local, isA<LocalDateTime>());
       expect(local, hasDate(2000, 1, 2));
@@ -235,7 +235,7 @@ void main() {
     });
 
     test('asInstant', () {
-      var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       expect(
           dt,
           hasInstant(
@@ -245,7 +245,7 @@ void main() {
 
   test('timespanUntil', () {
     var dt1 = ZonedDateTime.fromInstant(
-        Instant.fromUnix(Timespan(seconds: 2000)), 'America/Los Angeles');
+        Instant.fromUnix(Timespan(seconds: 2000)), 'America/Los_Angeles');
     var dt2 = ZonedDateTime.fromInstant(
         Instant.fromUnix(Timespan(seconds: 3000)), 'Australia/Sydney');
     expect(dt1.timespanUntil(dt2), Timespan(seconds: 1000));
@@ -253,7 +253,7 @@ void main() {
 
   group('Timespan arithmetic', () {
     test('plusTimespan', () {
-      var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusTimespan(Timespan(days: 120));
       expect(got, hasDate(2000, 5, 1));
       // One hour ahead because of DST:
@@ -261,7 +261,7 @@ void main() {
     });
 
     test('minusTimespan', () {
-      var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusTimespan(Timespan(days: 120));
       expect(got, hasDate(1999, 9, 4));
       // One hour ahead because of DST:
@@ -271,7 +271,7 @@ void main() {
 
   group('Period arithmetic', () {
     test('plusPeriod', () {
-      var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusPeriod(Period(months: 6));
       expect(got, hasDate(2000, 7, 2));
       // Remains unchanged in spite of DST.
@@ -279,7 +279,7 @@ void main() {
     });
 
     test('minusPeriod', () {
-      var dt = ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusPeriod(Period(months: 6));
       expect(got, hasDate(1999, 7, 2));
       // Remains unchanged in spite of DST.
@@ -316,7 +316,7 @@ void main() {
   });
 
   test('toString()', () {
-    expect(ZonedDateTime('America/Los Angeles', 2000, 1, 2, 3, 4).toString(),
+    expect(ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4).toString(),
         '2000-01-02T03:04-0800');
     expect(ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4).toString(),
         '2000-01-02T03:04+0200');

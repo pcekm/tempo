@@ -6,7 +6,6 @@ import 'package:tempo/timezone.dart';
 
 import 'local_time_type_block.dart';
 import 'posix_tz.dart';
-import 'zone_info_reader_result.dart';
 
 class ZoneInfoFormatException implements Exception {
   final String message;
