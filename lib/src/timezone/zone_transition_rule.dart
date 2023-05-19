@@ -15,8 +15,6 @@ abstract class ZoneTransitionRule
   static Serializer<ZoneTransitionRule> get serializer =>
       _$zoneTransitionRuleSerializer;
 
-  // TODO: Redo this with NamedZoneOffset + a hasDst flag. Or something.
-
   /// The name of the standard time zone. For example, "PST", "EST", "CET".
   String get stdName;
 
@@ -24,16 +22,19 @@ abstract class ZoneTransitionRule
   ZoneOffset get stdOffset;
 
   /// The name of the daylight savings time zone (if any). For example,
-  /// "PDT", "EDT", "CEST".
+  /// "PDT", "EDT", "CEST". Null for fixed-offset rules.
   String? get dstName;
 
-  /// The daylight savings offset from UTC. Defaults to [stdOffset] + 1 hour.
+  /// The daylight savings offset from UTC. Defaults to [stdOffset] + 1 hour
+  /// if [dstName] is set. Null for fixed-offset rules.
   ZoneOffset? get dstOffset;
 
   /// The rule for when the time switches to daylight savings in a given year.
+  /// Null for fixed-offset rules.
   TimeChangeRule? get dstStartRule;
 
   /// The rule for when the time switches to standard time in a given year.
+  /// Null for fixed-offset rules.
   TimeChangeRule? get stdStartRule;
 
   ZoneTransitionRule._();
@@ -46,6 +47,17 @@ abstract class ZoneTransitionRule
     if (b.dstName != null && b.dstOffset == null) {
       b.dstOffset =
           ZoneOffset.fromTimespan(b.stdOffset!.asTimespan + Timespan(hours: 1));
+    }
+  }
+
+  @BuiltValueHook(finalizeBuilder: true)
+  static void _checkConsistency(ZoneTransitionRuleBuilder b) {
+    if ((b.dstName == null) != (b.dstOffset == null) ||
+        (b.dstName == null) != (b._dstStartRule == null) ||
+        (b.dstName == null) != (b._stdStartRule == null)) {
+      throw ArgumentError(
+          'dstName, dstOffset, dstStartRule and stdStartRule must all be null '
+          'or non-null together.');
     }
   }
 
