@@ -1,7 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
-import 'package:collection/collection.dart';
 
 class HasZoneId extends CustomMatcher {
   HasZoneId(matcher) : super('Object with zoneId of', 'zoneId', matcher);
@@ -9,12 +9,19 @@ class HasZoneId extends CustomMatcher {
   Object? featureValueOf(actual) => actual.zoneId;
 }
 
+// The tests in here vary between tests of functionality to tests of the
+// built-in database consistency.
+
 void main() {
   // TODO: Need a test version of this.
-  final db = Database();
+  final db = TimeZoneDatabase();
+
+  test('version populated', () {
+    expect(db.version, isNotEmpty);
+  });
 
   test('zoneRulesFor', () {
-    var got = db.zoneRulesFor('Europe/Tallinn');
+    var got = db.rules['Europe/Tallinn'];
     expect(got, isNotNull);
     expect(got!.transitions, hasLength(greaterThan(10)));
     expect(got.rule.stdName, 'EET');
@@ -23,15 +30,14 @@ void main() {
   });
 
   test('transitions correctly sorted', () {
-    for (var z in db.allZoneRules()) {
-      var rules = db.zoneRulesFor(z.zoneId)!;
-      var transitions = rules.transitions.map((e) => e.transitionTime).toList();
+    for (var rule in db.rules.values) {
+      var transitions = rule.transitions.map((e) => e.transitionTime).toList();
       expect(transitions.isSorted((a, b) => a.compareTo(b)), isTrue);
     }
   });
 
   group('offsetFor', () {
-    final rules = db.zoneRulesFor('America/Los_Angeles')!;
+    final rules = db.rules['America/Los_Angeles']!;
 
     test('before first transition', () {
       var offset = rules.offsetFor(Instant.minimum);
@@ -67,37 +73,31 @@ void main() {
       expect(offset, ZoneOffset(-7));
     });
 
-    test('all zones decode without error', () {
+    test('all zones can find an offset without error', () {
       Instant now = Instant.now();
-      // This isn't really all time zones. Just those listed in zone1970.tab.
-      for (var z in db.allZoneRules()) {
+      for (var ent in db.rules.entries) {
         try {
-          db.zoneRulesFor(z.zoneId)!.offsetFor(now);
+          ent.value.offsetFor(now);
         } catch (e, stacktrace) {
-          fail('Zone ${z.zoneId} exception: $e\n$stacktrace');
+          fail('Zone ${ent.key} exception: $e\n$stacktrace');
         }
       }
     });
   });
 
-  test('allZoneRules() smoke test', () {
-    var zones = db.allZoneRules();
-    expect(zones, hasLength(greaterThan(100)));
-  });
-
-  test('forCountry()', () {
-    var zones = db.forCountry('ee');
-    expect(zones, hasLength(1));
-    expect(zones[0], HasZoneId('Europe/Tallinn'));
-    zones = db.forCountry('US');
-    expect(zones, hasLength(greaterThan(10)));
-    expect(zones, contains(HasZoneId('America/Juneau')));
+  test('descriptionsByCountry', () {
+    var desc = db.descriptionsByCountry['EE'];
+    expect(desc, hasLength(1));
+    expect(desc[0], HasZoneId('Europe/Tallinn'));
+    desc = db.descriptionsByCountry['US'];
+    expect(desc, hasLength(greaterThan(10)));
+    expect(desc, contains(HasZoneId('America/Juneau')));
   });
 
   group('byProximity()', () {
     test('without country', () {
       var zones = db.byProximity(54.517249, -128.599528);
-      expect(zones, hasLength(equals(db.allZoneRules().length)));
+      expect(zones, hasLength(equals(db.descriptions.length)));
 
       expect(zones[0], HasZoneId('America/Metlakatla'));
       expect(zones[1],

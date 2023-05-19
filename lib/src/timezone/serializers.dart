@@ -3,15 +3,14 @@ import 'package:built_value/serializer.dart';
 
 import '../../tempo.dart';
 import '../../timezone.dart';
-import 'zone_info.dart';
 
 part 'serializers.g.dart';
 
 @SerializersFor([
   TimeChangeRule,
-  ZoneInfo,
+  TimeZoneDatabase,
   ZoneRules,
-  ZoneTabRow,
+  ZoneDescription,
   ZoneTransitionRule,
   ZoneTransition,
 ])

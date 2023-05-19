@@ -2,11 +2,14 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'zone_tab_row.g.dart';
+part 'zone_description.g.dart';
 
-/// Information about a single time zone.
-abstract class ZoneTabRow implements Built<ZoneTabRow, ZoneTabRowBuilder> {
-  static Serializer<ZoneTabRow> get serializer => _$zoneTabRowSerializer;
+/// Information about a time zone that may be helpful when trying to choose
+/// one.
+abstract class ZoneDescription
+    implements Built<ZoneDescription, ZoneDescriptionBuilder> {
+  static Serializer<ZoneDescription> get serializer =>
+      _$zoneDescriptionSerializer;
 
   /// A string that uniquely identifies the time zone.
   ///
@@ -26,6 +29,7 @@ abstract class ZoneTabRow implements Built<ZoneTabRow, ZoneTabRowBuilder> {
   /// the time zone they're looking for.
   String get comments;
 
-  ZoneTabRow._();
-  factory ZoneTabRow([void Function(ZoneTabRowBuilder) updates]) = _$ZoneTabRow;
+  ZoneDescription._();
+  factory ZoneDescription([void Function(ZoneDescriptionBuilder) updates]) =
+      _$ZoneDescription;
 }

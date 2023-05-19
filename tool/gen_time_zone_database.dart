@@ -4,20 +4,22 @@ import 'dart:io';
 import 'package:built_collection/built_collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
-import 'package:tempo/src/timezone/zone_info.dart';
-import 'package:tempo/timezone.dart';
 import 'package:tempo/src/timezone/serializers.dart';
+import 'package:tempo/timezone.dart';
 
-import 'gen_zone_data/zone_info_reader.dart';
-import 'gen_zone_data/zone_tab_reader.dart';
+import 'gen_time_zone_database/zone_info_reader.dart';
+import 'gen_time_zone_database/zone_tab_reader.dart';
 
 const String zoneTabFilename = 'zone1970.tab';
 
-const String outFile = 'lib/src/timezone/database.data.dart';
+const String libraryName = 'time_zone_database';
+
+const String outFile = 'lib/src/timezone/$libraryName.data.dart';
 
 void main(List<String> args) {
   if (args.length != 1) {
-    stderr.writeln('Usage: dart run tool/gen_zone_data.dart /path/to/tzdb');
+    stderr.writeln(
+        'Usage: dart run tool/gen_time_zone_database.dart /path/to/tzdb');
     exit(1);
   }
   var path = args[0];
@@ -30,12 +32,13 @@ void main(List<String> args) {
     buildDatabase(path, tempDir);
     var zoneInfoDir = Directory(p.join(tempDir.path, 'usr/share/zoneinfo'));
 
-    var zoneInfoRec = ZoneInfo((b) => b
+    var zoneInfoRec = TimeZoneDatabase.build((b) => b
+      ..version = version
       ..rules = readZoneInfoRecords(zoneInfoDir).toBuilder()
-      ..zoneTab = readZoneTab1970(
+      ..descriptions = readZoneTab1970(
               File(p.join(zoneInfoDir.path, zoneTabFilename)).readAsBytesSync())
           .toBuilder()
-      ..zoneTabByCountry = byCountry(b.zoneTab.build()).toBuilder());
+      ..descriptionsByCountry = byCountry(b.descriptions.build()).toBuilder());
 
     File(outFile).writeAsStringSync(template(zoneInfoRec));
   } finally {
@@ -76,8 +79,9 @@ BuiltMap<String, ZoneRules> readZoneInfoRecords(Directory zoneInfoDir) {
   return b.build();
 }
 
-BuiltListMultimap<String, ZoneTabRow> byCountry(BuiltList<ZoneTabRow> zoneTab) {
-  var b = ListMultimapBuilder<String, ZoneTabRow>();
+BuiltListMultimap<String, ZoneDescription> byCountry(
+    BuiltList<ZoneDescription> zoneTab) {
+  var b = ListMultimapBuilder<String, ZoneDescription>();
   for (var row in zoneTab) {
     for (var country in row.countries) {
       b.add(country, row);
@@ -86,13 +90,14 @@ BuiltListMultimap<String, ZoneTabRow> byCountry(BuiltList<ZoneTabRow> zoneTab) {
   return b.build();
 }
 
-String template(ZoneInfo zoneInfoRec) {
+String template(TimeZoneDatabase zoneInfoRec) {
   var zoneInfoJson = json.encode(serializers.serialize(zoneInfoRec));
   return DartFormatter().format("""// AUTOMATICALLY GENERATED: DO NOT EDIT
 
-part of 'database.dart';
+part of '$libraryName.dart';
 
-final ZoneInfo _zoneInfo = 
-    serializers.deserialize(json.decode('''$zoneInfoJson''')) as ZoneInfo;
+final TimeZoneDatabase _defaultTimeZoneDatabase = 
+    serializers.deserialize(json.decode('''$zoneInfoJson'''))
+    as TimeZoneDatabase;
 """);
 }

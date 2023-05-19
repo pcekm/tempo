@@ -11,7 +11,6 @@ environment:
   sdk: ">=2.18.5 <3.0.0"
 
 dependencies:
-  archive: ^3.3.7
   built_collection: ^5.1.1
   built_value: ^8.5.0
   collection: ^1.17.1

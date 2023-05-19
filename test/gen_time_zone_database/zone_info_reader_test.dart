@@ -4,7 +4,7 @@ import 'package:tempo/tempo.dart';
 import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
-import '../../tool/gen_zone_data/zone_info_reader.dart';
+import '../../tool/gen_time_zone_database/zone_info_reader.dart';
 
 // An abbreviated America/Los_Angeles base 64 encoded.
 var losAngeles = base64Decode("""
@@ -64,7 +64,6 @@ void main() {
 
     test('first / default', () {
       var first = laTransitions.first;
-      expect(first.isDst, false);
       expect(first.offset, NamedZoneOffset('LMT', false, -7, -52, -58));
       expect(first.transitionTime, Instant.minimum);
     });
@@ -77,7 +76,6 @@ void main() {
           contains(ZoneTransition((b) => b
             ..transitionTime =
                 OffsetDateTime(ZoneOffset(-8), 2000, 4, 2, 2).asInstant
-            ..isDst = true
             ..offset = NamedZoneOffset('PDT', true, -7))));
     });
 

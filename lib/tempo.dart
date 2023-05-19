@@ -131,7 +131,8 @@ import 'src/tempo/common.dart';
 import 'src/tempo/julian_day.dart';
 import 'timezone.dart';
 
-export 'timezone.dart';
+export 'timezone.dart'
+    show allTimeZones, timeZonesForCountry, timeZonesByProximity;
 
 part 'src/tempo/__period_arithmetic.dart';
 part 'src/tempo/has_date.dart';

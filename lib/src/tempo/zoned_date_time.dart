@@ -66,7 +66,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   /// Looks up a time zone and throws ArgumentError if it's invalid.
   static NamedZoneOffset _lookupTimeZone(String zoneId, HasInstant instant) {
-    var tz = timeZones.zoneRulesFor(zoneId)?.offsetFor(instant);
+    var tz = TimeZoneDatabase().rules[zoneId]?.offsetFor(instant);
     if (tz == null) {
       throw ArgumentError.value(zoneId, 'zoneId');
     }

@@ -16,7 +16,6 @@ abstract class ZoneTransition
 
   Instant get transitionTime;
   NamedZoneOffset get offset;
-  bool get isDst;
 
   ZoneTransition._();
   factory ZoneTransition([void Function(ZoneTransitionBuilder) updates]) =

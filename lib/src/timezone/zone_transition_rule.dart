@@ -2,7 +2,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
 import '../../tempo.dart';
-import 'time_change_rule.dart';
+import '../../timezone.dart';
 
 part 'zone_transition_rule.g.dart';
 

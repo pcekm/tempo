@@ -1,5 +1,5 @@
-import 'package:tempo/src/timezone/time_change_rule.dart';
 import 'package:tempo/tempo.dart';
+import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
 void main() {

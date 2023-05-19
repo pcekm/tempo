@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
-import '../../tool/gen_zone_data/zone_tab_reader.dart';
+import '../../tool/gen_time_zone_database/zone_tab_reader.dart';
 
 const String contents = '# comment\n'
     '# another comment\n'
@@ -25,7 +25,7 @@ void main() {
     var lines = readZoneTab1970(Uint8List.fromList(utf8.encode(contents)));
     expect(
         lines,
-        containsOnce(ZoneTabRow((b) => b
+        containsOnce(ZoneDescription((b) => b
           ..countries.add('AD')
           ..latitude = 42.5
           ..longitude = 1 + 31 / 60
@@ -33,7 +33,7 @@ void main() {
           ..comments = '')));
     expect(
         lines,
-        containsOnce(ZoneTabRow((b) => b
+        containsOnce(ZoneDescription((b) => b
           ..countries.addAll(['AE', 'OM', 'RE', 'SC', 'TF'])
           ..latitude = 25 + 18 / 60
           ..longitude = 55 + 18 / 60
@@ -42,7 +42,7 @@ void main() {
     // https://youtu.be/oynJcSnLSI4:
     expect(
         lines,
-        containsOnce(ZoneTabRow((b) => b
+        containsOnce(ZoneDescription((b) => b
           ..countries.addAll(['AQ'])
           ..latitude = -72 - 41 / 3600
           ..longitude = 2 + 32 / 60 + 6 / 3600

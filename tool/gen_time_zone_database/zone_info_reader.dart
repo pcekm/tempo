@@ -90,7 +90,6 @@ class ZoneInfoReader {
       Uint8List designations) {
     var first = ZoneTransition((b) => b
       ..transitionTime = Instant.minimum
-      ..isDst = localTimeTypes[0].isDst
       ..offset = NamedZoneOffset.fromZoneOffset(
           _nullTermString(designations, localTimeTypes[0].index),
           localTimeTypes[0].isDst,
@@ -102,8 +101,7 @@ class ZoneInfoReader {
           return ZoneTransition((b) => b
             ..transitionTime = transitionTimes[i]
             ..offset = NamedZoneOffset.fromZoneOffset(
-                designation, ltt.isDst, ltt.utOffset)
-            ..isDst = ltt.isDst);
+                designation, ltt.isDst, ltt.utOffset));
         });
   }
 

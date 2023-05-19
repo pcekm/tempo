@@ -1,13 +1,12 @@
+import 'dart:math';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:collection/collection.dart';
 
 import '../../tempo.dart';
-import 'zone_transition.dart';
-import 'zone_transition_rule.dart';
-
-import 'dart:math';
+import '../../timezone.dart';
 
 part 'zone_rules.g.dart';
 
@@ -31,8 +30,7 @@ abstract class ZoneRules implements Built<ZoneRules, ZoneRulesBuilder> {
     var i = transitions.toList().lowerBoundBy<HasInstant>(
         ZoneTransition((b) => b
           ..transitionTime = instant.asInstant
-          ..offset = NamedZoneOffset('', false, 0)
-          ..isDst = false),
+          ..offset = NamedZoneOffset('', false, 0)),
         (t) => t.transitionTime);
     if (i == transitions.length) {
       return rule.offsetFor(instant);

@@ -1,7 +1,8 @@
 import 'package:tempo/tempo.dart';
+import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
-import '../../tool/gen_zone_data/posix_tz.dart';
+import '../../tool/gen_time_zone_database/posix_tz.dart';
 
 final jan1 = LocalDateTime(2023, 1, 1);
 final feb19 = LocalDateTime(2023, 2, 19); // 3rd Sunday in Feb

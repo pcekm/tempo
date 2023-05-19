@@ -1,5 +1,5 @@
-import 'package:tempo/src/timezone/zone_transition_rule.dart';
 import 'package:tempo/tempo.dart';
+import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
 final jan1 = LocalDateTime(2023, 1, 1);

@@ -2,14 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
-
 import 'package:tempo/timezone.dart';
 
 final _latLongRe =
     RegExp(r'^([+-])(\d{2})(\d{2})(\d{2})?([+-])(\d{3})(\d{2})(\d{2})?$');
 
 /// Reads 'zone1970.tab' file.
-BuiltList<ZoneTabRow> readZoneTab1970(Uint8List contents) {
+BuiltList<ZoneDescription> readZoneTab1970(Uint8List contents) {
   var lines = LineSplitter()
       .convert(utf8.decode(contents))
       .where((line) => line.trim().isNotEmpty && !line.startsWith('#'));
@@ -17,10 +16,10 @@ BuiltList<ZoneTabRow> readZoneTab1970(Uint8List contents) {
   return BuiltList.build((b) => b.addAll(zoneDescriptions));
 }
 
-ZoneTabRow _parseLine(String line) {
+ZoneDescription _parseLine(String line) {
   var fields = line.split('\t');
   var latLong = _latLongRe.firstMatch(fields[1]);
-  return ZoneTabRow((b) => b
+  return ZoneDescription((b) => b
     ..zoneId = fields[2]
     ..countries.addAll(fields[0].split(','))
     ..latitude = _dmsToDouble(

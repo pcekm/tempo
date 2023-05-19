@@ -1,20 +1,19 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:collection/collection.dart';
+import 'package:tempo/timezone.dart';
 
 import 'serializers.dart';
-import 'zone_info.dart';
-import 'zone_rules.dart';
-import 'zone_tab_row.dart';
 
-part 'database.data.dart';
+part 'time_zone_database.data.dart';
+part 'time_zone_database.g.dart';
 
-/// Default time zone database.
-final timeZones = Database();
-
-/// Returns all possible time zones in unspecified order.
-allZoneRules() => timeZones.allZoneRules();
+/// Returns a table of time zones with information usedful for choosing one.
+allTimeZones() => TimeZoneDatabase().descriptions;
 
 /// Provides a list of time zones sorted by proximity to a given set of
 /// geographic coordinates. Optionally filters by country.
@@ -26,29 +25,54 @@ allZoneRules() => timeZones.allZoneRules();
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-timeZonesByProximity(double latitude, double longitude,
-        [String? country = null]) =>
-    timeZones.byProximity(latitude, longitude, country);
+timeZonesByProximity(double latitude, double longitude, [String? country]) =>
+    TimeZoneDatabase().byProximity(latitude, longitude, country);
 
 /// Provides a list of time zones relevant to a specific country.
 ///
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-timeZonesForCountry(String country) => timeZones.forCountry(country);
+timeZonesForCountry(String country) =>
+    TimeZoneDatabase().descriptionsByCountry[country.toUpperCase()];
 
 /// Contains all known time zones, and provides methods for finding them.
-class Database {
-  /// Looks up a set of time zone rules by [zoneId].
-  ///
-  /// The [zoneId] arg is typically in the form "<continent>/<city>".
-  /// For example, "America/Los_Angeles" and "Europe/Tallinn".
-  ///
-  /// Returns `null` if no matching zone is found.
-  ZoneRules? zoneRulesFor(String zoneId) => _zoneInfo.rules[zoneId];
+abstract class TimeZoneDatabase
+    implements Built<TimeZoneDatabase, TimeZoneDatabaseBuilder> {
+  static Serializer<TimeZoneDatabase> get serializer =>
+      _$timeZoneDatabaseSerializer;
 
-  /// Returns all possible time zones in unspecified order.
-  Iterable<ZoneTabRow> allZoneRules() => _zoneInfo.zoneTab;
+  /// The version of the ARIN database this contains.
+  String get version;
+
+  /// A map of all known time zone rules indexed by zone id.
+  ///
+  /// The zone id is typically in the form "<continent>/<city>".
+  /// For example, "America/Los_Angeles" and "Europe/Tallinn".
+  BuiltMap<String, ZoneRules> get rules;
+
+  /// A table of additional information used for choosing a time zone.
+  BuiltList<ZoneDescription> get descriptions;
+
+  /// A list of additional information used for choosing a time zone,
+  /// indexed by country.
+  ///
+  /// The [country] arg is an [ISO 3166 2-letter
+  /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+  /// For example, US = United States, CA = Canada, EE = Estonia, etc.
+  BuiltListMultimap<String, ZoneDescription> get descriptionsByCountry;
+
+  TimeZoneDatabase._();
+
+  /// Constructs a new TimeZoneDatabase.
+  ///
+  /// Uses a compiled in copy of the ARIN
+  /// [Time Zone Database](https://www.iana.org/time-zones)
+  factory TimeZoneDatabase() => _defaultTimeZoneDatabase;
+
+  /// Constructs a new TimeZoneDatabase using custom data.
+  factory TimeZoneDatabase.build(
+      void Function(TimeZoneDatabaseBuilder) updates) = _$TimeZoneDatabase;
 
   /// Provides a list of time zones sorted by proximity to a given set of
   /// geographic coordinates. Optionally filters by country.
@@ -60,27 +84,19 @@ class Database {
   /// The [country] arg is an [ISO 3166 2-letter
   /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
   /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-  List<ZoneTabRow> byProximity(double latitude, double longitude,
+  List<ZoneDescription> byProximity(double latitude, double longitude,
       [String? country]) {
-    var zones = _zoneInfo.zoneTab.toList();
+    var zones = descriptions.toList();
     if (country != null) {
-      zones = forCountry(country).toList();
+      zones = descriptionsByCountry[country].toList();
     }
     zones.sortByCompare((x) => x, _compareByProximityTo(latitude, longitude));
     return zones;
   }
 
-  /// Provides a list of time zones relevant to a specific country.
-  ///
-  /// The [country] arg is an [ISO 3166 2-letter
-  /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
-  /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-  List<ZoneTabRow> forCountry(String country) =>
-      _zoneInfo.zoneTabByCountry[country.toUpperCase()].toList();
-
   /// Returns a [Comparator] that compares two ZoneDescriptions by their
   /// proximity to the specified geographic coordinates.
-  static Comparator<ZoneTabRow> _compareByProximityTo(
+  static Comparator<ZoneDescription> _compareByProximityTo(
           double latitude, double longitude) =>
       (a, b) => Comparable.compare(
             _distance(latitude, longitude, a.latitude, a.longitude),
