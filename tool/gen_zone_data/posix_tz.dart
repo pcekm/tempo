@@ -1,5 +1,4 @@
 import 'package:string_scanner/string_scanner.dart';
-import 'package:tempo/src/zonedb.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/timezone.dart';
 
@@ -100,10 +99,5 @@ class PosixTz {
       return null;
     }
     return ZoneOffset.fromTimespan(span);
-  }
-
-  TimeZone timeZoneFor(HasInstant instant) {
-    var offset = rule.offsetFor(instant);
-    return TimeZone(offset, offset.name, offset.isDst);
   }
 }

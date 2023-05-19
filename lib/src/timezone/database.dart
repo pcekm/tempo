@@ -1,16 +1,41 @@
+import 'dart:convert';
 import 'dart:math';
 
-import 'package:built_collection/built_collection.dart';
 import 'package:collection/collection.dart';
 
+import 'serializers.dart';
+import 'zone_info.dart';
 import 'zone_rules.dart';
 import 'zone_tab_row.dart';
 
-import 'serializers.dart';
-import 'dart:convert';
-import 'zone_info.dart';
-
 part 'database.data.dart';
+
+/// Default time zone database.
+final timeZones = Database();
+
+/// Returns all possible time zones in unspecified order.
+allZoneRules() => timeZones.allZoneRules();
+
+/// Provides a list of time zones sorted by proximity to a given set of
+/// geographic coordinates. Optionally filters by country.
+///
+/// The proximity sort is deliberately biased towards locations on similar
+/// longitudes since time zones tend to be much narrower in the east-west
+/// direction.
+///
+/// The [country] arg is an [ISO 3166 2-letter
+/// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+/// For example, US = United States, CA = Canada, EE = Estonia, etc.
+timeZonesByProximity(double latitude, double longitude,
+        [String? country = null]) =>
+    timeZones.byProximity(latitude, longitude, country);
+
+/// Provides a list of time zones relevant to a specific country.
+///
+/// The [country] arg is an [ISO 3166 2-letter
+/// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+/// For example, US = United States, CA = Canada, EE = Estonia, etc.
+timeZonesForCountry(String country) => timeZones.forCountry(country);
 
 /// Contains all known time zones, and provides methods for finding them.
 class Database {

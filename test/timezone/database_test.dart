@@ -97,7 +97,7 @@ void main() {
   group('byProximity()', () {
     test('without country', () {
       var zones = db.byProximity(54.517249, -128.599528);
-      expect(zones, hasLength(equals(allTimeZones().length)));
+      expect(zones, hasLength(equals(db.allZoneRules().length)));
 
       expect(zones[0], HasZoneId('America/Metlakatla'));
       expect(zones[1],

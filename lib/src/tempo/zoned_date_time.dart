@@ -12,18 +12,20 @@ class ZonedDateTime implements HasDateTime, HasInstant {
       ZonedDateTime.fromInstant(Instant.maximum, 'GMT');
 
   final OffsetDateTime _dateTime;
-  final TimeZone _timeZone;
+
+  /// The offset from UTC.
+  final NamedZoneOffset offset;
 
   /// A string that uniqueley identifies the time zone.
   final String zoneId;
 
-  ZonedDateTime._(this._dateTime, this.zoneId, this._timeZone);
+  ZonedDateTime._(this._dateTime, this.zoneId, this.offset);
 
   /// Constructs a [ZonedDateTime] from an [Instant] and a zone ID.
   factory ZonedDateTime.fromInstant(HasInstant instant, String zoneId) {
-    var timeZone = _lookupTimeZone(zoneId, instant);
-    var dateTime = OffsetDateTime.fromInstant(instant, timeZone.offset);
-    return ZonedDateTime._(dateTime, zoneId, timeZone);
+    var offset = _lookupTimeZone(zoneId, instant);
+    var dateTime = OffsetDateTime.fromInstant(instant, offset);
+    return ZonedDateTime._(dateTime, zoneId, offset);
   }
 
   /// Creates a [ZonedDateTime] from indiviual components.
@@ -63,8 +65,8 @@ class ZonedDateTime implements HasDateTime, HasInstant {
       ZonedDateTime.fromDateTime(DateTime.now(), zoneId);
 
   /// Looks up a time zone and throws ArgumentError if it's invalid.
-  static TimeZone _lookupTimeZone(String zoneId, HasInstant instant) {
-    var tz = lookupTimeZone(zoneId, instant);
+  static NamedZoneOffset _lookupTimeZone(String zoneId, HasInstant instant) {
+    var tz = timeZones.zoneRulesFor(zoneId)?.offsetFor(instant);
     if (tz == null) {
       throw ArgumentError.value(zoneId, 'zoneId');
     }
@@ -102,13 +104,10 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// These strings are not necessarily unique but are commonly used and
   /// understood. See [zoneId] for a unique identifier.
-  String get timeZone => _timeZone.designation;
-
-  /// The offset from UTC.
-  ZoneOffset get offset => _timeZone.offset;
+  String get timeZone => offset.name;
 
   /// If this is a daylight savings (or summer) time.
-  bool get isDst => _timeZone.isDst;
+  bool get isDst => offset.isDst;
 
   /// Converts this to a [LocalDateTime].
   ///

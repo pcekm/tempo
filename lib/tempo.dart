@@ -129,14 +129,9 @@ import 'package:string_scanner/string_scanner.dart';
 
 import 'src/tempo/common.dart';
 import 'src/tempo/julian_day.dart';
-import 'src/zonedb.dart';
+import 'timezone.dart';
 
-export 'src/zonedb.dart'
-    show
-        ZoneDescription,
-        allTimeZones,
-        timeZonesByProximity,
-        timeZonesForCountry;
+export 'timezone.dart';
 
 part 'src/tempo/__period_arithmetic.dart';
 part 'src/tempo/has_date.dart';
