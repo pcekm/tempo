@@ -30,10 +30,10 @@ abstract class ZoneTransitionRule
   /// The daylight savings offset from UTC. Defaults to [stdOffset] + 1 hour.
   ZoneOffset? get dstOffset;
 
-  /// The rule for when the day switches to daylight savings in a given year.
+  /// The rule for when the time switches to daylight savings in a given year.
   TimeChangeRule? get dstStartRule;
 
-  /// The rule for when the day switches to standard time in a given year.
+  /// The rule for when the time switches to standard time in a given year.
   TimeChangeRule? get stdStartRule;
 
   ZoneTransitionRule._();
@@ -71,8 +71,7 @@ abstract class ZoneTransitionRule
         return namedStdOffset;
       }
     } else {
-      // "Winter time." Hello, Ireland. You just _had_ to be different. :-)
-      // var lastDstStart = dstStartRule.forYear(std.year - 1);
+      // "Winter time." Hello, Ireland. :-)
       if (std >= stdStart && dst < dstStart) {
         return namedStdOffset;
       } else {
