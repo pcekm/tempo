@@ -102,7 +102,7 @@ OffsetDateTime(offset, 2000, 4, 21, 12, 30);
 A [`ZonedDateTime`][ZonedDateTime] with a proper time zone:
 
 ```dart
-ZonedDateTime('America/Los Angeles', 2023, 5, 9, 10, 47);
+ZonedDateTime('America/Los_Angeles', 2023, 5, 9, 10, 47);
 ```
 
 Both [`OffsetDateTime`][OffsetDateTime] and [`ZonedDateTime`][ZonedDateTime]
@@ -113,7 +113,7 @@ This moment is stored in an [`Instant`][Instant]:
 Instant.now();
 Instant.fromUnix(Timespan(seconds: 1683654985));
 OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).asInstant;
-ZonedDateTime('America/Los Angeles', 2023, 1, 2, 3).asInstant;
+ZonedDateTime('America/Los_Angeles', 2023, 1, 2, 3).asInstant;
 ```
 
 You can get a list of time zones nearest to a geographical

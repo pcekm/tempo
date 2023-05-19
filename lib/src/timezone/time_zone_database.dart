@@ -13,7 +13,8 @@ part 'time_zone_database.data.dart';
 part 'time_zone_database.g.dart';
 
 /// Returns a table of time zones with information usedful for choosing one.
-allTimeZones() => TimeZoneDatabase().descriptions;
+List<ZoneDescription> allTimeZones() =>
+    TimeZoneDatabase().descriptions.toList();
 
 /// Provides a list of time zones sorted by proximity to a given set of
 /// geographic coordinates. Optionally filters by country.
@@ -25,7 +26,8 @@ allTimeZones() => TimeZoneDatabase().descriptions;
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-timeZonesByProximity(double latitude, double longitude, [String? country]) =>
+List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
+        [String? country]) =>
     TimeZoneDatabase().byProximity(latitude, longitude, country);
 
 /// Provides a list of time zones relevant to a specific country.
@@ -33,8 +35,8 @@ timeZonesByProximity(double latitude, double longitude, [String? country]) =>
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
-timeZonesForCountry(String country) =>
-    TimeZoneDatabase().descriptionsByCountry[country.toUpperCase()];
+List<ZoneDescription> timeZonesForCountry(String country) =>
+    TimeZoneDatabase().descriptionsByCountry[country.toUpperCase()].toList();
 
 /// Contains all known time zones, and provides methods for finding them.
 abstract class TimeZoneDatabase

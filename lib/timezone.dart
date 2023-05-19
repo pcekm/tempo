@@ -1,4 +1,4 @@
-/// Contains information about time zones.
+/// Contains information about time zones (mostly for internal use).
 ///
 /// The important bits are exported from [tempo], so you probably shouldn't
 /// need to import this directly.
