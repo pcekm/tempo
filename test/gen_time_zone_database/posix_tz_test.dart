@@ -1,3 +1,5 @@
+@TestOn('!js')
+
 import 'package:tempo/tempo.dart';
 import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
