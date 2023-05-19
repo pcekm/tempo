@@ -4,7 +4,7 @@ description: >-
   DateTime with a rich set of date and time classes, advanced
   arithmetic features and full time zone support.
 
-version: 1.0.0
+version: 0.9.0
 repository: https://github.com/pcekm/tempo
 
 environment:
