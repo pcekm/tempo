@@ -107,8 +107,8 @@ class ZoneInfoReader {
 
   /// Reads a null-terminated string starting at [index].
   String _nullTermString(Uint8List bytes, int index, [int terminator = 0]) =>
-      // TODO: File a dart SDK bug about _UnmodifiableListMixin null error
-      // when omitting the second arg of sublist():
+      // Using the two-arg version of sublist to work around a bug
+      // in some earlier dart versions.
       AsciiDecoder().convert(bytes
           .sublist(index, bytes.length)
           .takeWhile((c) => c != terminator)
