@@ -24,7 +24,8 @@ class LocalDate
   /// The [year] uses ISO 8601, or astronomical year numbering and may be
   /// zero or negative. When negative, year equates to year - 1 BCE. Throws
   /// an exception if [month] or [day] is invalid.
-  // TODO: Just coerce invalid args into a proper date.
+  ///
+  /// Throws an exception if the date would be invalid.
   LocalDate([this.year = 0, this.month = 1, this.day = 1]) {
     _validate();
   }
