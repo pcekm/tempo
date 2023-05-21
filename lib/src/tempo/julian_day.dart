@@ -2,6 +2,9 @@ import 'package:meta/meta.dart';
 
 import '../../tempo.dart';
 
+const int _secondsPerDay = 86400;
+const int _nsPerSecond = 1000000000;
+
 /// A simple data object containing a Gregorian date + nanoseconds since
 /// the beginning of the day.
 @immutable
@@ -48,7 +51,7 @@ const List<int> _monthTable = [
 
 /// Calculates the weekday for a given Julian day.
 Weekday weekdayForJulianDay(Timespan julian) =>
-    Weekday.values[(julian + Timespan(hours: 12)).dayPart % 7 + 1];
+    Weekday.values[(julian + Timespan(hours: 12)).inDays % 7 + 1];
 
 /// Converts a Gregorian date and time to a Julian Day (JD).
 Timespan gregorianToJulianDay(Gregorian date, [int denominator = _nsPerDay]) {
@@ -66,14 +69,16 @@ Timespan gregorianToJulianDay(Gregorian date, [int denominator = _nsPerDay]) {
       days: jdn, nanoseconds: (denominator / 2).floor() + date.nanosecond);
 }
 
-/// Converts a [JulianDay] to years, months, days, and nanoseconds past
+/// Converts a julian day to years, months, days, and nanoseconds past
 /// midnight on the Gregorian calendar.
 Gregorian julianDayToGregorian(Timespan julian) {
   // See: Baum, Peter. (2017). Date Algorithms.
-  int z = julian.dayPart -
+  final nanosOfDay = julian.inSeconds.remainder(_secondsPerDay) * _nsPerSecond +
+      julian.nanosecondPart;
+  int z = julian.inDays -
       1721118 +
-      ((julian.nanosecondPart - (_nsPerDay / 2).floor()) / _nsPerDay).floor();
-  int remainder = (julian.nanosecondPart - (_nsPerDay / 2).floor()) % _nsPerDay;
+      ((nanosOfDay - (_nsPerDay / 2).floor()) / _nsPerDay).floor();
+  int remainder = (nanosOfDay - (_nsPerDay / 2).floor()) % _nsPerDay;
   int h = 100 * z - 25;
   int a = (h / 3652425).floor();
   int b = a - (a / 4).floor();

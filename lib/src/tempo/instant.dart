@@ -65,9 +65,9 @@ class Instant implements HasInstant {
   Instant.now() : this.fromDateTime(DateTime.now());
 
   Instant._fromJulianDay(Timespan julian)
-      : unixTimestamp =
-            Timespan(days: julian.dayPart, nanoseconds: julian.nanosecondPart) -
-                _julianOffset;
+      : unixTimestamp = Timespan(
+                seconds: julian.seconds, nanoseconds: julian.nanosecondPart) -
+            _julianOffset;
 
   @override
   Instant get asInstant => this;

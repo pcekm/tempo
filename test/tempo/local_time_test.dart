@@ -117,6 +117,22 @@ void main() {
         Timespan(nanoseconds: -1));
   });
 
+  test('plusTimespan()', () {
+    var t = LocalTime(12);
+    expect(
+        t.plusTimespan(
+            Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4)),
+        LocalTime(13, 2, 3, 4));
+  });
+
+  test('minusTimespan()', () {
+    var t = LocalTime(12);
+    expect(
+        t.minusTimespan(
+            Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4)),
+        LocalTime(10, 57, 56, 999999996));
+  });
+
   group('Comparison operator', () {
     test('== (and hash equality)', () {
       var t1 = LocalTime(3, 4, 5, 6);

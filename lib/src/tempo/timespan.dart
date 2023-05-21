@@ -4,12 +4,12 @@ part of '../../tempo.dart';
 ///
 /// This represents a duration of time equal to
 ///
-/// [dayPart] + [nanosecondPart] * `10^-9`
+/// [seconds] + [nanosecondPart] * `10^-9` seconds.
 ///
 /// The component numbers will always be normalized as follows:
 ///
 ///   - `-10^9` < [nanosecondPart] < `10^9`
-///   - [dayPart].sign == [nanosecondPart].sign
+///   - [seconds].sign == [nanosecondPart].sign
 ///
 /// There are two important differences between this and [Duration]:
 /// precision and longest representable timespan. This has nanosecond
@@ -20,13 +20,13 @@ part of '../../tempo.dart';
 ///
 /// The longest representable timespans are a bit complicated. `Duration`
 /// stores a single [int] in microseconds. This stores two ints: one for the
-/// number of days, and one for a nanosecond fraction of days.
+/// number of seconds, and one for a nanosecond fraction of seconds.
 ///
 /// Dart's [maximum int size](https://dart.dev/guides/language/numbers) varies,
 /// but you can count on at least 53 bits. Which means `Duration` can cover
-/// at least `2^53 / (86400 * 10^6)` or about `10^5` days. Since this class
-/// dedicates a full int just to days, it can cover at least `2^53` days,
-/// or about `9 * 10^15`.
+/// at least `2^53 / (86400 * 10^6)` or about `10^5` days. [Timespan]
+/// dedicates a full int to seconds and can cover at least `2^53` seconds,
+/// which is roughly 200 million years.
 ///
 /// With that said, other factors will limit the practical maximum. In
 /// particular, conversion operations like [inMicroseconds] and date
@@ -36,55 +36,44 @@ class Timespan implements Comparable<Timespan> {
   static const int _hoursPerDay = 24;
   static const int _minutesPerHour = 60;
   static const int _secondsPerMinute = 60;
+  static const int _millisecondsPerSecond = 1000;
+  static const int _microsecondsPerSecond = 1000000;
   static const int _nanosecondsPerSecond = 1000000000;
+  static const int _secondsPerHour = _minutesPerHour * _secondsPerMinute;
 
   static const int _minutesPerDay = _minutesPerHour * _hoursPerDay;
   static const int _secondsPerDay = _secondsPerMinute * _minutesPerDay;
-  static const int _millisecondsPerDay = 1000 * _secondsPerDay;
-  static const int _microsecondsPerDay = 1000 * _millisecondsPerDay;
-  static const int _nanosecondsPerDay = 1000 * _microsecondsPerDay;
 
   static const int _nsPerMicrosecond = 1000;
   static const int _nsPerMillisecond = 1000000;
-  static const int _nsPerSecond = 1000000000;
-  static const int _nsPerMinute = 60 * _nsPerSecond;
-  static const int _nsPerHour = 60 * _nsPerMinute;
 
-  /// The whole number of days.
-  ///
-  /// Mathematically, [dayPart] = int([dayPart] + [nanosecondPart]), where
-  /// [int()](https://mathworld.wolfram.com/IntegerPart.html) gives the integer
-  /// part of a real number.
-  final int dayPart;
+  /// The whole number of seconds.
+  final int seconds;
 
-  /// The fractional part of the day in nanoseconds.
-  ///
-  /// Mathematically, [nanosecondPart] = frac([dayPart] + [nanosecondPart]),
-  /// where [frac()](https://mathworld.wolfram.com/FractionalPart.html) gives
-  /// the fractional part of a real number.
+  /// The fractional part of the number of seconds in nanoseconds.
   final int nanosecondPart;
 
-  Timespan._(this.dayPart, this.nanosecondPart);
+  Timespan._(this.seconds, this.nanosecondPart);
 
-  /// Constructs a timespan from days + fraction.
+  /// Constructs a normalized Timespan from a seconds and nanoseconds part.
   ///
-  /// Either days or fraction may be negative and any value, but the result
-  /// will be normalized as follows:
+  /// Either [seconds] or [nanoseconds] may be negative and any value, but
+  /// the result will be normalized as follows:
   ///
   ///   - `-10^9` < [nanosecondPart] < `10^9`
-  ///   - [dayPart].sign == [nanosecondPart].sign
-  factory Timespan._fromParts(int days, int fraction) {
-    days += fraction ~/ _nanosecondsPerDay;
-    fraction = fraction.remainder(_nanosecondsPerDay);
-    if (days < 0 && fraction > 0) {
-      ++days;
-      fraction -= _nanosecondsPerDay;
-    } else if (days > 0 && fraction < 0) {
-      --days;
-      fraction += _nanosecondsPerDay;
+  ///   - [seconds].sign == [nanosecondPart].sign
+  factory Timespan._fromParts(int seconds, int nanoseconds) {
+    seconds += nanoseconds ~/ _nanosecondsPerSecond;
+    nanoseconds = nanoseconds.remainder(_nanosecondsPerSecond);
+    if (seconds < 0 && nanoseconds > 0) {
+      ++seconds;
+      nanoseconds -= _nanosecondsPerSecond;
+    } else if (seconds > 0 && nanoseconds < 0) {
+      --seconds;
+      nanoseconds += _nanosecondsPerSecond;
     }
-    assert(days.sign * fraction.sign != -1);
-    return Timespan._(days, fraction);
+    assert(seconds.sign * nanoseconds.sign != -1);
+    return Timespan._(seconds, nanoseconds);
   }
 
   /// Constructs a [Timespan].
@@ -95,7 +84,7 @@ class Timespan implements Comparable<Timespan> {
   /// be normalized as follows:
   ///
   ///   - `-10^9` < [nanosecondPart] < `10^9`
-  ///   - [dayPart].sign == [nanosecondPart].sign
+  ///   - [seconds].sign == [nanosecondPart].sign
   factory Timespan(
       {int days = 0,
       int hours = 0,
@@ -104,33 +93,26 @@ class Timespan implements Comparable<Timespan> {
       int milliseconds = 0,
       int microseconds = 0,
       int nanoseconds = 0}) {
-    // Divide days out of each field separately to minimize the chances of
-    // overflow.
-    days += hours ~/ _hoursPerDay;
-    hours = hours.remainder(_hoursPerDay);
+    var secondPart = days * _secondsPerDay +
+        hours * _secondsPerHour +
+        minutes * _secondsPerMinute +
+        seconds;
 
-    days += minutes ~/ _minutesPerDay;
-    minutes = minutes.remainder(_minutesPerDay);
+    /// Divide seconds out of each fractional part to minimize the risk of
+    /// overflow.
+    secondPart += milliseconds ~/ _millisecondsPerSecond;
+    milliseconds = milliseconds.remainder(_millisecondsPerSecond);
 
-    days += seconds ~/ _secondsPerDay;
-    seconds = seconds.remainder(_secondsPerDay);
+    secondPart += microseconds ~/ _microsecondsPerSecond;
+    microseconds = microseconds.remainder(_microsecondsPerSecond);
 
-    days += milliseconds ~/ _millisecondsPerDay;
-    milliseconds = milliseconds.remainder(_millisecondsPerDay);
+    secondPart += nanoseconds ~/ _nanosecondsPerSecond;
+    nanoseconds = nanoseconds.remainder(_nanosecondsPerSecond);
 
-    days += microseconds ~/ _microsecondsPerDay;
-    microseconds = microseconds.remainder(_microsecondsPerDay);
-
-    days += nanoseconds ~/ _nanosecondsPerDay;
-    nanoseconds = nanoseconds.remainder(_nanosecondsPerDay);
-
-    var fraction = hours * _nsPerHour +
-        minutes * _nsPerMinute +
-        seconds * _nsPerSecond +
-        milliseconds * _nsPerMillisecond +
+    var nanosecondPart = milliseconds * _nsPerMillisecond +
         microseconds * _nsPerMicrosecond +
         nanoseconds;
-    return Timespan._fromParts(days, fraction);
+    return Timespan._fromParts(secondPart, nanosecondPart);
   }
 
   /// Constructs a [Timespan] from a [Duration].
@@ -158,49 +140,47 @@ class Timespan implements Comparable<Timespan> {
   }
 
   /// Gets the timespan in days.
-  ///
-  /// This is equvalent to [dayPart] and included for consistency.
-  int get inDays => (dayPart + nanosecondPart / _nanosecondsPerDay).truncate();
-
-  int _sum(int dayMultiplier, int nanoDivisor) =>
-      (dayPart * dayMultiplier + nanosecondPart / nanoDivisor).truncate();
+  int get inDays => (seconds ~/ _secondsPerDay).truncate();
 
   /// Gets the timespan in hours.
-  int get inHours => _sum(_hoursPerDay, _nsPerHour);
+  int get inHours => seconds ~/ _secondsPerHour;
 
   /// Gets the timespan in minutes.
-  int get inMinutes => _sum(_minutesPerDay, _nsPerMinute);
+  int get inMinutes => seconds ~/ _secondsPerMinute;
 
   /// Gets the timespan in seconds.
-  int get inSeconds => _sum(_secondsPerDay, _nsPerSecond);
+  int get inSeconds => seconds;
+
+  int _sum(int secondMultiplier, int nanoDivisor) =>
+      (seconds * secondMultiplier + nanosecondPart / nanoDivisor).truncate();
 
   /// Gets the timespan in milliseconds.
-  int get inMilliseconds => _sum(_millisecondsPerDay, _nsPerMillisecond);
+  int get inMilliseconds => _sum(_millisecondsPerSecond, _nsPerMillisecond);
 
   /// Gets the timespan in microseconds.
-  int get inMicroseconds => _sum(_microsecondsPerDay, _nsPerMicrosecond);
+  int get inMicroseconds => _sum(_microsecondsPerSecond, _nsPerMicrosecond);
 
   /// Gets the timespan in nanoseconds.
-  int get inNanoseconds => _sum(_nanosecondsPerDay, 1);
+  int get inNanoseconds => _sum(_nanosecondsPerSecond, 1);
 
   /// Determines if the timespan is negative.
-  bool get isNegative => dayPart.isNegative || nanosecondPart.isNegative;
+  bool get isNegative => seconds.isNegative || nanosecondPart.isNegative;
 
   /// Addition operator.
   Timespan operator +(Timespan other) => Timespan._fromParts(
-      dayPart + other.dayPart, nanosecondPart + other.nanosecondPart);
+      seconds + other.seconds, nanosecondPart + other.nanosecondPart);
 
   /// Subtraction operator.
   Timespan operator -(Timespan other) => Timespan._fromParts(
-      dayPart - other.dayPart, nanosecondPart - other.nanosecondPart);
+      seconds - other.seconds, nanosecondPart - other.nanosecondPart);
 
   /// Multiplication operator. Fractional results are rounded towards zero.
   Timespan operator *(num other) => Timespan._fromParts(
-      (dayPart * other).truncate(), (nanosecondPart * other).truncate());
+      (seconds * other).truncate(), (nanosecondPart * other).truncate());
 
   /// Integer division operator.
   Timespan operator ~/(num other) =>
-      Timespan._fromParts(dayPart ~/ other, nanosecondPart ~/ other);
+      Timespan._fromParts(seconds ~/ other, nanosecondPart ~/ other);
 
   /// Less than operator.
   bool operator <(Timespan other) => compareTo(other) < 0;
@@ -215,7 +195,7 @@ class Timespan implements Comparable<Timespan> {
   bool operator >=(Timespan other) => compareTo(other) >= 0;
 
   /// Unary negation operator.
-  Timespan operator -() => Timespan._fromParts(-dayPart, -nanosecondPart);
+  Timespan operator -() => Timespan._fromParts(-seconds, -nanosecondPart);
 
   /// Converts this to a duration with a loss of precision.
   Duration toDuration() => Duration(microseconds: inMicroseconds);
@@ -224,7 +204,7 @@ class Timespan implements Comparable<Timespan> {
   Timespan abs() {
     // Important: this is only true because both parts are normalized
     // with matching signs.
-    return Timespan._fromParts(dayPart.abs(), nanosecondPart.abs());
+    return Timespan._fromParts(seconds.abs(), nanosecondPart.abs());
   }
 
   /// Compares this to another [Timespan].
@@ -232,11 +212,11 @@ class Timespan implements Comparable<Timespan> {
   /// Returns 0 if they are equal, -1 if this < [other] and 1 if this > [other].
   @override
   int compareTo(Timespan other) {
-    int daycmp = Comparable.compare(dayPart, other.dayPart);
-    if (daycmp == 0) {
+    int secondCmp = Comparable.compare(seconds, other.seconds);
+    if (secondCmp == 0) {
       return Comparable.compare(nanosecondPart, other.nanosecondPart);
     }
-    return daycmp;
+    return secondCmp;
   }
 
   /// Returns a string formatted as an ISO 8601 time duration.
@@ -248,28 +228,25 @@ class Timespan implements Comparable<Timespan> {
   ///   * Negative duration: P-3DT-1H
   @override
   String toString() {
-    if (dayPart == 0 && nanosecondPart == 0) {
+    if (seconds == 0 && nanosecondPart == 0) {
       return 'P0D';
     }
-    int adjDays = dayPart;
-    int adjFraction = nanosecondPart;
-    if (dayPart.isNegative && nanosecondPart > 0) {
-      ++adjDays;
-      adjFraction = -(_nanosecondsPerDay - nanosecondPart);
-    }
-    int hours = (adjFraction ~/ _nsPerHour).remainder(_hoursPerDay);
-    int minutes = (adjFraction ~/ _nsPerMinute).remainder(_minutesPerHour);
-    int seconds = (adjFraction ~/ _nsPerSecond).remainder(_secondsPerMinute);
-    int nanos = adjFraction.remainder(_nanosecondsPerSecond);
 
-    var d = adjDays != 0 ? '${adjDays}D' : '';
+    int days = seconds ~/ _secondsPerDay;
+    int hours = (seconds ~/ _secondsPerHour).remainder(_hoursPerDay);
+    int minutes = (seconds ~/ _secondsPerMinute).remainder(_minutesPerHour);
+    int secondsOfDay = seconds.remainder(_secondsPerMinute);
+
+    var d = days != 0 ? '${days}D' : '';
     var h = hours != 0 ? '${hours}H' : '';
     var m = minutes != 0 ? '${minutes}M' : '';
-    var s = seconds != 0 || nanos != 0 ? '$seconds' : '';
-    if (seconds == 0 && nanos < 0) {
+    var s = secondsOfDay != 0 || nanosecondPart != 0 ? '$secondsOfDay' : '';
+    if (secondsOfDay == 0 && nanosecondPart < 0) {
       s = '-0';
     }
-    s += nanos != 0 ? ".${'${nanos.abs()}'.padLeft(9, '0')}" : '';
+    s += nanosecondPart != 0
+        ? ".${'${nanosecondPart.abs()}'.padLeft(9, '0')}"
+        : '';
     s += s != '' ? 'S' : '';
     return 'P$d${h.isNotEmpty || m.isNotEmpty || s.isNotEmpty ? "T" : ""}$h$m$s';
   }
@@ -277,9 +254,9 @@ class Timespan implements Comparable<Timespan> {
   @override
   bool operator ==(Object other) =>
       (other is Timespan) &&
-      dayPart == other.dayPart &&
+      seconds == other.seconds &&
       nanosecondPart == other.nanosecondPart;
 
   @override
-  int get hashCode => Object.hash(dayPart, nanosecondPart);
+  int get hashCode => Object.hash(seconds, nanosecondPart);
 }

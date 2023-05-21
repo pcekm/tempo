@@ -47,8 +47,7 @@ class ZoneOffset {
   ///    * `-23 <= hours <= 23`
   ///    * `-59 <= minutes <= 59`
   ///    * `-59 <= seconds <= 59`
-  ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
-  ///      [hours]).
+  ///    * Numeric signs all match
   ZoneOffset.fromTimespan(Timespan amount)
       : this._(amount.inHours.remainder(24), amount.inMinutes.remainder(60),
             amount.inSeconds.remainder(60));

@@ -1,36 +1,37 @@
 import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
-const int nano = 1000000000;
-const int microsecondNano = nano ~/ 1000000;
-const int millisecondNano = nano ~/ 1000;
-const int secondNano = nano;
-const int minuteNano = 60 * nano;
-const int hourNano = 3600 * nano;
-const int dayNano = 86400 * nano;
-const int halfDayNano = dayNano ~/ 2;
+const int _nano = 1000000000;
+const int _microsecondNano = _nano ~/ 1000000;
+const int _millisecondNano = _nano ~/ 1000;
+const int _secondNano = _nano;
+const int _minuteSecs = 60;
+const int _hourSecs = 3600;
+const int _daySecs = 86400;
 
-class HasDayFraction extends CustomMatcher {
-  HasDayFraction(day, fraction)
-      : super('Timespan with [day, fraction]', '[day, fraction]',
-            [day, fraction]);
+const int _halfSecondNano = _nano ~/ 2;
+
+class HasParts extends CustomMatcher {
+  HasParts(int seconds, nanosecondPart)
+      : super('Timespan with [seconds, nanosecondPart]',
+            '[seconds, nanosecondPart]', [seconds, nanosecondPart]);
   @override
-  featureValueOf(actual) {
-    var jd = actual as Timespan;
-    return [jd.dayPart, jd.nanosecondPart];
+  List<int> featureValueOf(Object? actual) {
+    final ts = actual as Timespan;
+    return [ts.seconds, ts.nanosecondPart];
   }
 }
 
 void main() {
   group('Default constructor', () {
     test('arg conversions', () {
-      expect(Timespan(days: 5), HasDayFraction(5, 0));
-      expect(Timespan(hours: 5), HasDayFraction(0, 5 * hourNano));
-      expect(Timespan(minutes: 5), HasDayFraction(0, 5 * minuteNano));
-      expect(Timespan(seconds: 5), HasDayFraction(0, 5 * nano));
-      expect(Timespan(milliseconds: 5), HasDayFraction(0, 5 * millisecondNano));
-      expect(Timespan(microseconds: 5), HasDayFraction(0, 5 * microsecondNano));
-      expect(Timespan(nanoseconds: 5), HasDayFraction(0, 5));
+      expect(Timespan(days: 5), HasParts(5 * _daySecs, 0));
+      expect(Timespan(hours: 5), HasParts(5 * _hourSecs, 0));
+      expect(Timespan(minutes: 5), HasParts(5 * _minuteSecs, 0));
+      expect(Timespan(seconds: 5), HasParts(5, 0));
+      expect(Timespan(milliseconds: 5), HasParts(0, 5 * _millisecondNano));
+      expect(Timespan(microseconds: 5), HasParts(0, 5 * _microsecondNano));
+      expect(Timespan(nanoseconds: 5), HasParts(0, 5));
       expect(
           Timespan(
               days: 1,
@@ -40,53 +41,47 @@ void main() {
               milliseconds: 5,
               microseconds: 6,
               nanoseconds: 7),
-          HasDayFraction(1, 2 * hourNano + 3 * minuteNano + 4005006007));
+          HasParts(
+              1 * _daySecs + 2 * _hourSecs + 3 * _minuteSecs + 4, 5006007));
     });
 
     test('normalization', () {
-      expect(Timespan(), HasDayFraction(0, 0));
-      expect(Timespan(days: 0, nanoseconds: 1), HasDayFraction(0, 1));
-      expect(Timespan(days: 0, nanoseconds: halfDayNano),
-          HasDayFraction(0, halfDayNano));
-      expect(Timespan(days: 1), HasDayFraction(1, 0));
-      expect(Timespan(days: 1, nanoseconds: 1), HasDayFraction(1, 1));
-      expect(Timespan(days: 1, nanoseconds: halfDayNano),
-          HasDayFraction(1, halfDayNano));
-      expect(Timespan(days: 1, nanoseconds: dayNano + 1), HasDayFraction(2, 1));
-      expect(Timespan(days: 1, nanoseconds: 2 * dayNano + 1),
-          HasDayFraction(3, 1));
+      expect(Timespan(), HasParts(0, 0));
+      expect(Timespan(seconds: 0, nanoseconds: 1), HasParts(0, 1));
+      expect(Timespan(seconds: 0, nanoseconds: _halfSecondNano),
+          HasParts(0, _halfSecondNano));
+      expect(Timespan(seconds: 1), HasParts(1, 0));
+      expect(Timespan(seconds: 1, nanoseconds: 1), HasParts(1, 1));
+      expect(Timespan(seconds: 1, nanoseconds: _halfSecondNano),
+          HasParts(1, _halfSecondNano));
+      expect(Timespan(seconds: 1, nanoseconds: _nano + 1), HasParts(2, 1));
+      expect(Timespan(seconds: 1, nanoseconds: 2 * _nano + 1), HasParts(3, 1));
 
-      expect(
-          Timespan(days: 10, nanoseconds: -1), HasDayFraction(9, dayNano - 1));
+      expect(Timespan(seconds: 10, nanoseconds: -1), HasParts(9, _nano - 1));
 
-      expect(Timespan(days: 0, nanoseconds: -1), HasDayFraction(0, -1));
-      expect(Timespan(days: 0, nanoseconds: -halfDayNano),
-          HasDayFraction(0, -halfDayNano));
-      expect(Timespan(days: 0, nanoseconds: -dayNano + 1),
-          HasDayFraction(0, -dayNano + 1));
-      expect(Timespan(days: -1), HasDayFraction(-1, 0));
-      expect(Timespan(days: -1, nanoseconds: -1), HasDayFraction(-1, -1));
+      expect(Timespan(seconds: 0, nanoseconds: -1), HasParts(0, -1));
+      expect(Timespan(seconds: 0, nanoseconds: -_halfSecondNano),
+          HasParts(0, -_halfSecondNano));
+      expect(Timespan(seconds: 0, nanoseconds: -_nano + 1),
+          HasParts(0, -_nano + 1));
+      expect(Timespan(seconds: -1), HasParts(-1, 0));
+      expect(Timespan(seconds: -1, nanoseconds: -1), HasParts(-1, -1));
+      expect(Timespan(seconds: -1, nanoseconds: 1), HasParts(0, -_nano + 1));
       expect(
-          Timespan(days: -1, nanoseconds: 1), HasDayFraction(0, -dayNano + 1));
-      expect(Timespan(days: -1, nanoseconds: -(dayNano + 1)),
-          HasDayFraction(-2, -1));
-      expect(Timespan(days: -1, nanoseconds: -(2 * dayNano + 1)),
-          HasDayFraction(-3, -1));
+          Timespan(seconds: -1, nanoseconds: -(_nano + 1)), HasParts(-2, -1));
+      expect(Timespan(seconds: -1, nanoseconds: -(2 * _nano + 1)),
+          HasParts(-3, -1));
     });
 
     test("large components don't overflow", () {
-      const int trillion = 1000000000000;
-      expect(Timespan(hours: trillion),
-          HasDayFraction(41666666666, 16 * hourNano));
-      expect(Timespan(minutes: trillion),
-          HasDayFraction(694444444, 640 * minuteNano));
-      expect(Timespan(seconds: trillion),
-          HasDayFraction(11574074, 6400 * secondNano));
-      expect(Timespan(milliseconds: trillion),
-          HasDayFraction(11574, 6400000 * millisecondNano));
-      expect(Timespan(microseconds: trillion),
-          HasDayFraction(11, 49600000000 * microsecondNano));
-      expect(Timespan(nanoseconds: trillion), HasDayFraction(0, 1000000000000));
+      const int n = 100000000000;
+      expect(Timespan(days: n), HasParts(n * _daySecs, 0));
+      expect(Timespan(hours: n), HasParts(n * _hourSecs, 0));
+      expect(Timespan(minutes: n), HasParts(n * _minuteSecs, 0));
+      expect(Timespan(seconds: n), HasParts(n, 0));
+      expect(Timespan(milliseconds: n), HasParts(n ~/ 1000, 0));
+      expect(Timespan(microseconds: n), HasParts(n ~/ 1000000, 0));
+      expect(Timespan(nanoseconds: n), HasParts(100, 0));
     });
   });
 
@@ -151,99 +146,94 @@ void main() {
 
   group('arithmetic', () {
     test('operator+', () {
-      var t = Timespan(days: -10);
-      expect(t + Timespan(days: 1), HasDayFraction(-9, 0));
-      expect(t + Timespan(days: 5), HasDayFraction(-5, 0));
-      expect(t + Timespan(days: 10), HasDayFraction(0, 0));
-      expect(t + Timespan(days: 11), HasDayFraction(1, 0));
+      var t = Timespan(seconds: -10);
+      expect(t + Timespan(seconds: 1), HasParts(-9, 0));
+      expect(t + Timespan(seconds: 5), HasParts(-5, 0));
+      expect(t + Timespan(seconds: 10), HasParts(0, 0));
+      expect(t + Timespan(seconds: 11), HasParts(1, 0));
 
-      expect(t + Timespan(nanoseconds: 1), HasDayFraction(-9, -dayNano + 1));
-      expect(t + Timespan(nanoseconds: dayNano - 1), HasDayFraction(-9, -1));
-      expect(t + Timespan(nanoseconds: dayNano), HasDayFraction(-9, 0));
-      expect(
-          t + Timespan(nanoseconds: 2 * dayNano - 1), HasDayFraction(-8, -1));
-      expect(t + Timespan(nanoseconds: 2 * dayNano), HasDayFraction(-8, 0));
-      expect(t + Timespan(nanoseconds: 2 * dayNano + 1),
-          HasDayFraction(-7, -dayNano + 1));
+      expect(t + Timespan(nanoseconds: 1), HasParts(-9, -_secondNano + 1));
+      expect(t + Timespan(nanoseconds: _secondNano - 1), HasParts(-9, -1));
+      expect(t + Timespan(nanoseconds: _secondNano), HasParts(-9, 0));
+      expect(t + Timespan(nanoseconds: 2 * _secondNano - 1), HasParts(-8, -1));
+      expect(t + Timespan(nanoseconds: 2 * _secondNano), HasParts(-8, 0));
+      expect(t + Timespan(nanoseconds: 2 * _secondNano + 1),
+          HasParts(-7, -_secondNano + 1));
 
-      expect(
-          t + Timespan(nanoseconds: 10 * dayNano - 1), HasDayFraction(0, -1));
-      expect(t + Timespan(nanoseconds: 10 * dayNano), HasDayFraction(0, 0));
-      expect(t + Timespan(nanoseconds: 10 * dayNano + 1), HasDayFraction(0, 1));
+      expect(t + Timespan(nanoseconds: 10 * _secondNano - 1), HasParts(0, -1));
+      expect(t + Timespan(nanoseconds: 10 * _secondNano), HasParts(0, 0));
+      expect(t + Timespan(nanoseconds: 10 * _secondNano + 1), HasParts(0, 1));
 
-      expect(t + Timespan(nanoseconds: 20 * dayNano - 1),
-          HasDayFraction(9, dayNano - 1));
-      expect(t + Timespan(nanoseconds: 20 * dayNano), HasDayFraction(10, 0));
-      expect(
-          t + Timespan(nanoseconds: 20 * dayNano + 1), HasDayFraction(10, 1));
+      expect(t + Timespan(nanoseconds: 20 * _secondNano - 1),
+          HasParts(9, _secondNano - 1));
+      expect(t + Timespan(nanoseconds: 20 * _secondNano), HasParts(10, 0));
+      expect(t + Timespan(nanoseconds: 20 * _secondNano + 1), HasParts(10, 1));
     });
 
     test('operator-', () {
-      var t = Timespan(days: 10);
-      expect(t - Timespan(days: 1), HasDayFraction(9, 0));
-      expect(t - Timespan(days: 5), HasDayFraction(5, 0));
-      expect(t - Timespan(days: 10), HasDayFraction(0, 0));
-      expect(t - Timespan(days: 11), HasDayFraction(-1, 0));
+      var t = Timespan(seconds: 10);
+      expect(t - Timespan(seconds: 1), HasParts(9, 0));
+      expect(t - Timespan(seconds: 5), HasParts(5, 0));
+      expect(t - Timespan(seconds: 10), HasParts(0, 0));
+      expect(t - Timespan(seconds: 11), HasParts(-1, 0));
 
-      expect(t - Timespan(nanoseconds: 1), HasDayFraction(9, dayNano - 1));
-      expect(t - Timespan(nanoseconds: dayNano - 1), HasDayFraction(9, 1));
-      expect(t - Timespan(nanoseconds: dayNano), HasDayFraction(9, 0));
-      expect(t - Timespan(nanoseconds: 2 * dayNano - 1), HasDayFraction(8, 1));
-      expect(t - Timespan(nanoseconds: 2 * dayNano), HasDayFraction(8, 0));
-      expect(t - Timespan(nanoseconds: 2 * dayNano + 1),
-          HasDayFraction(7, dayNano - 1));
+      expect(t - Timespan(nanoseconds: 1), HasParts(9, _secondNano - 1));
+      expect(t - Timespan(nanoseconds: _secondNano - 1), HasParts(9, 1));
+      expect(t - Timespan(nanoseconds: _secondNano), HasParts(9, 0));
+      expect(t - Timespan(nanoseconds: 2 * _secondNano - 1), HasParts(8, 1));
+      expect(t - Timespan(nanoseconds: 2 * _secondNano), HasParts(8, 0));
+      expect(t - Timespan(nanoseconds: 2 * _secondNano + 1),
+          HasParts(7, _secondNano - 1));
 
-      expect(t - Timespan(nanoseconds: 10 * dayNano - 1), HasDayFraction(0, 1));
-      expect(t - Timespan(nanoseconds: 10 * dayNano), HasDayFraction(0, 0));
+      expect(t - Timespan(nanoseconds: 10 * _secondNano - 1), HasParts(0, 1));
+      expect(t - Timespan(nanoseconds: 10 * _secondNano), HasParts(0, 0));
+      expect(t - Timespan(nanoseconds: 10 * _secondNano + 1), HasParts(0, -1));
+
+      expect(t - Timespan(nanoseconds: 20 * _secondNano - 1),
+          HasParts(-9, -_secondNano + 1));
+      expect(t - Timespan(nanoseconds: 20 * _secondNano), HasParts(-10, 0));
       expect(
-          t - Timespan(nanoseconds: 10 * dayNano + 1), HasDayFraction(0, -1));
-
-      expect(t - Timespan(nanoseconds: 20 * dayNano - 1),
-          HasDayFraction(-9, -dayNano + 1));
-      expect(t - Timespan(nanoseconds: 20 * dayNano), HasDayFraction(-10, 0));
-      expect(
-          t - Timespan(nanoseconds: 20 * dayNano + 1), HasDayFraction(-10, -1));
+          t - Timespan(nanoseconds: 20 * _secondNano + 1), HasParts(-10, -1));
     });
 
     test('operator*', () {
-      expect(Timespan(days: 1) * 2, HasDayFraction(2, 0));
-      expect(Timespan(days: -1) * 2, HasDayFraction(-2, 0));
-      expect(Timespan(days: 1, nanoseconds: 2) * 2, HasDayFraction(2, 4));
-      expect(Timespan(days: -1, nanoseconds: 2) * 2,
-          HasDayFraction(-1, -dayNano + 4));
-      expect(Timespan(days: 1, nanoseconds: 2) * -2, HasDayFraction(-2, -4));
-      expect(Timespan(days: -1, nanoseconds: 2) * -2,
-          HasDayFraction(1, dayNano - 4));
-      expect(Timespan(days: -1, nanoseconds: -2) * 2, HasDayFraction(-2, -4));
-      expect(Timespan(days: -1, nanoseconds: -2) * -2, HasDayFraction(2, 4));
+      expect(Timespan(seconds: 1) * 2, HasParts(2, 0));
+      expect(Timespan(seconds: -1) * 2, HasParts(-2, 0));
+      expect(Timespan(seconds: 1, nanoseconds: 2) * 2, HasParts(2, 4));
+      expect(Timespan(seconds: -1, nanoseconds: 2) * 2,
+          HasParts(-1, -_secondNano + 4));
+      expect(Timespan(seconds: 1, nanoseconds: 2) * -2, HasParts(-2, -4));
+      expect(Timespan(seconds: -1, nanoseconds: 2) * -2,
+          HasParts(1, _secondNano - 4));
+      expect(Timespan(seconds: -1, nanoseconds: -2) * 2, HasParts(-2, -4));
+      expect(Timespan(seconds: -1, nanoseconds: -2) * -2, HasParts(2, 4));
 
-      expect(Timespan(days: 10, nanoseconds: 3) * 0.5, HasDayFraction(5, 1));
-      expect(
-          Timespan(days: -10, nanoseconds: -3) * 0.5, HasDayFraction(-5, -1));
+      expect(Timespan(seconds: 10, nanoseconds: 3) * 0.5, HasParts(5, 1));
+      expect(Timespan(seconds: -10, nanoseconds: -3) * 0.5, HasParts(-5, -1));
     });
 
     test('operator~/', () {
-      expect(Timespan(days: 2) ~/ 2, HasDayFraction(1, 0));
-      expect(Timespan(days: 2) ~/ -2, HasDayFraction(-1, 0));
-      expect(Timespan(days: -2) ~/ 2, HasDayFraction(-1, 0));
-      expect(Timespan(days: -2) ~/ -2, HasDayFraction(1, 0));
+      expect(Timespan(seconds: 2) ~/ 2, HasParts(1, 0));
+      expect(Timespan(seconds: 2) ~/ -2, HasParts(-1, 0));
+      expect(Timespan(seconds: -2) ~/ 2, HasParts(-1, 0));
+      expect(Timespan(seconds: -2) ~/ -2, HasParts(1, 0));
 
-      expect(Timespan(nanoseconds: 2) ~/ 2, HasDayFraction(0, 1));
-      expect(Timespan(nanoseconds: 2) ~/ -2, HasDayFraction(0, -1));
-      expect(Timespan(nanoseconds: -2) ~/ 2, HasDayFraction(0, -1));
-      expect(Timespan(nanoseconds: -2) ~/ -2, HasDayFraction(0, 1));
+      expect(Timespan(nanoseconds: 2) ~/ 2, HasParts(0, 1));
+      expect(Timespan(nanoseconds: 2) ~/ -2, HasParts(0, -1));
+      expect(Timespan(nanoseconds: -2) ~/ 2, HasParts(0, -1));
+      expect(Timespan(nanoseconds: -2) ~/ -2, HasParts(0, 1));
 
-      expect(Timespan(days: 2, nanoseconds: 4) ~/ 2, HasDayFraction(1, 2));
-      expect(Timespan(days: 2, nanoseconds: 4) ~/ -2, HasDayFraction(-1, -2));
-      expect(Timespan(days: -2, nanoseconds: -4) ~/ 2, HasDayFraction(-1, -2));
-      expect(Timespan(days: -2, nanoseconds: -4) ~/ -2, HasDayFraction(1, 2));
+      expect(Timespan(seconds: 2, nanoseconds: 4) ~/ 2, HasParts(1, 2));
+      expect(Timespan(seconds: 2, nanoseconds: 4) ~/ -2, HasParts(-1, -2));
+      expect(Timespan(seconds: -2, nanoseconds: -4) ~/ 2, HasParts(-1, -2));
+      expect(Timespan(seconds: -2, nanoseconds: -4) ~/ -2, HasParts(1, 2));
     });
   });
 
   group('comparison', () {
-    var a = Timespan(days: 2, nanoseconds: 3);
-    var b = Timespan(days: 2, nanoseconds: 2);
-    var c = Timespan(days: 1, nanoseconds: 2);
+    var a = Timespan(seconds: 2, nanoseconds: 3);
+    var b = Timespan(seconds: 2, nanoseconds: 2);
+    var c = Timespan(seconds: 1, nanoseconds: 2);
     test('operator<', () {
       expect(a, isNot(lessThan(a)));
 
@@ -308,19 +298,19 @@ void main() {
   });
 
   test('operator- (unary negation)', () {
-    expect(-Timespan(days: 2, nanoseconds: 1), HasDayFraction(-2, -1));
-    expect(-Timespan(days: -2, nanoseconds: -1), HasDayFraction(2, 1));
+    expect(-Timespan(seconds: 2, nanoseconds: 1), HasParts(-2, -1));
+    expect(-Timespan(seconds: -2, nanoseconds: -1), HasParts(2, 1));
   });
 
   test('abs()', () {
-    expect(Timespan(days: 2, nanoseconds: 3).abs(), HasDayFraction(2, 3));
-    expect(Timespan(days: -2, nanoseconds: -3).abs(), HasDayFraction(2, 3));
+    expect(Timespan(seconds: 2, nanoseconds: 3).abs(), HasParts(2, 3));
+    expect(Timespan(seconds: -2, nanoseconds: -3).abs(), HasParts(2, 3));
   });
 
   test('isNegative', () {
     expect(Timespan().isNegative, false);
-    expect(Timespan(days: 1).isNegative, false);
-    expect(Timespan(days: -1).isNegative, true);
+    expect(Timespan(seconds: 1).isNegative, false);
+    expect(Timespan(seconds: -1).isNegative, true);
     expect(Timespan(microseconds: 1).isNegative, false);
     expect(Timespan(microseconds: -1).isNegative, true);
   });
@@ -369,29 +359,29 @@ void main() {
 
   test('operator==', () {
     expect(Timespan(), Timespan());
-    expect(Timespan(days: 1), Timespan(days: 1));
+    expect(Timespan(seconds: 1), Timespan(seconds: 1));
     expect(Timespan(nanoseconds: 1), Timespan(nanoseconds: 1));
-    expect(
-        Timespan(days: 1, nanoseconds: 2), Timespan(days: 1, nanoseconds: 2));
+    expect(Timespan(seconds: 1, nanoseconds: 2),
+        Timespan(seconds: 1, nanoseconds: 2));
 
-    expect(Timespan(days: 1), isNot(Timespan(days: 2)));
+    expect(Timespan(seconds: 1), isNot(Timespan(seconds: 2)));
     expect(Timespan(nanoseconds: 1), isNot(Timespan(nanoseconds: 2)));
-    expect(Timespan(days: 1, nanoseconds: 2),
-        isNot(Timespan(days: 2, nanoseconds: 1)));
+    expect(Timespan(seconds: 1, nanoseconds: 2),
+        isNot(Timespan(seconds: 2, nanoseconds: 1)));
   });
 
   test('hashCode', () {
     expect(Timespan().hashCode, Timespan().hashCode);
-    expect(Timespan(days: 1).hashCode, Timespan(days: 1).hashCode);
+    expect(Timespan(seconds: 1).hashCode, Timespan(seconds: 1).hashCode);
     expect(
         Timespan(nanoseconds: 1).hashCode, Timespan(nanoseconds: 1).hashCode);
-    expect(Timespan(days: 1, nanoseconds: 2).hashCode,
-        Timespan(days: 1, nanoseconds: 2).hashCode);
+    expect(Timespan(seconds: 1, nanoseconds: 2).hashCode,
+        Timespan(seconds: 1, nanoseconds: 2).hashCode);
 
-    expect(Timespan(days: 1).hashCode, isNot(Timespan(days: 2).hashCode));
+    expect(Timespan(seconds: 1).hashCode, isNot(Timespan(seconds: 2).hashCode));
     expect(Timespan(nanoseconds: 1).hashCode,
         isNot(Timespan(nanoseconds: 2).hashCode));
-    expect(Timespan(days: 1, nanoseconds: 2).hashCode,
-        isNot(Timespan(days: 2, nanoseconds: 1).hashCode));
+    expect(Timespan(seconds: 1, nanoseconds: 2).hashCode,
+        isNot(Timespan(seconds: 2, nanoseconds: 1).hashCode));
   });
 }

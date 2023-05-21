@@ -107,13 +107,13 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
 
   /// Adds a [Timespan]. If [span] covers more than one day, the result will
   /// wrap.
-  LocalTime plusTimespan(Timespan span) =>
-      LocalTime(0, 0, 0, nanosecondsSinceMidnight + span.nanosecondPart);
+  LocalTime plusTimespan(Timespan span) => LocalTime(0, 0,
+      second + span.seconds, nanosecondsSinceMidnight + span.nanosecondPart);
 
   /// Subtracts a [Timespan]. If [span] covers more than one day, the result
   /// will wrap.
-  LocalTime minusTimespan(Timespan span) =>
-      LocalTime(0, 0, 0, nanosecondsSinceMidnight - span.nanosecondPart);
+  LocalTime minusTimespan(Timespan span) => LocalTime(0, 0,
+      second - span.seconds, nanosecondsSinceMidnight - span.nanosecondPart);
 
   /// Compares this to another [LocalTime].
   @override
