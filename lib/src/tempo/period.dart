@@ -4,7 +4,9 @@ part of '../../tempo.dart';
 ///
 /// Unlike [Timespan] and [Duration], which both represent an absolute length of
 /// time, the exact length of time this represents varies according to
-/// the dates it's relative to.
+/// the dates it's relative to. Some months are shorter than others, as
+/// are some days (for example while "springing forward" or "falling back"
+/// for daylight savings time).
 ///
 /// ```dart
 /// var d1 = LocalDate(2023, 2, 1);
