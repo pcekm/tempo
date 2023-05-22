@@ -158,8 +158,8 @@ expect(dt, hasTime(3, 4));
 - [Testing API documentation][testing]
 - [File a bug][bug]
 
-[tempo]: https://pub.dev/documentation/tempo/latest
-[testing]: https://pub.dev/documentation/tempo/latest/testing/
+[tempo]: https://pub.dev/documentation/tempo/latest/tempo/tempo-library.html
+[testing]: https://pub.dev/documentation/tempo/latest/testing/testing-library.html
 [bug]: https://github.com/pcekm/tempo/issues/new/choose
 [UTC]: https://en.wikipedia.org/wiki/UTC
 [DateTime]: https://api.dart.dev/stable/dart-core/DateTime-class.html
@@ -172,7 +172,7 @@ expect(dt, hasTime(3, 4));
 [ZonedDateTime]: https://pub.dev/documentation/tempo/latest/tempo/ZonedDateTime-class.html
 [Period]: https://pub.dev/documentation/tempo/latest/tempo/Period-class.html
 [Timespan]: https://pub.dev/documentation/tempo/latest/tempo/Timespan-class.html
-[allTimeZones]: https://pub.dev/documentation/tempo/latest/tempo/allTimeZones.html
-[timeZonesByProximity]: https://pub.dev/documentation/tempo/latest/tempo/timeZonesByProximity.html
-[timeZonesForCountry]: https://pub.dev/documentation/tempo/latest/tempo/timeZonesForCountry.html
-[ZoneDescription]: https://pub.dev/documentation/tempo/latest/tempo/ZoneDescription-class.html
+[allTimeZones]: https://pub.dev/documentation/tempo/latest/timezone/allTimeZones.html
+[timeZonesForCountry]: https://pub.dev/documentation/tempo/latest/timezone/timeZonesForCountry.html
+[timeZonesByProximity]: https://pub.dev/documentation/tempo/latest/timezone/timeZonesByProximity.html
+[ZoneDescription]: https://pub.dev/documentation/tempo/latest/timezone/ZoneDescription-class.html
