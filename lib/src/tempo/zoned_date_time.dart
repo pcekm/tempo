@@ -19,6 +19,9 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// A string that uniqueley identifies the time zone.
   final String zoneId;
 
+  @override
+  Timespan get unixTimestamp => _dateTime.unixTimestamp;
+
   ZonedDateTime._(this._dateTime, this.zoneId, this.offset);
 
   /// Constructs a [ZonedDateTime] from an [Instant] and a zone ID.
@@ -121,6 +124,10 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   @override
   OffsetDateTime atOffset(ZoneOffset offset) =>
       OffsetDateTime.fromInstant(this, offset);
+
+  @override
+  ZonedDateTime inTimezone(String zoneId) =>
+      ZonedDateTime.fromInstant(this, zoneId);
 
   /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///

@@ -92,6 +92,13 @@ class OffsetDateTime
   final ZoneOffset offset;
 
   @override
+  Timespan get unixTimestamp => _instant.unixTimestamp;
+
+  @override
+  ZonedDateTime inTimezone(String zoneId) =>
+      ZonedDateTime.fromInstant(this, zoneId);
+
+  @override
   OffsetDateTime atOffset(ZoneOffset offset) =>
       OffsetDateTime.fromInstant(this, offset);
 

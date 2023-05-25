@@ -24,20 +24,7 @@ class Instant implements HasInstant {
 
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
-  /// The amount of time since midnight, January 1, 1970 UTC.
-  ///
-  /// This is a [Timespan], which can be easily converted into whatever
-  /// units you might require.
-  ///
-  /// For example:
-  ///
-  /// ```dart
-  /// var instant = Instant.now();
-  /// instant.unixTimestamp.inSeconds;
-  /// instant.unixTimestamp.inMilliseconds;
-  /// instant.unixTimestamp.inNanoseconds;
-  /// instant.unixTimestamp.inDays;  // Probably not very useful, but it works!
-  /// ```
+  @override
   final Timespan unixTimestamp;
 
   /// Creates an instant given a time since midnight, January 1, 1970 UTC.
@@ -77,6 +64,10 @@ class Instant implements HasInstant {
   @override
   OffsetDateTime atOffset(ZoneOffset offset) =>
       OffsetDateTime.fromInstant(this, offset);
+
+  @override
+  ZonedDateTime inTimezone(String zoneId) =>
+      ZonedDateTime.fromInstant(this, zoneId);
 
   /// Returns the amount of time between this and another instant in time.
   @override
