@@ -10,6 +10,8 @@ build/
 pubspec.lock
 
 *.sublime-*
+.idea
+*.iml
 .vscode
 doc/api
 
