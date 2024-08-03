@@ -1,5 +1,4 @@
 /// Common functions for date time handling.
-
 const List<int> _daysInMonthTable = [
   0,
   31, // Jan
