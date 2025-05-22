@@ -41,14 +41,27 @@ class Instant implements HasInstant {
 
   /// Creates an instant from a [DateTime].
   ///
-  /// This will have the same precision as the `DateTime` object.
+  /// The precision depends on Dart's [DateTime] object, and varies by Dart
+  /// version and platform.
+  ///
+  /// | Dart Version | Platform | Precision   |
+  /// |--------------|----------|-------------|
+  /// | ≥ 3.5.0      | All      | Microsecond |
+  /// | < 3.5.0      | Native   | Microsecond |
+  /// | < 3.5.0      | Web      | Millisecond |
   Instant.fromDateTime(DateTime dateTime)
       : this.fromUnix(Timespan(microseconds: dateTime.microsecondsSinceEpoch));
 
   /// Creates an instant for the current time.
   ///
-  /// The resolution will either be millisecond or microsecond depending on
-  /// the underlying platform.
+  /// The precision depends on Dart's [DateTime] object, and varies by Dart
+  /// version and platform.
+  ///
+  /// | Dart Version | Platform | Precision   |
+  /// |--------------|----------|-------------|
+  /// | ≥ 3.5.0      | All      | Microsecond |
+  /// | < 3.5.0      | Native   | Microsecond |
+  /// | < 3.5.0      | Web      | Millisecond |
   Instant.now() : this.fromDateTime(DateTime.now());
 
   Instant._fromJulianDay(Timespan julian)

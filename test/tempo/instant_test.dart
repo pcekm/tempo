@@ -13,17 +13,11 @@ void main() {
         Instant.fromUnix(Timespan(seconds: 946872306, nanoseconds: 123456789)),
   });
 
-  test('fromDateTime() native', () {
+  test('fromDateTime()', () {
     var dt = DateTime.fromMicrosecondsSinceEpoch(1234567890);
     expect(Instant.fromDateTime(dt).unixTimestamp,
         Timespan(microseconds: 1234567890));
-  }, testOn: '!js');
-
-  test('fromDateTime() js', () {
-    var dt = DateTime.fromMicrosecondsSinceEpoch(1234567890);
-    expect(Instant.fromDateTime(dt).unixTimestamp,
-        Timespan(microseconds: 1234568000));
-  }, testOn: 'js');
+  });
 
   test('now() smoke test', () {
     var dt = DateTime.now();
