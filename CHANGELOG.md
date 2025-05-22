@@ -1,3 +1,8 @@
+## 0.5.4
+
+- Updated to tzdb-2025b
+- Minimum Dart SDK is now 2.19.0
+
 ## 0.5.3
 
 - Updated to tzdb-2024a.
