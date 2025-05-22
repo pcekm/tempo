@@ -8,7 +8,7 @@
 ///  - [allTimeZones]
 ///  - [timeZonesForCountry]
 ///  - [timeZonesByProximity]
-library timezone;
+library;
 
 export 'src/timezone/time_change_rule.dart';
 export 'src/timezone/time_zone_database.dart';

@@ -1,4 +1,6 @@
 @TestOn('!js')
+library;
+
 import 'dart:convert';
 
 import 'package:tempo/tempo.dart';

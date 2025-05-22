@@ -92,11 +92,13 @@ BuiltListMultimap<String, ZoneDescription> byCountry(
 
 String template(TimeZoneDatabase zoneInfoRec) {
   var zoneInfoJson = json.encode(serializers.serialize(zoneInfoRec));
-  return DartFormatter().format("""// AUTOMATICALLY GENERATED: DO NOT EDIT
+  return DartFormatter(
+          languageVersion: DartFormatter.latestShortStyleLanguageVersion)
+      .format("""// AUTOMATICALLY GENERATED: DO NOT EDIT
 
 part of '$libraryName.dart';
 
-final TimeZoneDatabase _defaultTimeZoneDatabase = 
+final TimeZoneDatabase _defaultTimeZoneDatabase =
     serializers.deserialize(json.decode('''$zoneInfoJson'''))
     as TimeZoneDatabase;
 """);

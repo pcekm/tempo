@@ -49,7 +49,7 @@ abstract class TimeZoneDatabase
 
   /// A map of all known time zone rules indexed by zone id.
   ///
-  /// The zone id is typically in the form "<continent>/<city>".
+  /// The zone id is typically in the form "Continent/City".
   /// For example, "America/Los_Angeles" and "Europe/Tallinn".
   BuiltMap<String, ZoneRules> get rules;
 

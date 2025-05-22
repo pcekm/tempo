@@ -1,4 +1,4 @@
 /// Useful matchers for testing dates and times.
-library testing;
+library;
 
 export 'src/testing/testing.dart';

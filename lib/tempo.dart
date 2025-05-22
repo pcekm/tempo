@@ -120,7 +120,7 @@
 /// which contains an ID string suitable for passing to [ZonedDateTime]
 /// along with other information that may be helpful in choosing
 /// a time zone.
-library tempo;
+library;
 
 import 'dart:math';
 
