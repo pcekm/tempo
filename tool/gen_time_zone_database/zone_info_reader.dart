@@ -25,14 +25,14 @@ class ZoneInfoFormatException implements Exception {
 /// [tzfile(5)](https://linux.die.net/man/5/tzfile) manpage, and in
 /// [RFC 8536](https://www.rfc-editor.org/rfc/rfc8536.html).
 class ZoneInfoReader {
-  final UnmodifiableUint8ListView _bytes;
-  final UnmodifiableByteDataView _data;
+  final Uint8List _bytes;
+  final ByteData _data;
 
   int _pos = 0;
 
   ZoneInfoReader(Uint8List bytes)
-      : _bytes = UnmodifiableUint8ListView(bytes),
-        _data = UnmodifiableByteDataView(ByteData.sublistView(bytes));
+      : _bytes = bytes,
+        _data = ByteData.sublistView(bytes);
 
   ZoneRules read() {
     _skipV1Part();
