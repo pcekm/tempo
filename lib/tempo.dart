@@ -121,6 +121,29 @@
 /// which contains an ID string suitable for passing to [ZonedDateTime]
 /// along with other information that may be helpful in choosing
 /// a time zone.
+///
+/// # Conversions
+///
+/// All of the classes have constructors and methods for converting from one
+/// type to another. (Including [DateTime] via an extension.). Here are some
+/// examples:
+///
+/// ```dart
+/// var dt = DateTime.utc(2025, 1, 1);
+/// dt.toLocal() == LocalDate(2025, 1, 1);
+/// dt.toInstant() == Instant.fromUnix(Timespan(seconds: 1735689600));
+/// dt.atOffset(ZoneOffset(-5)) =
+///   OffsetDateTime(ZoneOffset(-5), 2024, 12, 31, 19, 0);
+/// dt.inTimeZone('America/New_York') ==
+///   ZonedDateTime.inTimeZone('America/New_York', 2024, 12, 31, 19, 0);
+///
+/// var LocalDateTime ldt = LocalDateTime(2025, 1, 1);
+/// ldt.inTimeZone('America/New_York') ==
+///    ZonedDateTime.inTimeZone('America/New_York', 2025, 1, 1);
+///
+/// var zdt = ZonedDateTime(2025, 1, 1);
+/// zdt.toLocal() == LocalDateTime(2025, 1, 1);
+/// ```
 library;
 
 import 'dart:math';
@@ -136,6 +159,7 @@ export 'timezone.dart'
     show allTimeZones, timeZonesForCountry, timeZonesByProximity;
 
 part 'src/tempo/__period_arithmetic.dart';
+part 'src/tempo/extensions.dart';
 part 'src/tempo/has_date.dart';
 part 'src/tempo/has_date_time.dart';
 part 'src/tempo/has_instant.dart';
