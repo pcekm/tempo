@@ -37,8 +37,10 @@ abstract class HasInstant implements Comparable<HasInstant> {
   /// Converts this to an [OffsetDateTime] with the given [offset].
   OffsetDateTime atOffset(ZoneOffset offset);
 
-  /// Converts this to a [ZonedDateTime] with the given [zoneId].
-  ZonedDateTime inTimezone(String zoneId);
+  /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
+  ///
+  /// Uses [ZonedDateTime.defaultZoneId] if [zoneId] is not given.
+  ZonedDateTime inTimezone([String? zoneId]);
 
   /// Finds the amount of time between this and another instant in time.
   Timespan timespanUntil(HasInstant other);

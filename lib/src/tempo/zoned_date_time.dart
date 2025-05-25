@@ -1,8 +1,32 @@
 part of '../../tempo.dart';
 
 /// A date and time in a specific time zone.
+///
+/// The time zone defaults to "UTC" and may be changed by setting
+/// [defaultZoneId]. If you're using Flutter, you can get a better default
+/// from the [flutter_timezone](https://pub.dev/packages/flutter_timezone)
+/// package:
+///
+/// ```dart
+/// import 'package:flutter_timezone/flutter_timezone.dart';
+///
+/// ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+/// ```
 @immutable
 class ZonedDateTime implements HasDateTime, HasInstant {
+  /// The default time zone to use when creating a [ZonedDateTime].
+  ///
+  /// Dart has no way to determine the system time zone, so this always starts as
+  /// 'UTC'. If you're using Flutter, you can get a better default from the
+  /// [flutter_timezone](https://pub.dev/packages/flutter_timezone) package.
+  ///
+  /// ```dart
+  /// import 'package:flutter_timezone/flutter_timezone.dart';
+  ///
+  /// ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+  /// ```
+  static String defaultZoneId = 'UTC';
+
   /// The earliest possible datetime.
   static final ZonedDateTime minimum =
       ZonedDateTime.fromInstant(Instant.minimum, 'GMT');
@@ -16,7 +40,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// The offset from UTC.
   final NamedZoneOffset offset;
 
-  /// A string that uniqueley identifies the time zone.
+  /// A string that uniquely identifies the time zone.
   final String zoneId;
 
   @override
@@ -24,14 +48,18 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   ZonedDateTime._(this._dateTime, this.zoneId, this.offset);
 
-  /// Constructs a [ZonedDateTime] from an [Instant] and a zone ID.
-  factory ZonedDateTime.fromInstant(HasInstant instant, String zoneId) {
+  /// Constructs a [ZonedDateTime] from an [Instant].
+  ///
+  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
+  /// if not.
+  factory ZonedDateTime.fromInstant(HasInstant instant, [String? zoneId]) {
+    zoneId ??= defaultZoneId;
     var offset = _lookupTimeZone(zoneId, instant);
     var dateTime = OffsetDateTime.fromInstant(instant, offset);
     return ZonedDateTime._(dateTime, zoneId, offset);
   }
 
-  /// Creates a [ZonedDateTime] from indiviual components.
+  /// Creates a [ZonedDateTime] from individual components in a given time zone.
   ///
   /// Throws [ArgumentError] if [zoneId] is invalid.
   ///
@@ -42,7 +70,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// The exact behavior of in these situations is currently unspecified
   /// and may change in the future. However, the result will be close.
-  factory ZonedDateTime(String zoneId, int year,
+  factory ZonedDateTime.withZoneId(String zoneId, int year,
           [int month = 1,
           int day = 1,
           int hour = 0,
@@ -53,18 +81,39 @@ class ZonedDateTime implements HasDateTime, HasInstant {
           LocalDateTime(year, month, day, hour, minute, second, nanosecond),
           zoneId);
 
+  /// Creates a [ZonedDateTime] from individual components in the default time
+  /// zone specified by [defaultZoneId].
+  ///
+  /// Some dates and times are impossible or ambiguous in a given time zone.
+  /// When switching to daylight savings, the local time "springs forward"
+  /// skipping an hour. When switching back to standard time, the local time
+  /// "falls back," repeating the same hour.
+  ///
+  /// The exact behavior of in these situations is currently unspecified
+  /// and may change in the future. However, the result will be close.
+  factory ZonedDateTime(int year,
+          [int month = 1,
+          int day = 1,
+          int hour = 0,
+          int minute = 0,
+          int second = 0,
+          int nanosecond = 0]) =>
+      _forLocal(
+          LocalDateTime(year, month, day, hour, minute, second, nanosecond),
+          defaultZoneId);
+
   /// Converts a [DateTime] to a [ZonedDateTime].
   ///
-  /// This requires a [zoneId] arg because [DateTime] doesn't provide enough
-  /// information about the time zone to derive it.
-  factory ZonedDateTime.fromDateTime(DateTime dateTime, String zoneId) =>
+  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
+  /// if not.
+  factory ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId]) =>
       ZonedDateTime.fromInstant(Instant.fromDateTime(dateTime), zoneId);
 
   /// Creates a [ZonedDateTime] using the current time.
   ///
-  /// This requires a [zoneId] arg because it's not currently possible to
-  /// discover the system time zone using Dart's standard library.
-  factory ZonedDateTime.now(String zoneId) =>
+  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
+  /// if not.
+  factory ZonedDateTime.now([String? zoneId]) =>
       ZonedDateTime.fromDateTime(DateTime.now(), zoneId);
 
   /// Looks up a time zone and throws ArgumentError if it's invalid.
@@ -82,7 +131,8 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// but we don't know the instant without knowing the time zone.
   /// Instead, start at the previous day and skip forward. This is
   /// a bit fiddly, but I don't have any better ideas right now.
-  static ZonedDateTime _forLocal(LocalDateTime local, String zoneId) {
+  static ZonedDateTime _forLocal(LocalDateTime local, [String? zoneId]) {
+    zoneId ??= defaultZoneId;
     var instant = Instant._fromJulianDay(
         local.date.minusTimespan(Timespan(days: 1))._julianDay);
     var candidate = ZonedDateTime.fromInstant(instant, zoneId);
@@ -106,7 +156,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// The common designation for the time zone (e.g. UTC, PST, PDT, CET, CEST).
   ///
   /// These strings are not necessarily unique but are commonly used and
-  /// understood. See [zoneId] for a unique identifier.
+  /// understood by humans. See [zoneId] for a unique identifier.
   String get timeZone => offset.name;
 
   /// If this is a daylight savings (or summer) time.
@@ -126,13 +176,13 @@ class ZonedDateTime implements HasDateTime, HasInstant {
       OffsetDateTime.fromInstant(this, offset);
 
   @override
-  ZonedDateTime inTimezone(String zoneId) =>
+  ZonedDateTime inTimezone([String? zoneId]) =>
       ZonedDateTime.fromInstant(this, zoneId);
 
   /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///
-  /// Unfortunately, [DateTime] only supports two time zones: "local" and UTC,
-  /// so this conversion loses the time zone.
+  /// [DateTime] only supports two time zones: "local" and UTC, so this
+  /// conversion loses the time zone.
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
       _dateTime.asInstant.unixTimestamp.inMicroseconds);
@@ -242,12 +292,12 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   /// The equality operator.
   ///
-  /// Two [OffsetDateTime]s compare equal if and only if they have the same
-  /// date _and_ the same offset. If you want to know if two represent the
-  /// same moment in time, use [compareTo] or [asInstant].
+  /// Two [ZonedDateTime]s compare equal if and only if they have the same
+  /// date/time _and_ the same [zoneId]. If you just want to know if two
+  /// represent the same moment in time, use [compareTo] or [asInstant].
   ///
   /// ```dart
-  /// // Same moment in time; different zone offsets:
+  /// // Same moment in time; different time zones:
   /// var d1 = ZonedDateTime('America/Denver', 2023, 1, 1);
   /// var d2 = ZonedDateTime('America/Los Angeles', 2022, 12, 31, 23);
   ///

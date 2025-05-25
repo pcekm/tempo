@@ -79,7 +79,7 @@ class Instant implements HasInstant {
       OffsetDateTime.fromInstant(this, offset);
 
   @override
-  ZonedDateTime inTimezone(String zoneId) =>
+  ZonedDateTime inTimezone([String? zoneId]) =>
       ZonedDateTime.fromInstant(this, zoneId);
 
   /// Returns the amount of time between this and another instant in time.

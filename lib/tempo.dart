@@ -42,6 +42,7 @@
 ///
 /// - [Instant]
 /// - [OffsetDateTime]
+/// - [ZonedDateTime]
 /// - [Timespan]
 ///
 /// Unlike the local classes, these are tied to an absolute
@@ -65,7 +66,7 @@
 /// odt.toString() == '2000-01-03T03:05:06-0100';
 /// odt.asInstant == instant;
 ///
-/// var zdt = ZonedDateTime.fromInstant(instant, "America/Los_Angeles");
+/// var zdt = ZonedDateTime.fromInstant(instant, 'America/Los_Angeles');
 /// zdt.toString() == '2000-01-02T20:05:06-0800';
 /// zdt.timeZone == 'PST';
 /// zdt.offset == ZoneOffset(-8);

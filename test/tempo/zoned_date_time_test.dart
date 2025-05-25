@@ -16,7 +16,7 @@ void main() {
     test('fromInstant', () {
       var instant =
           Instant.fromUnix(Timespan(seconds: 1672657445, nanoseconds: 6));
-      var dt = ZonedDateTime.fromInstant(instant, "America/Los_Angeles");
+      var dt = ZonedDateTime.fromInstant(instant, 'America/Los_Angeles');
       expect(dt, hasDate(2023, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt, isNotDst);
@@ -24,11 +24,14 @@ void main() {
       expect(dt.zoneId, 'America/Los_Angeles');
     });
 
-    group('default (from components)', () {
+    group('from components', () {
       group('west', () {
+        setUp(() {
+          ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+        });
+
         test('normal std', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 1, 1, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 1, 1, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -39,8 +42,7 @@ void main() {
           expect(got.timeZone, 'PST');
         });
         test('normal dst', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 6, 1, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 6, 1, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -52,8 +54,7 @@ void main() {
         });
 
         test('spring forward into null space', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 3, 12, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 3, 12, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -63,8 +64,7 @@ void main() {
         });
 
         test('fall back into ambiguity', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 11, 5, 1, 3, 4, 5);
+          var got = ZonedDateTime(2023, 11, 5, 1, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -74,8 +74,7 @@ void main() {
         });
 
         test('spring forward over time change', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 3, 12, 3, 4, 5, 6);
+          var got = ZonedDateTime(2023, 3, 12, 3, 4, 5, 6);
 
           expect(got, hasHour(3));
           expect(got, isDst);
@@ -86,8 +85,7 @@ void main() {
         });
 
         test('fall back over time change', () {
-          var got =
-              ZonedDateTime('America/Los_Angeles', 2023, 11, 5, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 11, 5, 2, 3, 4, 5);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -97,8 +95,11 @@ void main() {
       });
 
       group('east', () {
+        setUp(() {
+          ZonedDateTime.defaultZoneId = 'Europe/Tallinn';
+        });
         test('normal std', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 1, 1, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 1, 1, 2, 3, 4, 5);
           expect(got, hasDate(2023, 1, 1));
           expect(got, hasTime(2, 3, 4, 5));
           expect(
@@ -109,7 +110,7 @@ void main() {
           expect(got.timeZone, 'EET');
         });
         test('normal dst', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 6, 1, 2, 3, 4, 5);
+          var got = ZonedDateTime(2023, 6, 1, 2, 3, 4, 5);
           expect(got, hasDate(2023, 6, 1));
           expect(got, hasTime(2, 3, 4, 5));
           expect(
@@ -121,7 +122,7 @@ void main() {
         });
 
         test('spring forward into null space', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 3, 26, 3, 4, 5, 6);
+          var got = ZonedDateTime(2023, 3, 26, 3, 4, 5, 6);
           expect(got, hasHour(4));
           expect(
               got,
@@ -131,7 +132,7 @@ void main() {
         });
 
         test('fall back into ambiguity', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 10, 29, 3, 4, 5, 6);
+          var got = ZonedDateTime(2023, 10, 29, 3, 4, 5, 6);
           expect(got, hasHour(3));
           expect(
               got,
@@ -141,7 +142,7 @@ void main() {
         });
 
         test('spring forward over time change', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 3, 26, 4, 5, 6, 7);
+          var got = ZonedDateTime(2023, 3, 26, 4, 5, 6, 7);
           expect(got, hasHour(4));
           expect(
               got,
@@ -151,7 +152,7 @@ void main() {
         });
 
         test('fall back over time change', () {
-          var got = ZonedDateTime('Europe/Tallinn', 2023, 10, 29, 4, 5, 6, 7);
+          var got = ZonedDateTime(2023, 10, 29, 4, 5, 6, 7);
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -159,6 +160,13 @@ void main() {
           expect(got, isNotDst);
         });
       });
+    });
+
+    test('withZoneId()', () {
+      var got =
+          ZonedDateTime.withZoneId('America/St_Johns', 2000, 1, 2, 3, 4, 5, 6);
+      expect(got, hasDate(2000, 1, 2));
+      expect(got.zoneId, equals('America/St_Johns'));
     });
 
     test('now() smoke test', () {
@@ -185,25 +193,30 @@ void main() {
   });
 
   group('time zone info', () {
+    setUp(() {
+      ZonedDateTime.defaultZoneId = 'Europe/Zurich';
+    });
+
     test('timeZone', () {
-      expect(ZonedDateTime('Europe/Zurich', 2000, 1, 2).timeZone, "CET");
-      expect(ZonedDateTime('Europe/Zurich', 2000, 6, 2).timeZone, "CEST");
+      expect(ZonedDateTime(2000, 1, 2).timeZone, "CET");
+      expect(ZonedDateTime(2000, 6, 2).timeZone, "CEST");
     });
 
     test('offset', () {
-      expect(ZonedDateTime('Europe/Zurich', 2000, 1, 2).offset, ZoneOffset(1));
-      expect(ZonedDateTime('Europe/Zurich', 2000, 6, 2).offset, ZoneOffset(2));
+      expect(ZonedDateTime(2000, 1, 2).offset, ZoneOffset(1));
+      expect(ZonedDateTime(2000, 6, 2).offset, ZoneOffset(2));
     });
 
     test('isDst', () {
-      expect(ZonedDateTime('Europe/Zurich', 2000, 1, 2), isNotDst);
-      expect(ZonedDateTime('Europe/Zurich', 2000, 6, 2), isDst);
+      expect(ZonedDateTime(2000, 1, 2), isNotDst);
+      expect(ZonedDateTime(2000, 6, 2), isDst);
     });
   });
 
   group('conversions', () {
     test('toLocal', () {
-      var local = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6)
+      var local = ZonedDateTime.withZoneId(
+              'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6)
           .toLocal();
       expect(local, isA<LocalDateTime>());
       expect(local, hasDate(2000, 1, 2));
@@ -212,7 +225,8 @@ void main() {
 
     test('toOffset', () {
       var odt =
-          ZonedDateTime('America/Toronto', 2000, 1, 2, 3, 4, 5, 6).toOffset();
+          ZonedDateTime.withZoneId('America/Toronto', 2000, 1, 2, 3, 4, 5, 6)
+              .toOffset();
       expect(odt, isA<OffsetDateTime>());
       expect(odt, hasDate(2000, 1, 2));
       expect(odt, hasTime(3, 4, 5, 6));
@@ -220,7 +234,9 @@ void main() {
     });
 
     test('atOffset()', () {
-      expect(ZonedDateTime('UTC', 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
+      expect(
+          ZonedDateTime.withZoneId('UTC', 1970, 1, 1, 0)
+              .atOffset(ZoneOffset(1)),
           OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
     });
 
@@ -228,14 +244,15 @@ void main() {
       // A bit involved: Create a date in UTC, convert it to a local DateTime,
       // then convert that back to UTC. Unfortunately it's not possible to
       // learn the local time zone in a portable way.
-      var dt = ZonedDateTime('UTC', 2000, 1, 2, 3, 4, 5, 006007000)
+      var dt = ZonedDateTime.withZoneId('UTC', 2000, 1, 2, 3, 4, 5, 006007000)
           .toDateTime()
           .toUtc();
       expect(dt, DateTime.utc(2000, 1, 2, 3, 4, 5, 6, 7));
     });
 
     test('asInstant', () {
-      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime.withZoneId(
+          'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
       expect(
           dt,
           hasInstant(
@@ -252,8 +269,11 @@ void main() {
   });
 
   group('Timespan arithmetic', () {
+    setUp(() {
+      ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+    });
     test('plusTimespan', () {
-      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusTimespan(Timespan(days: 120));
       expect(got, hasDate(2000, 5, 1));
       // One hour ahead because of DST:
@@ -261,7 +281,7 @@ void main() {
     });
 
     test('minusTimespan', () {
-      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusTimespan(Timespan(days: 120));
       expect(got, hasDate(1999, 9, 4));
       // One hour ahead because of DST:
@@ -270,8 +290,11 @@ void main() {
   });
 
   group('Period arithmetic', () {
+    setUp(() {
+      ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+    });
     test('plusPeriod', () {
-      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusPeriod(Period(months: 6));
       expect(got, hasDate(2000, 7, 2));
       // Remains unchanged in spite of DST.
@@ -279,7 +302,7 @@ void main() {
     });
 
     test('minusPeriod', () {
-      var dt = ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusPeriod(Period(months: 6));
       expect(got, hasDate(1999, 7, 2));
       // Remains unchanged in spite of DST.
@@ -291,8 +314,9 @@ void main() {
   // by Instant.
   group('comparisons', () {
     // Same wall time, two adjacent time zones (EST, CET):
-    var dt1 = ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6);
-    var dt2 = ZonedDateTime('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
+    var dt1 =
+        ZonedDateTime.withZoneId('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6);
+    var dt2 = ZonedDateTime.withZoneId('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
 
     test('operator<', () {
       expect(dt1, lessThan(dt2));
@@ -316,19 +340,25 @@ void main() {
   });
 
   test('toString()', () {
-    expect(ZonedDateTime('America/Los_Angeles', 2000, 1, 2, 3, 4).toString(),
+    expect(
+        ZonedDateTime.withZoneId('America/Los_Angeles', 2000, 1, 2, 3, 4)
+            .toString(),
         '2000-01-02T03:04-0800');
-    expect(ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4).toString(),
+    expect(
+        ZonedDateTime.withZoneId('Europe/Tallinn', 2000, 1, 2, 3, 4).toString(),
         '2000-01-02T03:04+0200');
-    expect(ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6).toString(),
+    expect(
+        ZonedDateTime.withZoneId('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6)
+            .toString(),
         '2000-01-02T03:04:05.000000006+0200');
   });
 
   group('equality and hashCode', () {
     // Same instant, two adjacent time zones (EST, CET):
-    var dt1 = ZonedDateTime('Europe/Tallinn', 2000, 1, 2, 4, 4, 5, 6);
-    var dt2 = ZonedDateTime('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
-    var dt3 = ZonedDateTime('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
+    var dt1 =
+        ZonedDateTime.withZoneId('Europe/Tallinn', 2000, 1, 2, 4, 4, 5, 6);
+    var dt2 = ZonedDateTime.withZoneId('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
+    var dt3 = ZonedDateTime.withZoneId('Europe/Zurich', 2000, 1, 2, 3, 4, 5, 6);
 
     test('operator== different zones', () {
       expect(dt1, isNot(dt2)); // Different zones means !=

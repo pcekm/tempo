@@ -95,7 +95,7 @@ class OffsetDateTime
   Timespan get unixTimestamp => _instant.unixTimestamp;
 
   @override
-  ZonedDateTime inTimezone(String zoneId) =>
+  ZonedDateTime inTimezone([String? zoneId]) =>
       ZonedDateTime.fromInstant(this, zoneId);
 
   @override

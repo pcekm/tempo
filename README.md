@@ -1,9 +1,8 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pcekm/tempo/dart.yml)
 
 A complete time and date solution that replaces Dart's core
-[`DateTime`][DateTime] with a rich set of date and time
-classes, advanced arithmetic features and full time zone
-support.
+[`DateTime`][DateTime] with a rich set of date and time classes, advanced
+arithmetic features and full time zone support.
 
 ## Features
 
@@ -24,9 +23,9 @@ Everything [`DateTime`][DateTime] can do, plus:
 import 'package:tempo/tempo.dart';
 ```
 
-We'll use a local datetime to get started, but all of the classes largely
-work the same. First, these all create the exact same date and time
-of May 1, 2023 at 12:00 PM:
+We'll use a local datetime to get started, but all of the classes largely work
+the same. First, these all create the exact same date and time of May 1, 2023 at
+12:00 PM:
 
 ```dart
 LocalDateTime(2023, 5, 1, 12, 0);
@@ -74,8 +73,8 @@ dt2 > dt1;
 dt1.compareTo(dt2) == -1;
 ```
 
-Add a [`Period`][Period] of 1 month. Unlike `Timespan`, the exact
-amount of time a `Period` covers varies. Some months are shorter than others:
+Add a [`Period`][Period] of 1 month. Unlike `Timespan`, the exact amount of time
+a `Period` covers varies. Some months are shorter than others:
 
 ```dart
 var dt = LocalDateTime(2023, 5, 1, 12, 0);
@@ -102,12 +101,15 @@ OffsetDateTime(offset, 2000, 4, 21, 12, 30);
 A [`ZonedDateTime`][ZonedDateTime] with a proper time zone:
 
 ```dart
-ZonedDateTime('America/Los_Angeles', 2023, 5, 9, 10, 47);
+// Default time zone:
+ZonedDateTime(2023, 5, 9, 10, 47);
+// Specified time zone:
+ZonedDateTime.withZoneId('America/Los_Angeles', 2023, 5, 9, 10, 47);
 ```
 
 Both [`OffsetDateTime`][OffsetDateTime] and [`ZonedDateTime`][ZonedDateTime]
-contain an offset from [UTC][UTC] and represent an absolute moment in time.
-This moment is stored in an [`Instant`][Instant]:
+contain an offset from [UTC][UTC] and represent an absolute moment in time. This
+moment is stored in an [`Instant`][Instant]:
 
 ```dart
 Instant.now();
@@ -116,9 +118,26 @@ OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).asInstant;
 ZonedDateTime('America/Los_Angeles', 2023, 1, 2, 3).asInstant;
 ```
 
-You can get a list of time zones nearest to a geographical
-location, optionally filtered by country. All of these functions return
-a list of [`ZoneDescription`][ZoneDescription]:
+The default for [`ZonedDateTime`][ZonedDateTime] is "UTC." You can change this
+by setting [`defaultZoneId`][defaultZoneId]:
+
+```dart
+ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+```
+
+Determining the system time zone in plain Dart in a portable way is impossible.
+However, if you're using Flutter, you have options. I recommend the
+[flutter_timezone](https://pub.dev/packages/flutter_timezone) package.
+
+```dart
+import 'package:flutter_timezone/flutter_timezone.dart';
+
+ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+```
+
+You can get a list of time zones nearest to a geographical location, optionally
+filtered by country. All of these functions return a list of
+[`ZoneDescription`][ZoneDescription]:
 
 ```dart
 timeZonesByProximity(latitude, longitude);
@@ -139,8 +158,8 @@ allTimeZones();
 
 ## Testing
 
-This package also contains a [`testing`][testing] library with a useful set
-of matchers for your unit tests that produce helpful error messages.
+This package also contains a [`testing`][testing] library with a useful set of
+matchers for your unit tests that produce helpful error messages.
 
 ```dart
 import 'package:tempo/testing.dart';
@@ -170,6 +189,7 @@ expect(dt, hasTime(3, 4));
 [Instant]: https://pub.dev/documentation/tempo/latest/tempo/Instant-class.html
 [OffsetDateTime]: https://pub.dev/documentation/tempo/latest/tempo/OffsetDateTime-class.html
 [ZonedDateTime]: https://pub.dev/documentation/tempo/latest/tempo/ZonedDateTime-class.html
+[defaultZoneId]: https://pub.dev/documentation/tempo/latest/tempo/ZonedDateTime/defaultZoneId.html
 [Period]: https://pub.dev/documentation/tempo/latest/tempo/Period-class.html
 [Timespan]: https://pub.dev/documentation/tempo/latest/tempo/Timespan-class.html
 [allTimeZones]: https://pub.dev/documentation/tempo/latest/timezone/allTimeZones.html
