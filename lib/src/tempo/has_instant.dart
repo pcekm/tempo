@@ -4,7 +4,7 @@ part of '../../tempo.dart';
 /// in time.
 ///
 /// {@category absolute}
-abstract class HasInstant implements Comparable<HasInstant> {
+abstract interface class HasInstant implements Comparable<HasInstant> {
   /// The amount of time since midnight, January 1, 1970 UTC.
   ///
   /// This is a [Timespan], which can be easily converted into whatever

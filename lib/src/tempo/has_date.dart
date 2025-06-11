@@ -4,7 +4,7 @@ part of '../../tempo.dart';
 /// ISO 8601 calendar.
 ///
 /// {@category local}
-abstract class HasDate {
+abstract interface class HasDate {
   /// The year.
   ///
   /// {@template astro_year}

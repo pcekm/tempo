@@ -8,7 +8,7 @@ version: 0.5.4
 repository: https://github.com/pcekm/tempo
 
 environment:
-  sdk: ">=2.19.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   built_collection: ^5.1.1

@@ -3,7 +3,7 @@ part of '../../tempo.dart';
 /// Interface implemented by classes that provide the time of day.
 ///
 /// {@category local}
-abstract class HasTime {
+abstract interface class HasTime {
   /// The hour from 0 to 23.
   int get hour;
 
