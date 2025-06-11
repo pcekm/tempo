@@ -35,7 +35,7 @@ int daysUntil(LocalDate date) => LocalDate.now().periodUntil(date).days;
 /// Prints a calendar for the given year and month.
 void printCalendar(int year, int month) {
   final monthStart = LocalDate(year, month);
-  final offset = monthStart.weekday.index % 7;
+  final offset = monthStart.weekday.us;
   final calendarStart = monthStart.minusPeriod(Period(days: offset));
   final monthEnd = monthStart.plusPeriod(Period(months: 1));
   print('Sun Mon Tue Wed Thu Fri Sat');
