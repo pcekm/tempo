@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 import '../../tempo.dart';
 
 class _HasInstant extends CustomMatcher {
-  _HasInstant(matcher) : super('Has instant that is', 'instant', matcher);
+  _HasInstant(dynamic matcher)
+      : super('Has instant that is', 'instant', matcher);
   @override
   Instant featureValueOf(dynamic actual) => actual.asInstant;
 }
@@ -12,7 +13,7 @@ class _HasInstant extends CustomMatcher {
 Matcher hasInstant(Object? matcher) => _HasInstant(matcher);
 
 class _HasYear extends CustomMatcher {
-  _HasYear(matcher) : super('Has year that is', 'year', matcher);
+  _HasYear(dynamic matcher) : super('Has year that is', 'year', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.year;
 }
@@ -21,7 +22,7 @@ class _HasYear extends CustomMatcher {
 Matcher hasYear(Object? matcher) => _HasYear(matcher);
 
 class _HasMonth extends CustomMatcher {
-  _HasMonth(matcher) : super('Has month that is', 'month', matcher);
+  _HasMonth(dynamic matcher) : super('Has month that is', 'month', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.month;
 }
@@ -30,7 +31,7 @@ class _HasMonth extends CustomMatcher {
 Matcher hasMonth(Object? matcher) => _HasMonth(matcher);
 
 class _HasDay extends CustomMatcher {
-  _HasDay(matcher) : super('Has day that is', 'day', matcher);
+  _HasDay(dynamic matcher) : super('Has day that is', 'day', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.day;
 }
@@ -39,7 +40,7 @@ class _HasDay extends CustomMatcher {
 Matcher hasDay(Object? matcher) => _HasDay(matcher);
 
 class _HasHour extends CustomMatcher {
-  _HasHour(matcher) : super('Has hour that is', 'hour', matcher);
+  _HasHour(dynamic matcher) : super('Has hour that is', 'hour', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.hour;
 }
@@ -48,7 +49,8 @@ class _HasHour extends CustomMatcher {
 Matcher hasHour(Object? matcher) => _HasHour(matcher);
 
 class _HasWeekday extends CustomMatcher {
-  _HasWeekday(matcher) : super('Has weekday that is', 'weekday', matcher);
+  _HasWeekday(dynamic matcher)
+      : super('Has weekday that is', 'weekday', matcher);
   @override
   Weekday featureValueOf(dynamic actual) => actual.weekday;
 }
@@ -57,7 +59,7 @@ class _HasWeekday extends CustomMatcher {
 Matcher hasWeekday(Object? matcher) => _HasWeekday(matcher);
 
 class _HasMinute extends CustomMatcher {
-  _HasMinute(matcher) : super('Has minute that is', 'minute', matcher);
+  _HasMinute(dynamic matcher) : super('Has minute that is', 'minute', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.minute;
 }
@@ -66,7 +68,7 @@ class _HasMinute extends CustomMatcher {
 Matcher hasMinute(Object? matcher) => _HasMinute(matcher);
 
 class _HasSecond extends CustomMatcher {
-  _HasSecond(matcher) : super('Has second that is', 'second', matcher);
+  _HasSecond(dynamic matcher) : super('Has second that is', 'second', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.second;
 }
@@ -75,7 +77,7 @@ class _HasSecond extends CustomMatcher {
 Matcher hasSecond(Object? matcher) => _HasSecond(matcher);
 
 class _HasNanosecond extends CustomMatcher {
-  _HasNanosecond(matcher)
+  _HasNanosecond(dynamic matcher)
       : super('Has nanosecond that is', 'nanosecond', matcher);
   @override
   int featureValueOf(dynamic actual) => actual.nanosecond;

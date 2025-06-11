@@ -4,7 +4,8 @@ import 'package:tempo/timezone.dart';
 import 'package:test/test.dart';
 
 class HasZoneId extends CustomMatcher {
-  HasZoneId(matcher) : super('Object with zoneId of', 'zoneId', matcher);
+  HasZoneId(dynamic matcher)
+      : super('Object with zoneId of', 'zoneId', matcher);
   @override
   Object? featureValueOf(actual) => actual.zoneId;
 }

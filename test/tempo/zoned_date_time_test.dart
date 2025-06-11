@@ -3,7 +3,7 @@ import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 
 class _HasDst extends CustomMatcher {
-  _HasDst(matcher) : super('Has isDst that is', 'isDst', matcher);
+  _HasDst(dynamic matcher) : super('Has isDst that is', 'isDst', matcher);
   @override
   bool featureValueOf(dynamic actual) => actual.isDst;
 }
