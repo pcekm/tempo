@@ -50,7 +50,7 @@ abstract class TimeZoneDatabase
   static Serializer<TimeZoneDatabase> get serializer =>
       _$timeZoneDatabaseSerializer;
 
-  /// The version of the ARIN database this contains.
+  /// The version of the IANA database this contains.
   String get version;
 
   /// A map of all known time zone rules indexed by zone id.
@@ -74,7 +74,7 @@ abstract class TimeZoneDatabase
 
   /// Constructs a new TimeZoneDatabase.
   ///
-  /// Uses a compiled in copy of the ARIN
+  /// Uses a compiled in copy of the IANA
   /// [Time Zone Database](https://www.iana.org/time-zones)
   factory TimeZoneDatabase() => _defaultTimeZoneDatabase;
 

@@ -121,7 +121,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   /// What's going on here:
   /// There's a chicken and egg problem. We need an Instant to determine
-  /// the correct time zone (that's how they're defined in ARIN's data),
+  /// the correct time zone (that's how they're defined in IANA's data),
   /// but we don't know the instant without knowing the time zone.
   /// Instead, start at the previous day and skip forward. This is
   /// a bit fiddly, but I don't have any better ideas right now.
