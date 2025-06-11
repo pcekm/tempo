@@ -1,6 +1,8 @@
 part of '../../tempo.dart';
 
 /// A date with no timezone.
+///
+/// {@category local}
 @immutable
 class LocalDate
     implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
@@ -19,13 +21,11 @@ class LocalDate
   @override
   final int day;
 
-  /// Constructs a [LocalDate] from individual parts.
+  /// Constructs a `LocalDate` from individual parts.
   ///
-  /// The [year] uses ISO 8601, or astronomical year numbering and may be
-  /// zero or negative. When negative, year equates to year - 1 BCE. Throws
-  /// an exception if [month] or [day] is invalid.
+  /// {@macro astro_year}
   ///
-  /// Throws an exception if the date would be invalid.
+  /// Throws an exception if the date is invalid.
   LocalDate([this.year = 0, this.month = 1, this.day = 1]) {
     _validate();
   }
@@ -35,11 +35,13 @@ class LocalDate
     return LocalDate(parts.year, parts.month, parts.day);
   }
 
-  /// Constructs a [LocalDate] with the current date and time in the
+  /// Constructs a `LocalDate` with the current date and time in the
   /// current time zone.
+  ///
+  /// {@macro datetime_precision}
   LocalDate.now() : this.fromDateTime(DateTime.now());
 
-  /// Constructs a [LocalDate] from a standard Dart [DateTime].
+  /// Constructs a `LocalDate` from a standard Dart [DateTime].
   /// The timezone (if any) of [dateTime] is ignored.
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);
@@ -165,7 +167,7 @@ class LocalDate
 
   /// Adds [Period] of time.
   ///
-  /// Increments (or decrements) the date by a specific number of months
+  /// Increments the date by a specific number of months
   /// or years while—as much as possible—keeping the day the same. When this
   /// is not possible the result will be the last day of the month. For
   /// example, adding one month to `2023-01-31` gives `2023-01-28`.
@@ -190,10 +192,10 @@ class LocalDate
 
   /// Subtracts [Period] of time.
   ///
-  /// Decrements (or increments) the date by a specific number of months
+  /// Decrements the date by a specific number of months
   /// or years while—as much as possible—keeping the day the same. When this
   /// is not possible the result will be the last day of the month. For
-  /// example, adding one month to `2023-01-31` gives `2023-01-28`.
+  /// example, subtracting one month from `2023-03-31` gives `2023-01-28`.
   ///
   /// The days part is applied last. For example, subtracting one month and
   /// one day from `2023-03-31` first subtracts one month to get `2023-02-28`

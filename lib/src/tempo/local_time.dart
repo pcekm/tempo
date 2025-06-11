@@ -4,6 +4,8 @@ part of '../../tempo.dart';
 ///
 /// Internally this stores the time in [nanosecondsSinceMidnight], which
 /// means it can represent any time down to the nanosecond.
+///
+/// {@category local}
 @immutable
 class LocalTime implements Comparable<LocalTime>, HasTime {
   /// The earliest possible time.
@@ -50,15 +52,13 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
 
   /// Constructs a [LocalTime] with the current time in the current time zone.
   ///
-  /// The result will have a maximum resolution of microseconds, and on web
-  /// platforms it may be milliseconds.
+  /// This uses [DateTime] underneath, and the resulting time will have the same
+  /// precision.
   LocalTime.now() : this.fromDateTime(DateTime.now());
 
   /// Constructs a [LocalTime] from a standard Dart [DateTime].
   ///
-  /// The timezone (if any) of [dateTime] is ignored. The resulting time will
-  /// have a maximum resolution of microseconds, and on web platforms it may
-  /// be milliseconds.
+  /// The timezone (if any) of [dateTime] is ignored.
   LocalTime.fromDateTime(DateTime dateTime)
       : this(dateTime.hour, dateTime.minute, dateTime.second,
             dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);

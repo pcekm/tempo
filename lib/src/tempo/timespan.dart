@@ -18,19 +18,19 @@ part of '../../tempo.dart';
 ///
 /// ## Longest Timespan
 ///
-/// The longest representable timespans are a bit complicated. `Duration`
-/// stores a single [int] in microseconds. This stores two ints: one for the
-/// number of seconds, and one for a nanosecond fraction of seconds.
-///
-/// Dart's [maximum int size](https://dart.dev/guides/language/numbers) varies,
-/// but you can count on at least 53 bits. Which means `Duration` can cover
-/// at least `2^53 / (86400 * 10^6)` or about `10^5` days. [Timespan]
-/// dedicates a full int to seconds and can cover at least `2^53` seconds,
-/// which is roughly 200 million years.
+/// The longest representable timespans are a bit complicated.
+/// This stores two ints: one for the number of seconds, and one for a
+/// nanosecond fraction of seconds. Dart's
+/// [maximum int size](https://dart.dev/guides/language/numbers) varies,
+/// but you can count on at least 53 bits. Since `Timespan` dedicates a full
+/// int to seconds it can cover at least `2^53` seconds, which is roughly 200
+/// million years.
 ///
 /// With that said, other factors will limit the practical maximum. In
 /// particular, conversion operations like [inMicroseconds] and date
 /// arithmetic could overflow.
+///
+/// {@category relative}
 @immutable
 class Timespan implements Comparable<Timespan> {
   static const int _hoursPerDay = 24;
@@ -55,7 +55,7 @@ class Timespan implements Comparable<Timespan> {
 
   Timespan._(this.seconds, this.nanosecondPart);
 
-  /// Constructs a normalized Timespan from a seconds and nanoseconds part.
+  /// Constructs a normalized `Timespan` from a seconds and nanoseconds part.
   ///
   /// Either [seconds] or [nanoseconds] may be negative and any value, but
   /// the result will be normalized as follows:
@@ -76,7 +76,7 @@ class Timespan implements Comparable<Timespan> {
     return Timespan._(seconds, nanoseconds);
   }
 
-  /// Constructs a [Timespan].
+  /// Constructs a `Timespan`.
   ///
   /// This is meant to work much like a higher-precision [Duration].
   ///
@@ -115,7 +115,7 @@ class Timespan implements Comparable<Timespan> {
     return Timespan._fromParts(secondPart, nanosecondPart);
   }
 
-  /// Constructs a [Timespan] from a [Duration].
+  /// Constructs a `Timespan` from a [Duration].
   factory Timespan.fromDuration(Duration duration) =>
       Timespan(microseconds: duration.inMicroseconds);
 
@@ -200,14 +200,14 @@ class Timespan implements Comparable<Timespan> {
   /// Converts this to a duration with a loss of precision.
   Duration toDuration() => Duration(microseconds: inMicroseconds);
 
-  /// Returns the absolute value of this [Timespan].
+  /// Returns the absolute value of this `Timespan`.
   Timespan abs() {
     // Important: this is only true because both parts are normalized
     // with matching signs.
     return Timespan._fromParts(seconds.abs(), nanosecondPart.abs());
   }
 
-  /// Compares this to another [Timespan].
+  /// Compares this to another `Timespan`.
   ///
   /// Returns 0 if they are equal, -1 if this < [other] and 1 if this > [other].
   @override

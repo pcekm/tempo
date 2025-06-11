@@ -8,6 +8,8 @@
 ///  - [allTimeZones]
 ///  - [timeZonesForCountry]
 ///  - [timeZonesByProximity]
+///
+/// @nodoc
 library;
 
 export 'src/timezone/time_change_rule.dart';

@@ -69,7 +69,7 @@ Timespan gregorianToJulianDay(Gregorian date, [int denominator = _nsPerDay]) {
       days: jdn, nanoseconds: (denominator / 2).floor() + date.nanosecond);
 }
 
-/// Converts a julian day to years, months, days, and nanoseconds past
+/// Converts a Julian day to years, months, days, and nanoseconds past
 /// midnight on the Gregorian calendar.
 Gregorian julianDayToGregorian(Timespan julian) {
   // See: Baum, Peter. (2017). Date Algorithms.

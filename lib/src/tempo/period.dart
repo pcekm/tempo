@@ -2,9 +2,9 @@ part of '../../tempo.dart';
 
 /// Represents a period between two dates on a calendar.
 ///
-/// Unlike [Timespan] and [Duration], which both represent an absolute length of
-/// time, the exact length of time this represents varies according to
-/// the dates it's relative to. Some months are shorter than others, as
+/// Unlike [Timespan] and [Duration], which both represent an absolute length
+/// of time, the exact time this represents varies according to the dates
+/// it's applied to. Some months are shorter or longer than others, as
 /// are some days (for example while "springing forward" or "falling back"
 /// for daylight savings time).
 ///
@@ -14,6 +14,8 @@ part of '../../tempo.dart';
 /// d1.periodUntil(d2) == Period(months: 1, days: 1);
 /// d2.timespanUntil(d2) == Timespan(days: 29);
 /// ```
+///
+/// {@category relative}
 @immutable
 class Period {
   /// The number of years in the period.
@@ -42,8 +44,11 @@ class Period {
         years: fields.years, months: fields.months, days: fields.days);
   }
 
-  /// Returns an equivalent period in which months is less than 12. This does
-  /// not attempt to convert days to months or years, which would be ambiguous.
+  /// Returns an equivalent period where months is less than 12 and
+  /// all fields have matching signs.
+  ///
+  /// This does not attempt to convert days to months or years, which
+  /// would be ambiguous.
   ///
   /// ```dart
   /// Period(months: 25).normalize() == Period(years: 2, months: 1);
@@ -62,7 +67,7 @@ class Period {
   ///
   /// Periods compare equal if and only if each of [years], [months] and [days]
   /// are equal. Because "year" and "month" are flexible concepts—some years
-  /// and months are different than others (leap years, Februarys), comparing
+  /// and months are different than others (leap years, February), comparing
   /// them to days would be ambiguous.
   ///
   /// Furthermore, even though a period of 1 year is unambiguously the same

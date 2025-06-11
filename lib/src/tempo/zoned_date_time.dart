@@ -2,6 +2,7 @@ part of '../../tempo.dart';
 
 /// A date and time in a specific time zone.
 ///
+/// {@template default_time_zone}
 /// The time zone defaults to "UTC" and may be changed by setting
 /// [defaultZoneId]. If you're using Flutter, you can get a better default
 /// from the [flutter_timezone](https://pub.dev/packages/flutter_timezone)
@@ -12,19 +13,14 @@ part of '../../tempo.dart';
 ///
 /// ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
 /// ```
+/// {@endtemplate}
+///
+/// {@category absolute}
 @immutable
 class ZonedDateTime implements HasDateTime, HasInstant {
   /// The default time zone to use when creating a [ZonedDateTime].
   ///
-  /// Dart has no way to determine the system time zone, so this always starts as
-  /// 'UTC'. If you're using Flutter, you can get a better default from the
-  /// [flutter_timezone](https://pub.dev/packages/flutter_timezone) package.
-  ///
-  /// ```dart
-  /// import 'package:flutter_timezone/flutter_timezone.dart';
-  ///
-  /// ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
-  /// ```
+  /// {@macro default_time_zone}
   static String defaultZoneId = 'UTC';
 
   /// The earliest possible datetime.
@@ -48,7 +44,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
 
   ZonedDateTime._(this._dateTime, this.zoneId, this.offset);
 
-  /// Constructs a [ZonedDateTime] from an [Instant].
+  /// Constructs a `ZonedDateTime` from an [Instant].
   ///
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
@@ -59,10 +55,11 @@ class ZonedDateTime implements HasDateTime, HasInstant {
     return ZonedDateTime._(dateTime, zoneId, offset);
   }
 
-  /// Creates a [ZonedDateTime] from individual components in a given time zone.
+  /// Creates a `ZonedDateTime` from individual components in a given time zone.
   ///
   /// Throws [ArgumentError] if [zoneId] is invalid.
   ///
+  /// {@template impossible_times}
   /// Some dates and times are impossible or ambiguous in a given time zone.
   /// When switching to daylight savings, the local time "springs forward"
   /// skipping an hour. When switching back to standard time, the local time
@@ -70,6 +67,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// The exact behavior of in these situations is currently unspecified
   /// and may change in the future. However, the result will be close.
+  /// {@endtemplate}
   factory ZonedDateTime.withZoneId(String zoneId, int year,
           [int month = 1,
           int day = 1,
@@ -81,16 +79,12 @@ class ZonedDateTime implements HasDateTime, HasInstant {
           LocalDateTime(year, month, day, hour, minute, second, nanosecond),
           zoneId);
 
-  /// Creates a [ZonedDateTime] from individual components in the default time
+  /// Creates a `ZonedDateTime` from individual components in the default time
   /// zone specified by [defaultZoneId].
   ///
-  /// Some dates and times are impossible or ambiguous in a given time zone.
-  /// When switching to daylight savings, the local time "springs forward"
-  /// skipping an hour. When switching back to standard time, the local time
-  /// "falls back," repeating the same hour.
+  /// {@macro impossible_times}
   ///
-  /// The exact behavior of in these situations is currently unspecified
-  /// and may change in the future. However, the result will be close.
+  /// {@macro astro_year}
   factory ZonedDateTime(int year,
           [int month = 1,
           int day = 1,
@@ -102,14 +96,14 @@ class ZonedDateTime implements HasDateTime, HasInstant {
           LocalDateTime(year, month, day, hour, minute, second, nanosecond),
           defaultZoneId);
 
-  /// Converts a [DateTime] to a [ZonedDateTime].
+  /// Converts a [DateTime] to a `ZonedDateTime`.
   ///
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
   factory ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId]) =>
       ZonedDateTime.fromInstant(Instant.fromDateTime(dateTime), zoneId);
 
-  /// Creates a [ZonedDateTime] using the current time.
+  /// Creates a `ZonedDateTime` using the current time.
   ///
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
@@ -206,7 +200,7 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   /// Subtracts a [Timespan].
   ///
   /// This decrements the underlying [Instant] by exactly [timespan].
-  /// When adding a whole number of days, this could result in the time
+  /// When subtracting a whole number of days, this could result in the time
   /// changing because of daylight savings.
   ///
   /// See also [minusPeriod].

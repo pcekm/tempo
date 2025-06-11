@@ -1,6 +1,8 @@
 part of '../../tempo.dart';
 
 /// A date and time at a fixed offset from UTC.
+///
+/// {@category absolute}
 @immutable
 class OffsetDateTime
     implements HasInstant, HasDateTime, _PeriodArithmetic<OffsetDateTime> {
@@ -19,8 +21,10 @@ class OffsetDateTime
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
-  /// Constructs an [OffsetDateTime] from an offset and the individual
+  /// Constructs an `OffsetDateTime` from an offset and the individual
   /// components of the date and time.
+  ///
+  /// {@macro astro_year}
   factory OffsetDateTime(ZoneOffset offset, int year,
       [int month = 1,
       int day = 1,
@@ -43,7 +47,7 @@ class OffsetDateTime
     return OffsetDateTime._(dateTime, instant, offset);
   }
 
-  /// Constructs an [OffsetDateTime] from a [LocalDateTime] at a fixed
+  /// Constructs an `OffsetDateTime` from a `LocalDateTime` at a fixed
   /// offset from UTC.
   factory OffsetDateTime.fromLocalDateTime(
       LocalDateTime dt, ZoneOffset offset) {
@@ -51,11 +55,11 @@ class OffsetDateTime
         dt.second, dt.nanosecond);
   }
 
-  /// Constructs an [OffsetDateTime] with the current date and time in the
+  /// Constructs an `OffsetDateTime` with the current date and time in the
   /// local time zone.
   OffsetDateTime.now() : this.fromDateTime(DateTime.now());
 
-  /// Constructs an [OffsetDateTime] from a [DateTime].
+  /// Constructs an `OffsetDateTime` from a `DateTime`.
   ///
   /// This will have the same time zone offset as the `DateTime`.
   OffsetDateTime.fromDateTime(DateTime dateTime)
@@ -64,7 +68,7 @@ class OffsetDateTime
                 Timespan(microseconds: dateTime.microsecondsSinceEpoch)),
             ZoneOffset.fromDuration(dateTime.timeZoneOffset));
 
-  /// Constructs an [OffsetDateTime] from an [Instant] and a fixed offset
+  /// Constructs an `OffsetDateTime` from an `Instant` and a fixed offset
   /// from UTC.
   ///
   /// If [offset] is unset, this defaults to zero, making this equal to
@@ -74,7 +78,7 @@ class OffsetDateTime
         _dateTime = _mkDateTime(hasInstant.asInstant, offset ?? ZoneOffset(0)),
         _instant = hasInstant.asInstant;
 
-  /// Parses an [OffsetDateTime] from an ISO-8601 formatted string.
+  /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///
   /// ```dart
   /// OffsetDateTime.parse('2000-01-02T03:04+0545') ==
@@ -102,7 +106,7 @@ class OffsetDateTime
   OffsetDateTime atOffset(ZoneOffset offset) =>
       OffsetDateTime.fromInstant(this, offset);
 
-  /// Converts this to a [LocalDateTime].
+  /// Converts this to a `LocalDateTime`.
   ///
   /// The result will have exactly the same year, month, day, etc. but will
   /// lack any time zone information.
@@ -145,7 +149,7 @@ class OffsetDateTime
   @override
   Timespan timespanUntil(HasInstant other) => _instant.timespanUntil(other);
 
-  /// Adds a [Timespan].
+  /// Adds a `Timespan`.
   ///
   /// This increments the underlying [Instant] by exactly [timespan].
   /// See also [plusPeriod].
@@ -159,7 +163,7 @@ class OffsetDateTime
   OffsetDateTime plusTimespan(Timespan timespan) =>
       OffsetDateTime.fromInstant(_instant.plusTimespan(timespan), offset);
 
-  /// Subtracts a [Timespan].
+  /// Subtracts a `Timespan`.
   ///
   /// This decrements the underlying [Instant] by exactly [timespan].
   /// See also [minusPeriod].

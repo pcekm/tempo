@@ -2,11 +2,13 @@ part of '../../tempo.dart';
 
 /// Interface implemented by any class that is tied to a specific [Instant]
 /// in time.
+///
+/// {@category absolute}
 abstract class HasInstant implements Comparable<HasInstant> {
   /// The amount of time since midnight, January 1, 1970 UTC.
   ///
   /// This is a [Timespan], which can be easily converted into whatever
-  /// units you might require.
+  /// units you need.
   ///
   /// For example:
   ///
@@ -45,11 +47,11 @@ abstract class HasInstant implements Comparable<HasInstant> {
   /// Finds the amount of time between this and another instant in time.
   Timespan timespanUntil(HasInstant other);
 
-  /// Compares this to another [HasInstant].
+  /// Compares this to another `HasInstant`.
   ///
-  /// Returns a negative integer if [this] comes before [other],
-  /// a positive integer if [this] comes after [other], and
-  /// zero if [this] and [other] are at the exact same moment.
+  /// Returns a negative integer if this comes before [other],
+  /// a positive integer if this comes after [other], and
+  /// zero if this and [other] are at the exact same moment.
   @override
   int compareTo(HasInstant other);
 }

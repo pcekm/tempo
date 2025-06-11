@@ -4,6 +4,8 @@ part of '../../tempo.dart';
 ///
 /// This is a combination of [LocalDate] and [LocalTime]. The individual
 /// parts can be retrieved with [date] and [time].
+///
+/// {@category local}
 @immutable
 class LocalDateTime
     implements
@@ -31,7 +33,7 @@ class LocalDateTime
   /// The time part of this [DateTime].
   final LocalTime time;
 
-  /// Constructs a new LocalDateTime.
+  /// Constructs a new `LocalDateTime`.
   ///
   /// The time arguments wrap in exactly the same way they do in [LocalTime],
   /// with one addition. A wrap increments or decrements the date part
@@ -44,6 +46,8 @@ class LocalDateTime
   /// LocalDateTime(2000, 1, 1, 25) == LocalDateTime(2000, 1, 2, 1);
   /// LocalDateTime(2000, 1, 1, -1) == LocalDateTime(1999, 12, 31, 23);
   /// ```
+  ///
+  /// {@macro astro_year}
   LocalDateTime(
       [int year = 0,
       int month = 1,
@@ -59,16 +63,14 @@ class LocalDateTime
             seconds: second,
             nanoseconds: nanosecond));
 
-  /// Constructs a [LocalDateTime] with the current date and time in the
+  /// Constructs a `LocalDateTime` with the current date and time in the
   /// current time zone.
   ///
-  /// This will have a maximum resolution of microseconds.
+  /// {@macro datetime_precision}
   LocalDateTime.now() : this.fromDateTime(DateTime.now());
 
-  /// Constructs a [LocalDateTime] from a standard Dart [DateTime].
+  /// Constructs a `LocalDateTime` from a standard Dart [DateTime].
   /// The timezone (if any) of [dateTime] is ignored.
-  ///
-  /// This will have a maximum resolution of microseconds.
   LocalDateTime.fromDateTime(DateTime dateTime)
       : this(
             dateTime.year,
@@ -80,8 +82,9 @@ class LocalDateTime
             dateTime.millisecond * _nsPerMillisecond +
                 dateTime.microsecond * _nsPerMicrosecond);
 
-  /// Makes a [LocalDateTime] from a [LocalDate] and an optional
-  /// [LocalTime]. Uses midnight if no time is provided.
+  /// Makes a `LocalDateTime` from a [LocalDate] and an optional [LocalTime].
+  ///
+  /// Uses midnight if no time is provided.
   LocalDateTime.combine(this.date, [LocalTime? time])
       : time = time ?? LocalTime();
 
@@ -167,7 +170,7 @@ class LocalDateTime
   DateTime toDateTime() =>
       DateTime(year, month, day, hour, minute, second, 0, nanosecond ~/ 1000);
 
-  /// Finds the timespan between [this] and [other].
+  /// Finds the timespan between this and [other].
   ///
   /// ```dart
   /// LocalDateTime dt1 = LocalDateTime(2000, 1, 1, 2);

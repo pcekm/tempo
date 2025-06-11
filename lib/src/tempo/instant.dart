@@ -8,9 +8,11 @@ part of '../../tempo.dart';
 ///
 /// ```dart
 /// var instant = Instant.now();
-/// OffsetDateTime.fromInstant(instant, ZoneOffset(-7));
-/// ZonedDateTime.fromInstant(instant, 'America/Phoenix');
+/// instant.atOffset(ZoneOffset(-7));
+/// instant.inTimezone('America/Phoenix');
 /// ```
+///
+/// {@category absolute}
 @immutable
 class Instant implements HasInstant {
   /// The earliest supported instant.
@@ -41,7 +43,8 @@ class Instant implements HasInstant {
 
   /// Creates an instant from a [DateTime].
   ///
-  /// The precision depends on Dart's [DateTime] object, and varies by Dart
+  /// {@template datetime_precision}
+  /// The precision depends on Dart's [DateTime] object which varies by Dart
   /// version and platform.
   ///
   /// | Dart Version | Platform | Precision   |
@@ -49,19 +52,13 @@ class Instant implements HasInstant {
   /// | ≥ 3.5.0      | All      | Microsecond |
   /// | < 3.5.0      | Native   | Microsecond |
   /// | < 3.5.0      | Web      | Millisecond |
+  /// {@endtemplate}
   Instant.fromDateTime(DateTime dateTime)
       : this.fromUnix(Timespan(microseconds: dateTime.microsecondsSinceEpoch));
 
   /// Creates an instant for the current time.
   ///
-  /// The precision depends on Dart's [DateTime] object, and varies by Dart
-  /// version and platform.
-  ///
-  /// | Dart Version | Platform | Precision   |
-  /// |--------------|----------|-------------|
-  /// | ≥ 3.5.0      | All      | Microsecond |
-  /// | < 3.5.0      | Native   | Microsecond |
-  /// | < 3.5.0      | Web      | Millisecond |
+  /// {@macro datetime_precision}
   Instant.now() : this.fromDateTime(DateTime.now());
 
   Instant._fromJulianDay(Timespan julian)

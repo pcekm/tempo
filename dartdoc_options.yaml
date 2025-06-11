@@ -1,0 +1,15 @@
+dartdoc:
+  categoryOrder: [local, absolute, relative, time_zones]
+  categories:
+    local:
+      markdown: doc/local.md
+      displayName: Local times
+    absolute:
+      markdown: doc/absolute.md
+      displayName: Absolute times
+    relative:
+      markdown: doc/relative.md
+      displayName: Relative times
+    time_zones:
+      markdown: doc/time_zones.md
+      displayName: Time zone lookups

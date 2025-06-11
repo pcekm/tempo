@@ -6,6 +6,8 @@ part 'zone_description.g.dart';
 
 /// Information about a time zone that may be helpful when trying to choose
 /// one.
+///
+/// {@category time_zones}
 abstract class ZoneDescription
     implements Built<ZoneDescription, ZoneDescriptionBuilder> {
   static Serializer<ZoneDescription> get serializer =>

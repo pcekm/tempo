@@ -3,9 +3,9 @@ part of '../../tempo.dart';
 /// Interface implemented by classes that can add and subtract a [Period].
 ///
 /// Avoid exporting this interface. It exists mainly to avoid repeating
-/// documentation comments in each implementor.
+/// documentation comments in each implementer.
 abstract class _PeriodArithmetic<T> {
-  /// Adds a [Period] of time.
+  /// Adds a `Period` of time.
   ///
   /// Increments (or decrements) the date by a specific number of months
   /// or years while—as much as possible—keeping the day (and time, if any)
@@ -18,7 +18,7 @@ abstract class _PeriodArithmetic<T> {
   /// adds one day for a final result of `2023-03-01`.
   T plusPeriod(Period p);
 
-  /// Subtracts a [Period] of time.
+  /// Subtracts a `Period` of time.
   ///
   /// Decrements (or increments) the date by a specific number of months
   /// or years while—as much as possible—keeping the day (and time, if any)

@@ -4,16 +4,24 @@ part of '../../tempo.dart';
 ///
 /// This can be used interchangeably with a [ZoneOffset] and compares
 /// identically regardless of the [name] or [isDst].
+///
+/// {@category absolute}
 class NamedZoneOffset extends ZoneOffset {
-  /// The name for this zone offset. Typically this is a non-unique identifier
-  /// that describes the time zone, such as "PST" (Pacific Standard Time)
-  /// or "CEST" (Central European Summer Time).
+  /// The name for this zone offset.
   ///
-  /// This is strictly informational. It's not used by [operator==], [hashCode],
-  /// or [toString].
+  /// Typically this is a non-unique identifier that describes the time
+  /// zone, such as "PST" (Pacific Standard Time) or "CEST" (Central
+  /// European Summer Time).
+  ///
+  /// {@template informational}
+  /// This field is strictly informational. It's not used by [operator==],
+  /// [hashCode], or [toString].
+  /// {@endtemplate}
   final String name;
 
   /// If true, this is a daylight savings offset.
+  ///
+  /// {@macro informational}
   final bool isDst;
 
   /// Constructs a named zone offset from an unnamed one.

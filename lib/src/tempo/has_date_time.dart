@@ -1,4 +1,6 @@
 part of '../../tempo.dart';
 
-/// Inteface for classes that provide date and time fields.
+/// Interface for classes that provide date and time fields.
+///
+/// {@category local}
 abstract class HasDateTime implements HasDate, HasTime {}

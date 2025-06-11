@@ -17,7 +17,7 @@ String _iso8601Date(HasDate date) {
   return '$year-${_zeroPad(date.month)}-${_zeroPad(date.day)}';
 }
 
-/// Parss an ISO 8601 date string.
+/// Parses an ISO 8601 date string.
 LocalDate _parseIso8601Date(String dateString) {
   var s = StringScanner(dateString);
   var date = _scanIso8601Date(s);

@@ -12,7 +12,9 @@ import 'serializers.dart';
 part 'time_zone_database.data.dart';
 part 'time_zone_database.g.dart';
 
-/// Returns a table of time zones with information usedful for choosing one.
+/// Returns a table of time zones with information useful for choosing one.
+///
+/// {@category time_zones}
 List<ZoneDescription> allTimeZones() =>
     TimeZoneDatabase().descriptions.toList();
 
@@ -26,6 +28,8 @@ List<ZoneDescription> allTimeZones() =>
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
+///
+/// {@category time_zones}
 List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
         [String? country]) =>
     TimeZoneDatabase().byProximity(latitude, longitude, country);
@@ -35,6 +39,8 @@ List<ZoneDescription> timeZonesByProximity(double latitude, double longitude,
 /// The [country] arg is an [ISO 3166 2-letter
 /// code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 /// For example, US = United States, CA = Canada, EE = Estonia, etc.
+///
+/// {@category time_zones}
 List<ZoneDescription> timeZonesForCountry(String country) =>
     TimeZoneDatabase().descriptionsByCountry[country.toUpperCase()].toList();
 
@@ -112,7 +118,7 @@ abstract class TimeZoneDatabase
   /// time zones.
   ///
   /// It assumes that geographic coordinates are actually points on a
-  /// cartesian plane and returns the square of the distance between
+  /// Cartesian plane and returns the square of the distance between
   /// them. It weights differences in longitude more heavily than latitude
   /// since time zones tend to be long and skinny along the north-south axis.
   ///
