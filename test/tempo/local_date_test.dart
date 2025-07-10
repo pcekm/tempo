@@ -191,16 +191,46 @@ void main() {
     expect(LocalDate(2023, 12, 31).ordinalDay, 365);
   });
 
-  test('toDateTime', () {
-    expect(LocalDate(2000, 3, 4).toDateTime(), DateTime(2000, 3, 4));
-  });
-
   test('isLeapYear', () {
     expect(LocalDate(1900).isLeapYear, false, reason: 'year = 1900');
     expect(LocalDate(1904).isLeapYear, true, reason: 'year = 1904');
     expect(LocalDate(1996).isLeapYear, true, reason: 'year = 1996');
     expect(LocalDate(1997).isLeapYear, false, reason: 'year = 1997');
     expect(LocalDate(2000).isLeapYear, true, reason: 'year = 2000');
+  });
+
+  group('conversions', () {
+    final date = LocalDate(2000, 1, 2);
+    final sinceEpoch = Timespan(seconds: 946771200);
+
+    test('toDateTime', () {
+      final want = DateTime(2000, 1, 2);
+      expect(date.toDateTime(), want);
+    });
+
+    test('toInstant', () {
+      final want = Instant.fromUnix(sinceEpoch);
+      expect(date.toInstant(), want);
+    });
+
+    test('inTimezone', () {
+      final want = ZonedDateTime.fromUnix(sinceEpoch);
+      expect(date.inTimezone(), want);
+    });
+
+    test('inTimezone with time zone', () {
+      final want = ZonedDateTime.fromUnix(sinceEpoch, 'UTC');
+      expect(date.inTimezone(), want);
+    });
+
+    test('atOffset', () {
+      final want = OffsetDateTime.fromUnix(sinceEpoch);
+      expect(date.atOffset(ZoneOffset(0)), want);
+    });
+
+    test('toLocal', () {
+      expect(date.toLocal(), LocalDateTime(2000, 1, 2));
+    });
   });
 
   group('Timespan arithmetic:', () {

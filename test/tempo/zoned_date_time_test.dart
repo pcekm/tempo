@@ -24,6 +24,16 @@ void main() {
       expect(dt.zoneId, 'America/Los_Angeles');
     });
 
+    test('fromUnix', () {
+      var unixTimestamp = Timespan(seconds: 1672657445, nanoseconds: 6);
+      var dt = ZonedDateTime.fromUnix(unixTimestamp, 'America/Los_Angeles');
+      expect(dt, hasDate(2023, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt, isNotDst);
+      expect(dt.timeZone, 'PST');
+      expect(dt.zoneId, 'America/Los_Angeles');
+    });
+
     group('from components', () {
       group('west', () {
         setUp(() {
@@ -223,10 +233,10 @@ void main() {
       expect(local, hasTime(3, 4, 5, 6));
     });
 
-    test('toOffset', () {
+    test('asOffsetDateTime', () {
       var odt =
           ZonedDateTime.withZoneId('America/Toronto', 2000, 1, 2, 3, 4, 5, 6)
-              .toOffset();
+              .asOffsetDateTime;
       expect(odt, isA<OffsetDateTime>());
       expect(odt, hasDate(2000, 1, 2));
       expect(odt, hasTime(3, 4, 5, 6));
@@ -248,6 +258,13 @@ void main() {
           .toDateTime()
           .toUtc();
       expect(dt, DateTime.utc(2000, 1, 2, 3, 4, 5, 6, 7));
+    });
+
+    test('toInstant', () {
+      var dt = ZonedDateTime.withZoneId(
+          'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
+      expect(dt.toInstant(),
+          Instant.fromUnix(Timespan(seconds: 946811045, nanoseconds: 6)));
     });
 
     test('asInstant', () {

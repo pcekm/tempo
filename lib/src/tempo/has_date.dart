@@ -36,7 +36,4 @@ abstract interface class HasDate {
   ///
   /// Ranges from 1 to 365 (or 366 on a leap year).
   int get ordinalDay;
-
-  /// Converts this to a [DateTime] in the local time zone.
-  DateTime toDateTime();
 }

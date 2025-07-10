@@ -15,8 +15,45 @@
 /// - [Relative time periods](../topics/Relative%20times-topic.html)
 /// - [Time zone lookups](../topics/Time%20zone%20lookups-topic.html)
 ///
-/// All of the classes have constructors and methods for converting from one
-/// type to another. (Including [DateTime] and [Duration] via extensions.).
+/// # Conversions
+///
+/// Converting from one type to another is designed to be as consistent as
+/// possible, and the method names for doing so are the same no matter what
+/// you're converting from. Note, however, that conversions will often lose
+/// information (such as time zones). See the documentation for the specific
+/// method you're calling for any caveats.
+///
+/// Dates and times:
+///
+/// | Target           | Conversion       |
+/// | ---------------- | ---------------- |
+/// | [DateTime]       | `toDateTime()`   |
+/// | [Instant]        | `toInstant()`    |
+/// | [OffsetDateTime] | `atOffset()`     |
+/// | [ZonedDateTime]  | `inTimezone()`   |
+/// | [LocalDateTime]  | `toLocal()`      |
+/// | [LocalDate]      | `toLocal().date` |
+/// | [LocalTime]      | `toLocal().time` |
+///
+/// The DateTime extension method [TempoDateTime.toLocalDateTime] is an
+/// exception to the above. This is necessary because DateTime already
+/// has a toLocal method.
+///
+/// Relative times:
+///
+/// | Target           | Conversion       |
+/// | ---------------- | ---------------- |
+/// | [Duration]       | `toDuration()`   |
+/// | [Timespan]       | `toTimespan()`   |
+///
+/// Note: [Period] has no associated conversion methods, because it doesn't
+/// represent a fixed amount of time. There's no general way to make such a
+/// conversion. If you _must_ convert something to a Period, you'll need to
+/// do what makes sense for your application. (The only potentially legitimate
+/// reason for this is working with an API you can't change. If you need to
+/// for some other reason, you may need to re-evaluate your approach. In
+/// either case, sticking with Duration and Timespan may be safest approach.)
+///
 /// Here are some examples:
 ///
 /// ```dart
@@ -53,6 +90,7 @@ export 'timezone.dart'
         timeZonesByProximity,
         ZoneDescription;
 
+part 'src/tempo/__convertible_date.dart';
 part 'src/tempo/__period_arithmetic.dart';
 part 'src/tempo/extensions.dart';
 part 'src/tempo/has_date.dart';

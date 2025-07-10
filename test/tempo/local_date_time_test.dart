@@ -103,10 +103,38 @@ void main() {
     });
   });
 
-  test('toDateTime', () {
-    var dt = LocalDateTime(2000, 1, 2, 3, 4, 5, 006007000);
-    var want = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
-    expect(dt.toDateTime(), want);
+  group('conversions', () {
+    final dt = LocalDateTime(2000, 1, 2, 3, 4, 5, 006007008);
+    final sinceEpoch = Timespan(seconds: 946782245, nanoseconds: 006007008);
+
+    test('toDateTime', () {
+      final want = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
+      expect(dt.toDateTime(), want);
+    });
+
+    test('toInstant', () {
+      final want = Instant.fromUnix(sinceEpoch);
+      expect(dt.toInstant(), want);
+    });
+
+    test('inTimezone', () {
+      final want = ZonedDateTime.fromUnix(sinceEpoch);
+      expect(dt.inTimezone(), want);
+    });
+
+    test('inTimezone with time zone', () {
+      final want = ZonedDateTime.fromUnix(sinceEpoch, 'UTC');
+      expect(dt.inTimezone(), want);
+    });
+
+    test('atOffset', () {
+      final want = OffsetDateTime.fromUnix(sinceEpoch);
+      expect(dt.atOffset(ZoneOffset(0)), want);
+    });
+
+    test('toLocal', () {
+      expect(dt.toLocal(), same(dt));
+    });
   });
 
   test('timespanUntil', () {

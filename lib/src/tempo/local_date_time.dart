@@ -11,7 +11,8 @@ class LocalDateTime
     implements
         Comparable<LocalDateTime>,
         HasDateTime,
-        _PeriodArithmetic<LocalDateTime> {
+        _PeriodArithmetic<LocalDateTime>,
+        _ConvertibleDate {
   /// The earliest possible datetime.
   static final LocalDateTime minimum =
       LocalDateTime.combine(LocalDate.minimum, LocalTime.minimum);
@@ -166,9 +167,36 @@ class LocalDateTime
   @override
   int get nanosecond => time.nanosecond;
 
+  /// Converts this to a DateTime.
+  ///
+  /// The result will have the same date and time as this and will be in the
+  /// local time zone.
   @override
   DateTime toDateTime() =>
       DateTime(year, month, day, hour, minute, second, 0, nanosecond ~/ 1000);
+
+  /// Converts this to an Instant.
+  @override
+  Instant toInstant() => Instant._fromJulianDay(_julianDay);
+
+  @override
+  OffsetDateTime atOffset(ZoneOffset offset) =>
+      OffsetDateTime.fromLocalDateTime(this, offset);
+
+  @override
+  ZonedDateTime inTimezone([String? zoneId]) => ZonedDateTime.withZoneId(
+      zoneId ?? ZonedDateTime.defaultZoneId,
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
+      nanosecond);
+
+  /// Returns this unchanged. Provided for completeness.
+  @override
+  LocalDateTime toLocal() => this;
 
   /// Finds the timespan between this and [other].
   ///

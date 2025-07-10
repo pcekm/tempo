@@ -14,7 +14,7 @@ part of '../../tempo.dart';
 ///
 /// {@category absolute}
 @immutable
-class Instant implements HasInstant {
+class Instant implements HasInstant, _ConvertibleDate {
   /// The earliest supported instant.
   static final Instant minimum =
       OffsetDateTime(ZoneOffset(0), -9999, 1, 1).asInstant;
@@ -65,6 +65,17 @@ class Instant implements HasInstant {
       : unixTimestamp = Timespan(
                 seconds: julian.seconds, nanoseconds: julian.nanosecondPart) -
             _julianOffset;
+
+  @override
+  DateTime toDateTime() =>
+      DateTime.fromMicrosecondsSinceEpoch(unixTimestamp.inMicroseconds);
+
+  /// Returns this unchanged.
+  @override
+  Instant toInstant() => this;
+
+  @override
+  LocalDateTime toLocal() => LocalDateTime._fromJulianDay(_julianDay);
 
   @override
   Instant get asInstant => this;

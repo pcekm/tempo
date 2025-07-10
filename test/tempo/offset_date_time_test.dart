@@ -97,6 +97,26 @@ void main() {
     });
   });
 
+  group('fromUnix()', () {
+    test('hour+minute offset', () {
+      var dt = OffsetDateTime.fromUnix(nepalInstant.unixTimestamp, nepalOffset);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
+
+    test('hour+minute+second offset', () {
+      var instant = Instant.fromUnix(Timespan(seconds: 0));
+      var dt =
+          OffsetDateTime.fromUnix(instant.unixTimestamp, ZoneOffset(1, 2, 3));
+      expect(dt, hasDate(1970, 1, 1));
+      expect(dt, hasTime(1, 2, 3));
+      expect(dt.offset, ZoneOffset(1, 2, 3));
+      expect(dt, hasInstant(instant));
+    });
+  });
+
   group('parse()', () {
     test('all fields', () {
       var dt = OffsetDateTime.parse('1000-02-03T04:05:06.000000007+08:09:10');
@@ -130,19 +150,36 @@ void main() {
     });
   });
 
-  test('atOffset()', () {
-    expect(OffsetDateTime(ZoneOffset(0), 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
-        OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
-  });
+  group('conversions', () {
+    test('atOffset()', () {
+      expect(
+          OffsetDateTime(ZoneOffset(0), 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
+          OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+    });
 
-  test('toLocal()', () {
-    expect(nepalOffsetTime.toLocal(), nepalTime);
-  });
+    test('toLocal()', () {
+      expect(nepalOffsetTime.toLocal(), nepalTime);
+    });
 
-  test('toDateTime()', () {
-    var want = DateTime.fromMicrosecondsSinceEpoch(
-        nepalInstant.unixTimestamp.inMicroseconds);
-    expect(nepalOffsetTime.toDateTime(), want);
+    test('toDateTime()', () {
+      var want = DateTime.fromMicrosecondsSinceEpoch(
+          nepalInstant.unixTimestamp.inMicroseconds);
+      expect(nepalOffsetTime.toDateTime(), want);
+    });
+
+    test('toInstant()', () {
+      expect(nepalOffsetTime.toInstant(), nepalInstant);
+    });
+
+    test('inTimezone()', () {
+      expect(nepalOffsetTime.inTimezone(),
+          ZonedDateTime.fromInstant(nepalInstant));
+    });
+
+    test('inTimezone() with time zone', () {
+      expect(nepalOffsetTime.inTimezone('America/Los_Angeles'),
+          ZonedDateTime.fromInstant(nepalInstant, 'America/Los_Angeles'));
+    });
   });
 
   test('timespanUntil()', () {

@@ -5,7 +5,11 @@ part of '../../tempo.dart';
 /// {@category local}
 @immutable
 class LocalDate
-    implements HasDate, Comparable<LocalDate>, _PeriodArithmetic<LocalDate> {
+    implements
+        HasDate,
+        Comparable<LocalDate>,
+        _PeriodArithmetic<LocalDate>,
+        _ConvertibleDate {
   /// The earliest supported date.
   static final LocalDate minimum = LocalDate(-9999, 1, 1);
 
@@ -81,6 +85,20 @@ class LocalDate
 
   @override
   DateTime toDateTime() => DateTime(year, month, day);
+
+  @override
+  OffsetDateTime atOffset(ZoneOffset offset) =>
+      OffsetDateTime.fromLocalDateTime(toLocal(), offset);
+
+  @override
+  ZonedDateTime inTimezone([String? zoneId]) => ZonedDateTime.withZoneId(
+      zoneId ?? ZonedDateTime.defaultZoneId, year, month, day);
+
+  @override
+  Instant toInstant() => Instant._fromJulianDay(_julianDay);
+
+  @override
+  LocalDateTime toLocal() => LocalDateTime.combine(this);
 
   @override
   int get ordinalDay =>

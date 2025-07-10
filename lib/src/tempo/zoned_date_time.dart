@@ -17,7 +17,7 @@ part of '../../tempo.dart';
 ///
 /// {@category absolute}
 @immutable
-class ZonedDateTime implements HasDateTime, HasInstant {
+class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   /// The default time zone to use when creating a [ZonedDateTime].
   ///
   /// {@macro default_time_zone}
@@ -54,6 +54,22 @@ class ZonedDateTime implements HasDateTime, HasInstant {
     var dateTime = OffsetDateTime.fromInstant(instant, offset);
     return ZonedDateTime._(dateTime, zoneId, offset);
   }
+
+  /// Creates a ZonedDateTime using a time since midnight, January 1, 1970 UTC.
+  ///
+  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
+  /// if not.
+  ///
+  /// The Unix timestamp can be provided in any units supported by [Timespan].
+  /// These examples all produce the same time:
+  ///
+  /// ```dart
+  /// ZonedDateTime.fromUnix(Timespan(seconds: 1));
+  /// ZonedDateTime.fromUnix(Timespan(milliseconds: 1000));
+  /// ZonedDateTime.fromUnix(Timespan(nanoseconds: 1000000000));
+  /// ```
+  factory ZonedDateTime.fromUnix(Timespan unixTimestamp, [String? zoneId]) =>
+      ZonedDateTime.fromInstant(Instant.fromUnix(unixTimestamp), zoneId);
 
   /// Creates a `ZonedDateTime` from individual components in a given time zone.
   ///
@@ -100,6 +116,22 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
+  ///
+  /// ## Caveats
+  ///
+  /// Be careful when using `DateTime` for its date and time values (like a
+  /// `LocalDateTime`). This conversion treats `DateTime` like
+  /// it's an `Instant`. Which means the date and time of the result will
+  /// be different if the timezones don't match. (I've personally been
+  /// surprised by this when hard coding [defaultZoneId] in a test. It
+  /// passed locally but failed later in a Github action, because the
+  /// `DateTime` time zone was different.)
+  ///
+  /// Best practice: Don't use `DateTime` as a `LocalDateTime`, and when
+  /// interacting with APIs that use it that way, convert it to `LocalDateTime` as
+  /// soon as possible. To catch these issues in unit tests, set [defaultTimeZone]
+  /// to something that's likely to always conflict with the system time zone. I
+  /// suggest "Pacific/Kiritimati."
   factory ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId]) =>
       ZonedDateTime.fromInstant(Instant.fromDateTime(dateTime), zoneId);
 
@@ -160,10 +192,11 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   ///
   /// The result will have exactly the same year, month, day, etc. but will
   /// lack any time zone information.
+  @override
   LocalDateTime toLocal() => _dateTime.toLocal();
 
-  /// Converts this to an [OffsetDateTime] with the same offset.
-  OffsetDateTime toOffset() => _dateTime;
+  /// Returns an equivalent [OffsetDateTime] with the same offset.
+  OffsetDateTime get asOffsetDateTime => _dateTime;
 
   @override
   OffsetDateTime atOffset(ZoneOffset offset) =>
@@ -180,6 +213,9 @@ class ZonedDateTime implements HasDateTime, HasInstant {
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
       _dateTime.asInstant.unixTimestamp.inMicroseconds);
+
+  @override
+  Instant toInstant() => _dateTime.asInstant;
 
   @override
   Instant get asInstant => _dateTime.asInstant;

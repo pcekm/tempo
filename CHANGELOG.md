@@ -1,3 +1,14 @@
+## Unreleased changes
+
+- Added some missing conversion methods, and standardized the existing ones (see
+  the library docs for a list of conversion method names)
+- **Breaking changes**:
+  - DateTime extension method toLocal() has been renamed toLocalDateTime() to
+    avoid shadowing an existing method
+  - ZonedDateTime.toOffset() changed to a getter, `asOffsetDateTime` to better
+    distinguish it from the standardized `atOffset` method.
+  - `toDateTime()` no longer a part of the `HasDate` interface
+
 ## 0.6.0
 
 - Minimum Dart SDK is now 3.0.0

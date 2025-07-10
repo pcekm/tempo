@@ -5,7 +5,11 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class OffsetDateTime
-    implements HasInstant, HasDateTime, _PeriodArithmetic<OffsetDateTime> {
+    implements
+        HasInstant,
+        HasDateTime,
+        _PeriodArithmetic<OffsetDateTime>,
+        _ConvertibleDate {
   /// The earliest possible datetime.
   static final OffsetDateTime minimum =
       OffsetDateTime.fromLocalDateTime(LocalDateTime.minimum, ZoneOffset(0));
@@ -78,6 +82,14 @@ class OffsetDateTime
         _dateTime = _mkDateTime(hasInstant.asInstant, offset ?? ZoneOffset(0)),
         _instant = hasInstant.asInstant;
 
+  /// Constructs an `OffsetDateTime` from an unix timestamp and a fixed offset
+  /// from UTC.
+  ///
+  /// If [offset] is unset, this defaults to zero, making this equal to
+  /// UTC.
+  OffsetDateTime.fromUnix(Timespan unixTimestamp, [ZoneOffset? offset])
+      : this.fromInstant(Instant.fromUnix(unixTimestamp), offset);
+
   /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///
   /// ```dart
@@ -110,7 +122,11 @@ class OffsetDateTime
   ///
   /// The result will have exactly the same year, month, day, etc. but will
   /// lack any time zone information.
+  @override
   LocalDateTime toLocal() => _dateTime;
+
+  @override
+  Instant toInstant() => _instant;
 
   @override
   Instant get asInstant => _instant;

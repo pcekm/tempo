@@ -6,7 +6,7 @@ extension TempoDateTime on DateTime {
   ///
   /// The result will have exactly the same year, month, day, etc. but will
   /// lack any time zone information.
-  LocalDateTime toLocal() => LocalDateTime.fromDateTime(this);
+  LocalDateTime toLocalDateTime() => LocalDateTime.fromDateTime(this);
 
   /// Converts this to an [Instant].
   Instant toInstant() => Instant.fromDateTime(this);
@@ -18,6 +18,22 @@ extension TempoDateTime on DateTime {
   /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
   ///
   /// Uses [ZonedDateTime.defaultZoneId] if [zoneId] is not given.
+  ///
+  /// ## Caveats
+  ///
+  /// Be careful when using `DateTime` for its date and time values (like a
+  /// `LocalDateTime`). This conversion treats `DateTime` like
+  /// it's an `Instant`. Which means the date and time of the result will
+  /// be different if the timezones don't match. (I've personally been
+  /// surprised by this when hard coding [defaultZoneId] in a test. It
+  /// passed locally but failed later in a Github action, because the
+  /// `DateTime` time zone was different.)
+  ///
+  /// Best practice: Don't use `DateTime` as a `LocalDateTime`, and when
+  /// interacting with APIs that use it that way, convert it to `LocalDateTime` as
+  /// soon as possible. To catch these issues in unit tests, set [defaultTimeZone]
+  /// to something that's likely to always conflict with the system time zone. I
+  /// suggest "Pacific/Kiritimati."
   ZonedDateTime inTimezone([String? zoneId]) =>
       ZonedDateTime.fromDateTime(this, zoneId);
 }
