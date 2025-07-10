@@ -25,11 +25,11 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
 
   /// The earliest possible datetime.
   static final ZonedDateTime minimum =
-      ZonedDateTime.fromInstant(Instant.minimum, 'GMT');
+      ZonedDateTime.fromInstant(Instant.minimum, 'UTC');
 
   /// The latest possible datetime.
   static final ZonedDateTime maximum =
-      ZonedDateTime.fromInstant(Instant.maximum, 'GMT');
+      ZonedDateTime.fromInstant(Instant.maximum, 'UTC');
 
   final OffsetDateTime _dateTime;
 
