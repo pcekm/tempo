@@ -1,44 +1,72 @@
-## Unreleased changes
+# Changelog
 
-- Added some missing conversion methods, and standardized the existing ones (see
-  the library docs for a list of conversion method names)
-- **Breaking changes**:
-  - DateTime extension method toLocal() has been renamed toLocalDateTime() to
-    avoid shadowing an existing method
-  - ZonedDateTime.toOffset() changed to a getter, `asOffsetDateTime` to better
-    distinguish it from the standardized `atOffset` method.
-  - `toDateTime()` no longer a part of the `HasDate` interface
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.6.0
+## [Unreleased]
 
-- Minimum Dart SDK is now 3.0.0
+### Added
+
+- Missing conversion methods, and standardized the existing ones (see the
+  library docs for a list of conversion method names)
+
+### Changed
+
+- **Breaking**: ZonedDateTime.toOffset() changed to a getter, `asOffsetDateTime`
+- **Breaking**: `toDateTime()` no longer a part of the `HasDate` interface
+
+### Fixed
+
+- **Breaking**: DateTime extension method toLocal() is now toLocalDateTime() so
+  it doesn't shadow an existing method
+
+## [0.6.0] - 2025-06-11
+
+### Added
+
 - Added `us` and `iso` getters to Weekday for weekday numbers
 - Added extension methods on DateTime and Duration to convert to Tempo objects
-- Made zoneId optional for ZonedDateTime creation. **Breaking change**
-  - This is seamless with one exception:
-  - **Breaking change**: Removed zoneId arg from ZonedDateTime(). Use
-    ZonedDateTime.withZoneId() if you want to specify a time zone.
-  - ZonedDateTime now has a settable defaultZoneId field that will be used if
-    none is provided.
-- Documentation improvements
 
-## 0.5.4
+### Changed
+
+- Minimum Dart SDK is now 3.0.0
+- Made zoneId optional for ZonedDateTime creation. This is seamless with one
+  exception (see below)
+- **Breaking**: Removed zoneId arg from ZonedDateTime(). Use
+  ZonedDateTime.withZoneId() if you want to specify a time zone.
+- ZonedDateTime now has a settable defaultZoneId field that will be used if none
+  is provided.
+- Improved documentation; assigned objects to categories and created category
+  documentation pages.
+
+## [0.5.4] - 2025-05-22
+
+### Changed
 
 - Updated to tzdb-2025b
 - Minimum Dart SDK is now 2.19.0
 
-## 0.5.3
+## [0.5.3] - 2024-08-03
+
+### Changed
 
 - Updated to tzdb-2024a.
 
-## 0.5.2
+## [0.5.2] - 2023-05-26
+
+### Added
 
 - Added unixTimestamp and inTimezone() to HasInstant interface.
 
-## 0.5.1
+## [0.5.1] - 2023-05-21
+
+### Changed
 
 - Fixed broken links in README.md
 
-## 0.5.0
+## [0.5.0] - 2023-05-21
+
+### Added
 
 - Initial version.
