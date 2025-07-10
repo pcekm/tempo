@@ -114,8 +114,8 @@ moment is stored in an [`Instant`][Instant]:
 ```dart
 Instant.now();
 Instant.fromUnix(Timespan(seconds: 1683654985));
-OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).asInstant;
-ZonedDateTime('America/Los_Angeles', 2023, 1, 2, 3).asInstant;
+OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).toInstant();
+ZonedDateTime('America/Los_Angeles', 2023, 1, 2, 3).toInstant();
 ```
 
 The default for [`ZonedDateTime`][ZonedDateTime] is "UTC." You can change this

@@ -15,6 +15,12 @@ and this project adheres to
 
 - **Breaking**: ZonedDateTime.toOffset() changed to a getter, `asOffsetDateTime`
 - **Breaking**: `toDateTime()` no longer a part of the `HasDate` interface
+- **Breaking**: HasInstant now uses toInstant() method instead of asInstant
+  getter
+
+### Removed
+
+- **Breaking**: All asInstant getters removed. Use toInstant() instead.
 
 ### Fixed
 

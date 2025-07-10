@@ -15,11 +15,11 @@ instant.toString() == '2000-01-03T04:05:06Z';
 
 var odt = OffsetDateTime(ZoneOffset(-1), 2000, 1, 3, 3, 5, 6);
 odt.toString() == '2000-01-03T03:05:06-0100';
-odt.asInstant == instant;
+odt.toInstant() == instant;
 
 var zdt = ZonedDateTime.fromInstant(instant, 'America/Los_Angeles');
 zdt.toString() == '2000-01-02T20:05:06-0800';
 zdt.timeZone == 'PST';
 zdt.offset == ZoneOffset(-8);
-zdt.asInstant == instant;
+zdt.toInstant() == instant;
 ```

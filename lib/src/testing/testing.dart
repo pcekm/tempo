@@ -6,7 +6,7 @@ class _HasInstant extends CustomMatcher {
   _HasInstant(dynamic matcher)
       : super('Has instant that is', 'instant', matcher);
   @override
-  Instant featureValueOf(dynamic actual) => actual.asInstant;
+  Instant featureValueOf(dynamic actual) => actual.toInstant();
 }
 
 /// Matches the instant from a [HasInstant].

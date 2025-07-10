@@ -266,15 +266,6 @@ void main() {
       expect(dt.toInstant(),
           Instant.fromUnix(Timespan(seconds: 946811045, nanoseconds: 6)));
     });
-
-    test('asInstant', () {
-      var dt = ZonedDateTime.withZoneId(
-          'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);
-      expect(
-          dt,
-          hasInstant(
-              Instant.fromUnix(Timespan(seconds: 946811045, nanoseconds: 6))));
-    });
   });
 
   test('timespanUntil', () {
@@ -379,7 +370,7 @@ void main() {
 
     test('operator== different zones', () {
       expect(dt1, isNot(dt2)); // Different zones means !=
-      expect(dt1.asInstant, dt2.asInstant);
+      expect(dt1.toInstant(), dt2.toInstant());
     });
 
     test('operator== same zones', () {

@@ -188,12 +188,12 @@ void main() {
 
   test('plusTimespan()', () {
     var got = nepalOffsetTime.plusTimespan(delta);
-    expect(got.asInstant, nstTime.asInstant);
+    expect(got.toInstant(), nstTime.toInstant());
   });
 
   test('minusTimespan()', () {
     var got = nstTime.minusTimespan(delta);
-    expect(got.asInstant, nepalOffsetTime.asInstant);
+    expect(got.toInstant(), nepalOffsetTime.toInstant());
   });
 
   test('plusPeriod()', () {
@@ -252,6 +252,6 @@ void main() {
 
     expect(d1, isNot(d2));
     expect(d1.compareTo(d2), 0);
-    expect(d1.asInstant, d2.asInstant);
+    expect(d1.toInstant(), d2.toInstant());
   });
 }

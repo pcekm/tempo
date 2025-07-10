@@ -91,6 +91,7 @@ export 'timezone.dart'
         ZoneDescription;
 
 part 'src/tempo/__convertible_date.dart';
+part 'src/tempo/__instant_convertible.dart';
 part 'src/tempo/__period_arithmetic.dart';
 part 'src/tempo/extensions.dart';
 part 'src/tempo/has_date.dart';

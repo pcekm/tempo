@@ -17,12 +17,12 @@ part of '../../tempo.dart';
 class Instant implements HasInstant, _ConvertibleDate {
   /// The earliest supported instant.
   static final Instant minimum =
-      OffsetDateTime(ZoneOffset(0), -9999, 1, 1).asInstant;
+      OffsetDateTime(ZoneOffset(0), -9999, 1, 1).toInstant();
 
   /// The latest supported instant.
   static final Instant maximum =
       OffsetDateTime(ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999)
-          .asInstant;
+          .toInstant();
 
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 
@@ -77,9 +77,6 @@ class Instant implements HasInstant, _ConvertibleDate {
   @override
   LocalDateTime toLocal() => LocalDateTime._fromJulianDay(_julianDay);
 
-  @override
-  Instant get asInstant => this;
-
   Timespan get _julianDay => unixTimestamp + _julianOffset;
 
   @override
@@ -93,7 +90,7 @@ class Instant implements HasInstant, _ConvertibleDate {
   /// Returns the amount of time between this and another instant in time.
   @override
   Timespan timespanUntil(HasInstant other) =>
-      other.asInstant.unixTimestamp - unixTimestamp;
+      other.toInstant().unixTimestamp - unixTimestamp;
 
   /// Adds a [Timespan].
   Instant plusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp + t);
@@ -103,7 +100,7 @@ class Instant implements HasInstant, _ConvertibleDate {
 
   @override
   int compareTo(HasInstant other) {
-    return Comparable.compare(unixTimestamp, other.asInstant.unixTimestamp);
+    return Comparable.compare(unixTimestamp, other.toInstant().unixTimestamp);
   }
 
   /// Greater than operator.

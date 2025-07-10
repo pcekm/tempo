@@ -212,16 +212,13 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   /// conversion loses the time zone.
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
-      _dateTime.asInstant.unixTimestamp.inMicroseconds);
+      _dateTime.toInstant().unixTimestamp.inMicroseconds);
 
   @override
-  Instant toInstant() => _dateTime.asInstant;
+  Instant toInstant() => _dateTime.toInstant();
 
   @override
-  Instant get asInstant => _dateTime.asInstant;
-
-  @override
-  Timespan timespanUntil(HasInstant other) => asInstant.timespanUntil(other);
+  Timespan timespanUntil(HasInstant other) => toInstant().timespanUntil(other);
 
   /// Adds a [Timespan].
   ///
@@ -231,7 +228,7 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   ///
   /// See also [plusPeriod].
   ZonedDateTime plusTimespan(Timespan timespan) =>
-      ZonedDateTime.fromInstant(asInstant.plusTimespan(timespan), zoneId);
+      ZonedDateTime.fromInstant(toInstant().plusTimespan(timespan), zoneId);
 
   /// Subtracts a [Timespan].
   ///
@@ -241,7 +238,7 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   ///
   /// See also [minusPeriod].
   ZonedDateTime minusTimespan(Timespan timespan) =>
-      ZonedDateTime.fromInstant(asInstant.minusTimespan(timespan), zoneId);
+      ZonedDateTime.fromInstant(toInstant().minusTimespan(timespan), zoneId);
 
   /// Adds a [Period].
   ///
@@ -324,7 +321,7 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   ///
   /// Two [ZonedDateTime]s compare equal if and only if they have the same
   /// date/time _and_ the same [zoneId]. If you just want to know if two
-  /// represent the same moment in time, use [compareTo] or [asInstant].
+  /// represent the same moment in time, use [compareTo] or [toInstant].
   ///
   /// ```dart
   /// // Same moment in time; different time zones:
@@ -333,7 +330,7 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   ///
   /// d1 != d2;
   /// d1.compareTo(d2) == 0;
-  /// d1.asInstant == d2.asInstant;
+  /// d1.toInstant() == d2.toInstant();
   /// ```
   @override
   bool operator ==(Object other) =>

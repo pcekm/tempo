@@ -29,7 +29,7 @@ abstract class ZoneRules implements Built<ZoneRules, ZoneRulesBuilder> {
   NamedZoneOffset offsetFor(HasInstant instant) {
     var i = transitions.toList().lowerBoundBy<HasInstant>(
         ZoneTransition((b) => b
-          ..transitionTime = instant.asInstant
+          ..transitionTime = instant.toInstant()
           ..offset = NamedZoneOffset('', false, 0)),
         (t) => t.transitionTime);
     if (i == transitions.length) {

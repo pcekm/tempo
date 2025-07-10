@@ -1,12 +1,9 @@
 part of '../../tempo.dart';
 
 /// Interface for datetime classes that can convert to other datetime classes.
-abstract interface class _ConvertibleDate {
+abstract interface class _ConvertibleDate implements _InstantConvertible {
   /// Converts this to a DateTime in the local time zone.
   DateTime toDateTime();
-
-  /// Converts this to an Instant in UTC.
-  Instant toInstant();
 
   /// Converts this to a ZonedDateTime.
   ///

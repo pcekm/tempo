@@ -78,7 +78,7 @@ void main() {
           laTransitions,
           contains(ZoneTransition((b) => b
             ..transitionTime =
-                OffsetDateTime(ZoneOffset(-8), 2000, 4, 2, 2).asInstant
+                OffsetDateTime(ZoneOffset(-8), 2000, 4, 2, 2).toInstant()
             ..offset = NamedZoneOffset('PDT', true, -7))));
     });
 

@@ -4,7 +4,8 @@ part of '../../tempo.dart';
 /// in time.
 ///
 /// {@category absolute}
-abstract interface class HasInstant implements Comparable<HasInstant> {
+abstract interface class HasInstant
+    implements Comparable<HasInstant>, _InstantConvertible {
   /// The amount of time since midnight, January 1, 1970 UTC.
   ///
   /// This is a [Timespan], which can be easily converted into whatever
@@ -20,9 +21,6 @@ abstract interface class HasInstant implements Comparable<HasInstant> {
   /// instant.unixTimestamp.inDays;  // Probably not very useful, but it works!
   /// ```
   Timespan get unixTimestamp;
-
-  /// Converts this to an [Instant].
-  Instant get asInstant;
 
   /// Greater than operator.
   bool operator >(HasInstant other);

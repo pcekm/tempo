@@ -79,8 +79,9 @@ class OffsetDateTime
   /// UTC.
   OffsetDateTime.fromInstant(HasInstant hasInstant, [ZoneOffset? offset])
       : offset = offset ?? ZoneOffset(0),
-        _dateTime = _mkDateTime(hasInstant.asInstant, offset ?? ZoneOffset(0)),
-        _instant = hasInstant.asInstant;
+        _dateTime =
+            _mkDateTime(hasInstant.toInstant(), offset ?? ZoneOffset(0)),
+        _instant = hasInstant.toInstant();
 
   /// Constructs an `OffsetDateTime` from an unix timestamp and a fixed offset
   /// from UTC.
@@ -127,9 +128,6 @@ class OffsetDateTime
 
   @override
   Instant toInstant() => _instant;
-
-  @override
-  Instant get asInstant => _instant;
 
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
@@ -229,7 +227,7 @@ class OffsetDateTime
   ///
   /// Two [OffsetDateTime]s compare equal if and only if they have the same
   /// date _and_ the same offset. If you want to know if two represent the
-  /// same moment in time, use [compareTo] or [asInstant].
+  /// same moment in time, use [compareTo] or [toInstant].
   ///
   /// ```dart
   /// // Same moment in time; different zone offsets:
@@ -238,7 +236,7 @@ class OffsetDateTime
   ///
   /// d1 != d2;
   /// d1.compareTo(d2) == 0;
-  /// d1.asInstant == d2.asInstant;
+  /// d1.toInstant() == d2.toInstant();
   /// ```
   @override
   bool operator ==(Object other) =>
