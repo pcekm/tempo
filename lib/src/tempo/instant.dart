@@ -14,7 +14,7 @@ part of '../../tempo.dart';
 ///
 /// {@category absolute}
 @immutable
-class Instant implements HasInstant, _ConvertibleDate {
+class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// The earliest supported instant.
   static final Instant minimum =
       OffsetDateTime(ZoneOffset(0), -9999, 1, 1).toInstant();
@@ -79,45 +79,11 @@ class Instant implements HasInstant, _ConvertibleDate {
 
   Timespan get _julianDay => unixTimestamp + _julianOffset;
 
-  @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
-      OffsetDateTime.fromInstant(this, offset);
-
-  @override
-  ZonedDateTime inTimezone([String? zoneId]) =>
-      ZonedDateTime.fromInstant(this, zoneId);
-
-  /// Returns the amount of time between this and another instant in time.
-  @override
-  Timespan timespanUntil(HasInstant other) =>
-      other.toInstant().unixTimestamp - unixTimestamp;
-
   /// Adds a [Timespan].
   Instant plusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp + t);
 
   /// Subtracts a [Timespan].
   Instant minusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp - t);
-
-  @override
-  int compareTo(HasInstant other) {
-    return Comparable.compare(unixTimestamp, other.toInstant().unixTimestamp);
-  }
-
-  /// Greater than operator.
-  @override
-  bool operator >(HasInstant other) => compareTo(other) > 0;
-
-  /// Greater than or equals operator.
-  @override
-  bool operator >=(HasInstant other) => compareTo(other) >= 0;
-
-  /// Less than operator.
-  @override
-  bool operator <(HasInstant other) => compareTo(other) < 0;
-
-  /// Less than or equals operator.
-  @override
-  bool operator <=(HasInstant other) => compareTo(other) <= 0;
 
   /// Formats this as an ISO 8601 timestamp.
   ///

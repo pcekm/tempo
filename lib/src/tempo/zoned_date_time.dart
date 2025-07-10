@@ -17,7 +17,9 @@ part of '../../tempo.dart';
 ///
 /// {@category absolute}
 @immutable
-class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
+class ZonedDateTime
+    with _HasInstantImpl
+    implements HasDateTime, HasInstant, _ConvertibleDate {
   /// The default time zone to use when creating a [ZonedDateTime].
   ///
   /// {@macro default_time_zone}
@@ -198,14 +200,6 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
   /// Returns an equivalent [OffsetDateTime] with the same offset.
   OffsetDateTime get asOffsetDateTime => _dateTime;
 
-  @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
-      OffsetDateTime.fromInstant(this, offset);
-
-  @override
-  ZonedDateTime inTimezone([String? zoneId]) =>
-      ZonedDateTime.fromInstant(this, zoneId);
-
   /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///
   /// [DateTime] only supports two time zones: "local" and UTC, so this
@@ -216,9 +210,6 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
 
   @override
   Instant toInstant() => _dateTime.toInstant();
-
-  @override
-  Timespan timespanUntil(HasInstant other) => toInstant().timespanUntil(other);
 
   /// Adds a [Timespan].
   ///
@@ -290,21 +281,6 @@ class ZonedDateTime implements HasDateTime, HasInstant, _ConvertibleDate {
 
   @override
   int get ordinalDay => _dateTime.ordinalDay;
-
-  @override
-  int compareTo(HasInstant other) => _dateTime.compareTo(other);
-
-  @override
-  bool operator <(HasInstant other) => _dateTime < other;
-
-  @override
-  bool operator <=(HasInstant other) => _dateTime <= other;
-
-  @override
-  bool operator >(HasInstant other) => _dateTime > other;
-
-  @override
-  bool operator >=(HasInstant other) => _dateTime >= other;
 
   /// Returns this as an ISO 8601-formatted string with an offset.
   ///

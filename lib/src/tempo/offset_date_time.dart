@@ -5,6 +5,7 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class OffsetDateTime
+    with _HasInstantImpl
     implements
         HasInstant,
         HasDateTime,
@@ -111,14 +112,6 @@ class OffsetDateTime
   @override
   Timespan get unixTimestamp => _instant.unixTimestamp;
 
-  @override
-  ZonedDateTime inTimezone([String? zoneId]) =>
-      ZonedDateTime.fromInstant(this, zoneId);
-
-  @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
-      OffsetDateTime.fromInstant(this, offset);
-
   /// Converts this to a `LocalDateTime`.
   ///
   /// The result will have exactly the same year, month, day, etc. but will
@@ -160,9 +153,6 @@ class OffsetDateTime
   @override
   int get nanosecond => _dateTime.nanosecond;
 
-  @override
-  Timespan timespanUntil(HasInstant other) => _instant.timespanUntil(other);
-
   /// Adds a `Timespan`.
   ///
   /// This increments the underlying [Instant] by exactly [timespan].
@@ -198,21 +188,6 @@ class OffsetDateTime
   @override
   OffsetDateTime minusPeriod(Period period) =>
       OffsetDateTime.fromLocalDateTime(_dateTime.minusPeriod(period), offset);
-
-  @override
-  int compareTo(HasInstant other) => _instant.compareTo(other);
-
-  @override
-  bool operator >(HasInstant other) => compareTo(other) > 0;
-
-  @override
-  bool operator >=(HasInstant other) => compareTo(other) >= 0;
-
-  @override
-  bool operator <(HasInstant other) => compareTo(other) < 0;
-
-  @override
-  bool operator <=(HasInstant other) => compareTo(other) <= 0;
 
   /// Formats this as an ISO 8601 date time with offset.
   ///
