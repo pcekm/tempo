@@ -148,6 +148,29 @@ void main() {
       var dt = OffsetDateTime.parse('-1000-02-03');
       expect(dt, hasDate(-1000, 2, 3));
     });
+
+    test('minimal delimiters, standards compliant', () {
+      var dt = OffsetDateTime.parse('10000203T040506.000000007+080910');
+      expect(dt, hasDate(1000, 2, 3));
+      expect(dt, hasTime(4, 5, 6, 7));
+      expect(dt, hasOffset(8, 9, 10));
+    });
+
+    test('space separator', () {
+      // Technically not allowed by the most recent version of ISO 8601, but
+      // common enough to be worth parsing.
+      var dt = OffsetDateTime.parse('2001-02-03 04:05:06');
+      expect(dt, hasDate(2001, 2, 3));
+      expect(dt, hasTime(4, 5, 6));
+    });
+
+    test('no separators at all', () {
+      // Technically not allowed by the most recent version of ISO 8601, but
+      // common enough to be worth parsing.
+      var dt = OffsetDateTime.parse('20010203040506');
+      expect(dt, hasDate(2001, 2, 3));
+      expect(dt, hasTime(4, 5, 6));
+    });
   });
 
   group('conversions', () {

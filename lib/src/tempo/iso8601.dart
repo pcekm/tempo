@@ -99,7 +99,7 @@ OffsetDateTime _parseIso8160DateTime(String dateStr) {
   var date = _scanIso8601Date(s);
   var time = LocalTime(0);
   var offset = ZoneOffset(0);
-  if (s.scan(RegExp('T'))) {
+  if (s.scan(RegExp(r'[T\s]?(?=\d)'))) {
     time = _scanIso8601Time(s);
     offset = _scanIso8601Offset(s);
   }

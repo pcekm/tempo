@@ -11,6 +11,7 @@ and this project adheres to
 - Missing conversion methods, and standardized the existing ones (see the
   library docs for a list of conversion method names)
 - Instant now has a `parse()` constructor for ISO 8601 formatted strings
+- Parses ISO date times with either a space or no separator instead of a 'T'
 
 ### Changed
 
