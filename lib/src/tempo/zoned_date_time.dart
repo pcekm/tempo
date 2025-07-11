@@ -122,8 +122,8 @@ class ZonedDateTime
   /// ## Caveats
   ///
   /// Be careful when using `DateTime` for its date and time values (like a
-  /// `LocalDateTime`). This conversion treats `DateTime` like
-  /// it's an `Instant`. Which means the date and time of the result will
+  /// [LocalDateTime]). This conversion treats `DateTime` like
+  /// it's an [Instant]. Which means the date and time of the result will
   /// be different if the timezones don't match. (I've personally been
   /// surprised by this when hard coding [defaultZoneId] in a test. It
   /// passed locally but failed later in a Github action, because the
