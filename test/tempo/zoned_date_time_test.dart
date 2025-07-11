@@ -213,8 +213,8 @@ void main() {
     });
 
     test('offset', () {
-      expect(ZonedDateTime(2000, 1, 2).offset, ZoneOffset(1));
-      expect(ZonedDateTime(2000, 6, 2).offset, ZoneOffset(2));
+      expect(ZonedDateTime(2000, 1, 2), hasOffset(1));
+      expect(ZonedDateTime(2000, 6, 2), hasOffset(2));
     });
 
     test('isDst', () {
@@ -240,7 +240,7 @@ void main() {
       expect(odt, isA<OffsetDateTime>());
       expect(odt, hasDate(2000, 1, 2));
       expect(odt, hasTime(3, 4, 5, 6));
-      expect(odt.offset, ZoneOffset(-5));
+      expect(odt, hasOffset(-5));
     });
 
     test('atOffset()', () {
