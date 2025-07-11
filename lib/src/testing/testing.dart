@@ -2,101 +2,64 @@ import 'package:test/test.dart';
 
 import '../../tempo.dart';
 
-class _HasInstant extends CustomMatcher {
-  _HasInstant(dynamic matcher)
-      : super('Has instant that is', 'instant', matcher);
-  @override
-  Instant featureValueOf(dynamic actual) => actual.toInstant();
-}
-
 /// Matches the instant from a [HasInstant].
-Matcher hasInstant(Object? matcher) => _HasInstant(matcher);
-
-class _HasYear extends CustomMatcher {
-  _HasYear(dynamic matcher) : super('Has year that is', 'year', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.year;
-}
+Matcher hasInstant(Object? matcher) =>
+    isA<HasInstant>().having((t) => t.toInstant(), 'instant', matcher);
 
 /// Matches the year from a [HasDate].
-Matcher hasYear(Object? matcher) => _HasYear(matcher);
-
-class _HasMonth extends CustomMatcher {
-  _HasMonth(dynamic matcher) : super('Has month that is', 'month', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.month;
-}
+Matcher hasYear(Object? matcher) =>
+    isA<HasDate>().having((d) => d.year, 'year', matcher);
 
 /// Matches the month from a [HasDate].
-Matcher hasMonth(Object? matcher) => _HasMonth(matcher);
-
-class _HasDay extends CustomMatcher {
-  _HasDay(dynamic matcher) : super('Has day that is', 'day', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.day;
-}
+Matcher hasMonth(Object? matcher) =>
+    isA<HasDate>().having((d) => d.month, 'month', matcher);
 
 /// Matches the day from a [HasDate].
-Matcher hasDay(Object? matcher) => _HasDay(matcher);
-
-class _HasHour extends CustomMatcher {
-  _HasHour(dynamic matcher) : super('Has hour that is', 'hour', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.hour;
-}
-
-/// Matches the hour from a [HasTime].
-Matcher hasHour(Object? matcher) => _HasHour(matcher);
-
-class _HasWeekday extends CustomMatcher {
-  _HasWeekday(dynamic matcher)
-      : super('Has weekday that is', 'weekday', matcher);
-  @override
-  Weekday featureValueOf(dynamic actual) => actual.weekday;
-}
+Matcher hasDay(Object? matcher) =>
+    isA<HasDate>().having((d) => d.day, 'day', matcher);
 
 /// Matches the weekday from a [HasDate].
-Matcher hasWeekday(Object? matcher) => _HasWeekday(matcher);
+Matcher hasWeekday(Object? matcher) =>
+    isA<HasDate>().having((d) => d.weekday, 'weekday', matcher);
 
-class _HasMinute extends CustomMatcher {
-  _HasMinute(dynamic matcher) : super('Has minute that is', 'minute', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.minute;
-}
+/// Matches the hour from a [HasTime].
+Matcher hasHour(Object? matcher) =>
+    isA<HasTime>().having((d) => d.hour, 'hour', matcher);
 
 /// Matches the minute from a [HasTime].
-Matcher hasMinute(Object? matcher) => _HasMinute(matcher);
-
-class _HasSecond extends CustomMatcher {
-  _HasSecond(dynamic matcher) : super('Has second that is', 'second', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.second;
-}
+Matcher hasMinute(Object? matcher) =>
+    isA<HasTime>().having((d) => d.minute, 'minute', matcher);
 
 /// Matches the second from a [HasTime].
-Matcher hasSecond(Object? matcher) => _HasSecond(matcher);
-
-class _HasNanosecond extends CustomMatcher {
-  _HasNanosecond(dynamic matcher)
-      : super('Has nanosecond that is', 'nanosecond', matcher);
-  @override
-  int featureValueOf(dynamic actual) => actual.nanosecond;
-}
+Matcher hasSecond(Object? matcher) =>
+    isA<HasTime>().having((t) => t.second, 'second', matcher);
 
 /// Matches the nanosecond from a [HasTime].
-Matcher hasNanosecond(Object? matcher) => _HasNanosecond(matcher);
+Matcher hasNanosecond(Object? matcher) =>
+    isA<HasTime>().having((t) => t.nanosecond, 'nanosecond', matcher);
 
 /// Matches the date from a [HasDate].
-Matcher hasDate(Object? year, [Object? month, Object? day]) => allOf(
-    hasYear(year),
-    month != null ? hasMonth(month) : null,
-    day != null ? hasDay(day) : null);
+Matcher hasDate(Object? year, [Object? month = 1, Object? day = 1]) =>
+    allOf(hasYear(year), hasMonth(month), hasDay(day));
 
 /// Matches the time from a [HasTime].
 Matcher hasTime(Object? hour,
-        [Object? minute, Object? second, Object? nanosecond]) =>
-    allOf(
-        hasHour(hour),
-        minute != null ? hasMinute(minute) : null,
-        second != null ? hasSecond(second) : null,
-        nanosecond != null ? hasNanosecond(nanosecond) : null);
+        [Object? minute = 0, Object? second = 0, Object? nanosecond = 0]) =>
+    allOf(hasHour(hour), hasMinute(minute), hasSecond(second),
+        hasNanosecond(nanosecond));
+
+/// Matches the values the time zone offset of an [OffsetDateTime] or
+/// [ZonedDateTime].
+Matcher hasOffset(Object? hours,
+    [Object? minutes = isZero, Object? seconds = isZero]) {
+  return anyOf(
+    isA<OffsetDateTime>()
+        .having((d) => d.offset.hours, 'hours', hours)
+        .having((d) => d.offset.minutes, 'minutes', minutes)
+        .having((d) => d.offset.seconds, 'seconds', seconds),
+    isA<ZonedDateTime>()
+        .having((d) => d.offset.hours, 'hours', hours)
+        .having((d) => d.offset.minutes, 'minutes', minutes)
+        .having((d) => d.offset.seconds, 'seconds', seconds),
+  );
+}

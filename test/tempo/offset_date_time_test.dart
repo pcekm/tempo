@@ -128,7 +128,7 @@ void main() {
     test('no offset', () {
       var dt = OffsetDateTime.parse('1000-02-03T04:05:06.000000007');
       expect(dt, hasDate(1000, 2, 3));
-      expect(dt, hasTime(4, 5, 6));
+      expect(dt, hasTime(4, 5, 6, 7));
       expect(dt.offset, ZoneOffset(0));
     });
 

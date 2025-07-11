@@ -27,6 +27,10 @@ and this project adheres to
 
 - **Breaking**: DateTime extension method toLocal() is now toLocalDateTime() so
   it doesn't shadow an existing method
+- Test matchers `hasDate` and `hasTime` no longer ignore unspecified fields, and
+  instead check for expected defaults. For example,
+  `expect(LocalTime(4, 30), hasTime(4))` used to pass. Now it fails, since the
+  unspecified minute matcher defaults to 0.
 
 ## [0.6.0] - 2025-06-11
 
