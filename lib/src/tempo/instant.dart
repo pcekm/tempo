@@ -41,6 +41,14 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// ```
   Instant.fromUnix(this.unixTimestamp);
 
+  /// Parses an `Instant` from an ISO-8601 formatted string.
+  ///
+  /// This correctly applies nonzero timezone offsets, but the original
+  /// offset will not be retained. To retain the offset, use
+  /// [OffsetDateTime.parse] instead.
+  factory Instant.parse(String isoString) =>
+      _parseIso8160DateTime(isoString).toInstant();
+
   /// Creates an instant from a [DateTime].
   ///
   /// {@template datetime_precision}

@@ -13,6 +13,15 @@ void main() {
         Instant.fromUnix(Timespan(seconds: 946872306, nanoseconds: 123456789)),
   });
 
+  test('parse()', () {
+    final want = timeline[946872306];
+    expect(Instant.parse('2000-01-03T04:05:06.123456789Z'), want);
+    expect(Instant.parse('2000-01-03T05:05:06.123456789+01'), want);
+    expect(Instant.parse('2000-01-03T05:35:06.123456789+0130'), want);
+    expect(Instant.parse('2000-01-03T03:05:06.123456789-01'), want);
+    expect(Instant.parse('2000-01-03T02:35:06.123456789-0130'), want);
+  });
+
   test('fromDateTime()', () {
     var dt = DateTime.fromMicrosecondsSinceEpoch(1234567890);
     expect(Instant.fromDateTime(dt).unixTimestamp,
