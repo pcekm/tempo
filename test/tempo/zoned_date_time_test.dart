@@ -12,6 +12,10 @@ final isDst = _HasDst(true);
 final isNotDst = _HasDst(false);
 
 void main() {
+  setUp(() {
+    defaultZoneId = 'Pacific/Kiritimati';
+  });
+
   group('construction', () {
     test('fromInstant', () {
       var instant =
@@ -34,10 +38,51 @@ void main() {
       expect(dt.zoneId, 'America/Los_Angeles');
     });
 
+    group('parse', () {
+      group('provided zone id', () {
+        test('provided offset', () {
+          final dt = ZonedDateTime.parse(
+              '2025-01-02T03:04-0500', 'America/Los_Angeles');
+          expect(dt, hasDate(2025, 1, 2));
+          expect(dt, hasTime(0, 4));
+          expect(dt.zoneId, 'America/Los_Angeles');
+        });
+
+        test('no offset', () {
+          final dt =
+              ZonedDateTime.parse('2025-01-02T03:04', 'America/Los_Angeles');
+          expect(dt, hasDate(2025, 1, 2));
+          expect(dt, hasTime(3, 4));
+          expect(dt.zoneId, 'America/Los_Angeles');
+        });
+      });
+
+      group('default zone id', () {
+        setUp(() {
+          defaultZoneId = 'America/Los_Angeles';
+        });
+
+        test('provided offset', () {
+          final dt = ZonedDateTime.parse('2025-01-02T03:04-0500');
+          expect(dt, hasDate(2025, 1, 2));
+          expect(dt, hasTime(0, 4));
+          expect(dt.zoneId, 'America/Los_Angeles');
+        });
+
+        test('no offset', () {
+          final dt =
+              ZonedDateTime.parse('2025-01-02T03:04', 'America/Los_Angeles');
+          expect(dt, hasDate(2025, 1, 2));
+          expect(dt, hasTime(3, 4));
+          expect(dt.zoneId, 'America/Los_Angeles');
+        });
+      });
+    });
+
     group('from components', () {
       group('west', () {
         setUp(() {
-          ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+          defaultZoneId = 'America/Los_Angeles';
         });
 
         test('normal std', () {
@@ -106,7 +151,7 @@ void main() {
 
       group('east', () {
         setUp(() {
-          ZonedDateTime.defaultZoneId = 'Europe/Tallinn';
+          defaultZoneId = 'Europe/Tallinn';
         });
         test('normal std', () {
           var got = ZonedDateTime(2023, 1, 1, 2, 3, 4, 5);
@@ -204,7 +249,7 @@ void main() {
 
   group('time zone info', () {
     setUp(() {
-      ZonedDateTime.defaultZoneId = 'Europe/Zurich';
+      defaultZoneId = 'Europe/Zurich';
     });
 
     test('timeZone', () {
@@ -278,7 +323,7 @@ void main() {
 
   group('Timespan arithmetic', () {
     setUp(() {
-      ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+      defaultZoneId = 'America/Los_Angeles';
     });
     test('plusTimespan', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
@@ -299,7 +344,7 @@ void main() {
 
   group('Period arithmetic', () {
     setUp(() {
-      ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+      defaultZoneId = 'America/Los_Angeles';
     });
     test('plusPeriod', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);

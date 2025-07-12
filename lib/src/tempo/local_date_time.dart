@@ -102,7 +102,7 @@ class LocalDateTime
   /// dt == LocalDateTime(2020, 3, 4, 5, 6);
   /// ```
   factory LocalDateTime.parse(String dateTime) =>
-      _parseIso8160DateTime(dateTime).toLocal();
+      _parseIso8160DateTime(dateTime).datetime;
 
   Timespan get _julianDay => gregorianToJulianDay(Gregorian(
       year,
@@ -185,7 +185,7 @@ class LocalDateTime
 
   @override
   ZonedDateTime inTimezone([String? zoneId]) => ZonedDateTime.withZoneId(
-      zoneId ?? ZonedDateTime.defaultZoneId,
+      zoneId ?? defaultZoneId,
       year,
       month,
       day,

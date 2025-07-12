@@ -15,6 +15,7 @@ void main() {
 
   test('parse()', () {
     final want = timeline[946872306];
+    expect(Instant.parse('2000-01-03T04:05:06.123456789'), want);
     expect(Instant.parse('2000-01-03T04:05:06.123456789Z'), want);
     expect(Instant.parse('2000-01-03T05:05:06.123456789+01'), want);
     expect(Instant.parse('2000-01-03T05:35:06.123456789+0130'), want);

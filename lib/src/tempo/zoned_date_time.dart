@@ -2,29 +2,13 @@ part of '../../tempo.dart';
 
 /// A date and time in a specific time zone.
 ///
-/// {@template default_time_zone}
-/// The time zone defaults to "UTC" and may be changed by setting
-/// [defaultZoneId]. If you're using Flutter, you can get a better default
-/// from the [flutter_timezone](https://pub.dev/packages/flutter_timezone)
-/// package:
-///
-/// ```dart
-/// import 'package:flutter_timezone/flutter_timezone.dart';
-///
-/// ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
-/// ```
-/// {@endtemplate}
+/// The time zone defaults to "UTC" and may be changed by setting [defaultZoneId].
 ///
 /// {@category absolute}
 @immutable
 class ZonedDateTime
     with _HasInstantImpl
     implements HasDateTime, HasInstant, _ConvertibleDate {
-  /// The default time zone to use when creating a [ZonedDateTime].
-  ///
-  /// {@macro default_time_zone}
-  static String defaultZoneId = 'UTC';
-
   /// The earliest possible datetime.
   static final ZonedDateTime minimum =
       ZonedDateTime.fromInstant(Instant.minimum, 'UTC');
@@ -48,8 +32,10 @@ class ZonedDateTime
 
   /// Constructs a `ZonedDateTime` from an [Instant].
   ///
+  /// {@template zone_id}
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
+  /// {@endtemplate}
   factory ZonedDateTime.fromInstant(HasInstant instant, [String? zoneId]) {
     zoneId ??= defaultZoneId;
     var offset = _lookupTimeZone(zoneId, instant);
@@ -59,8 +45,7 @@ class ZonedDateTime
 
   /// Creates a ZonedDateTime using a time since midnight, January 1, 1970 UTC.
   ///
-  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
-  /// if not.
+  /// {@macro zone_id}
   ///
   /// The Unix timestamp can be provided in any units supported by [Timespan].
   /// These examples all produce the same time:
@@ -72,6 +57,20 @@ class ZonedDateTime
   /// ```
   factory ZonedDateTime.fromUnix(Timespan unixTimestamp, [String? zoneId]) =>
       ZonedDateTime.fromInstant(Instant.fromUnix(unixTimestamp), zoneId);
+
+  /// Parses a `ZonedDateTime` from an ISO-8601 formatted string.
+  ///
+  /// Assumes input strings without a zone offset are local to [zoneId] (or
+  /// [defaultZoneId] if that's unset).
+  /// {@macro zone_id}
+  factory ZonedDateTime.parse(String isoString, [String? zoneId]) {
+    final parsed = _parseIso8160DateTime(isoString);
+    if (parsed.offset != null) {
+      return parsed.datetime.atOffset(parsed.offset!).inTimezone(zoneId);
+    } else {
+      return parsed.datetime.inTimezone(zoneId);
+    }
+  }
 
   /// Creates a `ZonedDateTime` from individual components in a given time zone.
   ///
@@ -116,8 +115,7 @@ class ZonedDateTime
 
   /// Converts a [DateTime] to a `ZonedDateTime`.
   ///
-  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
-  /// if not.
+  /// {@macro zone_id}
   ///
   /// ## Caveats
   ///
@@ -131,7 +129,7 @@ class ZonedDateTime
   ///
   /// Best practice: Don't use `DateTime` as a `LocalDateTime`, and when
   /// interacting with APIs that use it that way, convert it to `LocalDateTime` as
-  /// soon as possible. To catch these issues in unit tests, set [defaultTimeZone]
+  /// soon as possible. To catch these issues in unit tests, set [defaultZoneId]
   /// to something that's likely to always conflict with the system time zone. I
   /// suggest "Pacific/Kiritimati."
   factory ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId]) =>
@@ -139,8 +137,7 @@ class ZonedDateTime
 
   /// Creates a `ZonedDateTime` using the current time.
   ///
-  /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
-  /// if not.
+  /// {@macro zone_id}
   factory ZonedDateTime.now([String? zoneId]) =>
       ZonedDateTime.fromDateTime(DateTime.now(), zoneId);
 

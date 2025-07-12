@@ -31,7 +31,7 @@ extension TempoDateTime on DateTime {
   ///
   /// Best practice: Don't use `DateTime` as a `LocalDateTime`, and when
   /// interacting with APIs that use it that way, convert it to `LocalDateTime` as
-  /// soon as possible. To catch these issues in unit tests, set [defaultTimeZone]
+  /// soon as possible. To catch these issues in unit tests, set [defaultZoneId]
   /// to something that's likely to always conflict with the system time zone. I
   /// suggest "Pacific/Kiritimati."
   ZonedDateTime inTimezone([String? zoneId]) =>

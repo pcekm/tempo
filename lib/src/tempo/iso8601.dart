@@ -1,5 +1,28 @@
 part of '../../tempo.dart';
 
+/// Internal result of parsing an ISO 8601 datetime.
+class _Iso8601DateTime {
+  final LocalDateTime datetime;
+  final ZoneOffset? offset;
+
+  const _Iso8601DateTime(this.datetime, this.offset);
+
+  @override
+  bool operator ==(Object other) {
+    return other is _Iso8601DateTime &&
+        datetime == other.datetime &&
+        offset == other.offset;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([datetime, offset]);
+
+  @override
+  String toString() {
+    return '_Iso8601DateTime($datetime, $offset)';
+  }
+}
+
 /// Pads an integer up to [digits]. Negative signs are not counted as a digit.
 String _zeroPad(int n, [int digits = 2]) {
   var sign = '';
@@ -73,9 +96,9 @@ LocalTime _scanIso8601Time(StringScanner s) {
 
 /// Parses an ISO 8601 zone offset string.
 ZoneOffset _parseIso8601Offset(String offset) =>
-    _scanIso8601Offset(StringScanner(offset), true);
+    _scanIso8601Offset(StringScanner(offset), true)!;
 
-ZoneOffset _scanIso8601Offset(StringScanner s, [bool must = false]) {
+ZoneOffset? _scanIso8601Offset(StringScanner s, [bool must = false]) {
   if (s.scan('Z')) {
     return ZoneOffset(0);
   }
@@ -90,21 +113,20 @@ ZoneOffset _scanIso8601Offset(StringScanner s, [bool must = false]) {
         sign * int.parse(s.lastMatch!.group(3) ?? '0'),
         sign * int.parse(s.lastMatch!.group(4) ?? '0'));
   }
-  return ZoneOffset(0);
+  return null;
 }
 
 /// Parses an ISO 8601 datetime.
-OffsetDateTime _parseIso8160DateTime(String dateStr) {
+_Iso8601DateTime _parseIso8160DateTime(String dateStr) {
   var s = StringScanner(dateStr);
   var date = _scanIso8601Date(s);
-  var time = LocalTime(0);
-  var offset = ZoneOffset(0);
+  LocalTime? time;
+  ZoneOffset? offset;
   if (s.scan(RegExp(r'[T\s]?(?=\d)'))) {
     time = _scanIso8601Time(s);
     offset = _scanIso8601Offset(s);
   }
-  return OffsetDateTime.fromLocalDateTime(
-      LocalDateTime.combine(date, time), offset);
+  return _Iso8601DateTime(LocalDateTime.combine(date, time), offset);
 }
 
 /// Formats a [HasTime] as an ISO 8601 string.

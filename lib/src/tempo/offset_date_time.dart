@@ -94,12 +94,22 @@ class OffsetDateTime
 
   /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///
+  /// The result will have the same offset as the input. If the input doesn't
+  /// have an offset, the result will have an offset in the time zone specified
+  /// by [defaultZoneId].
+  ///
   /// ```dart
   /// OffsetDateTime.parse('2000-01-02T03:04+0545') ==
   ///   OffsetDateTime(ZoneOffset(5, 45), 2000, 1, 2, 3, 4);
   /// ```
-  factory OffsetDateTime.parse(String isoString) =>
-      _parseIso8160DateTime(isoString);
+  factory OffsetDateTime.parse(String isoString) {
+    final parsed = _parseIso8160DateTime(isoString);
+    if (parsed.offset != null) {
+      return parsed.datetime.atOffset(parsed.offset!);
+    } else {
+      return parsed.datetime.inTimezone().asOffsetDateTime;
+    }
+  }
 
   OffsetDateTime._(this._dateTime, this._instant, this.offset);
 

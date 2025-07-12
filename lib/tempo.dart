@@ -109,5 +109,6 @@ part 'src/tempo/offset_date_time.dart';
 part 'src/tempo/period.dart';
 part 'src/tempo/timespan.dart';
 part 'src/tempo/weekday.dart';
+part 'src/tempo/zone_defaults.dart';
 part 'src/tempo/zone_offset.dart';
 part 'src/tempo/zoned_date_time.dart';

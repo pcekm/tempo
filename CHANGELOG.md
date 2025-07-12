@@ -10,24 +10,30 @@ and this project adheres to
 
 - Missing conversion methods, and standardized the existing ones (see the
   library docs for a list of conversion method names)
-- Instant now has a `parse()` constructor for ISO 8601 formatted strings
+- New ISO 8601 `parse()` constructors for Instant and `ZonedDateTime`
 - Parses ISO date times with either a space or no separator instead of a 'T'
 
 ### Changed
 
-- **Breaking**: ZonedDateTime.toOffset() changed to a getter, `asOffsetDateTime`
+- **Breaking**: `ZonedDateTime.defaultZoneId` moved to a top-level getter/setter
+  pair
+- Setting `defaultZoneId` to an invalid value now throws an exception
+- **Breaking**: `ZonedDateTime.toOffset()` changed to a getter,
+  `asOffsetDateTime`
 - **Breaking**: `toDateTime()` no longer a part of the `HasDate` interface
-- **Breaking**: HasInstant now uses toInstant() method instead of asInstant
-  getter
+- **Breaking**: `HasInstant` now uses `toInstant()` method instead of
+  `asInstant` getter
+- **Breaking**: `OffsetDateTime.parse()` now assumes inputs with no zone offset
+  are in `defaultZoneId` instead of UTC
 
 ### Removed
 
-- **Breaking**: All asInstant getters removed. Use toInstant() instead.
+- **Breaking**: All `asInstant` getters removed. Use `toInstant()` instead.
 
 ### Fixed
 
-- **Breaking**: DateTime extension method toLocal() is now toLocalDateTime() so
-  it doesn't shadow an existing method
+- **Breaking**: DateTime extension method `toLocal()` renamed to
+  `toLocalDateTime()` so it doesn't shadow an existing method
 - Test matchers `hasDate` and `hasTime` no longer ignore unspecified fields, and
   instead check for expected defaults. For example,
   `expect(LocalTime(4, 30), hasTime(4))` used to pass. Now it fails, since the

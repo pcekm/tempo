@@ -91,8 +91,8 @@ class LocalDate
       OffsetDateTime.fromLocalDateTime(toLocal(), offset);
 
   @override
-  ZonedDateTime inTimezone([String? zoneId]) => ZonedDateTime.withZoneId(
-      zoneId ?? ZonedDateTime.defaultZoneId, year, month, day);
+  ZonedDateTime inTimezone([String? zoneId]) =>
+      ZonedDateTime.withZoneId(zoneId ?? defaultZoneId, year, month, day);
 
   @override
   Instant toInstant() => Instant._fromJulianDay(_julianDay);

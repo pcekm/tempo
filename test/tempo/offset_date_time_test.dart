@@ -20,6 +20,11 @@ void main() {
   // Difference between nepalTime and ndtTime:
   final delta = Timespan(days: 365, seconds: 22254, nanoseconds: nano - 6);
 
+  setUp(() {
+    // Unlikely to be the system local time zone:
+    defaultZoneId = 'Pacific/Kiritimati';
+  });
+
   group('Default constructor', () {
     test('hour+minute offset', () {
       var dt = OffsetDateTime(
@@ -125,18 +130,18 @@ void main() {
       expect(dt, hasOffset(8, 9, 10));
     });
 
-    test('no offset', () {
-      var dt = OffsetDateTime.parse('1000-02-03T04:05:06.000000007');
-      expect(dt, hasDate(1000, 2, 3));
+    test('no offset assumes local zone', () {
+      var dt = OffsetDateTime.parse('2000-02-03T04:05:06.000000007');
+      expect(dt, hasDate(2000, 2, 3));
       expect(dt, hasTime(4, 5, 6, 7));
-      expect(dt, hasOffset(0));
+      expect(dt, hasOffset(14));
     });
 
     test('just date', () {
-      var dt = OffsetDateTime.parse('1000-02-03');
-      expect(dt, hasDate(1000, 2, 3));
+      var dt = OffsetDateTime.parse('2000-02-03');
+      expect(dt, hasDate(2000, 2, 3));
       expect(dt, hasTime(0));
-      expect(dt, hasOffset(0));
+      expect(dt, hasOffset(14));
     });
 
     test('positive', () {

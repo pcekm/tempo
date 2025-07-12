@@ -18,7 +18,7 @@ abstract class ZoneRules implements Built<ZoneRules, ZoneRulesBuilder> {
   /// transition time.
   BuiltList<ZoneTransition> get transitions;
 
-  /// The general rule for time transitions to use afte the last entry in
+  /// The general rule for time transitions to use after the last entry in
   /// [transitions].
   ZoneTransitionRule get rule;
 
