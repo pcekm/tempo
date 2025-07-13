@@ -17,12 +17,12 @@ part of '../../tempo.dart';
 class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// The earliest supported instant.
   static final Instant minimum =
-      OffsetDateTime(ZoneOffset(0), -9999, 1, 1).toInstant();
+      OffsetDateTime.withOffset(ZoneOffset(0), -9999, 1, 1).toInstant();
 
   /// The latest supported instant.
-  static final Instant maximum =
-      OffsetDateTime(ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999)
-          .toInstant();
+  static final Instant maximum = OffsetDateTime.withOffset(
+          ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999)
+      .toInstant();
 
   static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
 

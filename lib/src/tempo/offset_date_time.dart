@@ -26,11 +26,33 @@ class OffsetDateTime
         parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
   }
 
+  static ZoneOffset _defaultOffset(Instant instant) {
+    return TimeZoneDatabase().rules[defaultZoneId]!.offsetFor(instant);
+  }
+
+  /// Constructs an `OffsetDateTime` from the individual components of a date
+  /// and time.
+  ///
+  /// The date time will have the offset of the time zone specified in
+  /// [defaultZoneId].
+  ///
+  /// {@macro astro_year}
+  factory OffsetDateTime(int year,
+      [int month = 1,
+      int day = 1,
+      int hour = 0,
+      int minute = 0,
+      int second = 0,
+      int nanosecond = 0]) {
+    return ZonedDateTime(year, month, day, hour, minute, second, nanosecond)
+        .asOffsetDateTime;
+  }
+
   /// Constructs an `OffsetDateTime` from an offset and the individual
   /// components of the date and time.
   ///
   /// {@macro astro_year}
-  factory OffsetDateTime(ZoneOffset offset, int year,
+  factory OffsetDateTime.withOffset(ZoneOffset offset, int year,
       [int month = 1,
       int day = 1,
       int hour = 0,
@@ -52,16 +74,26 @@ class OffsetDateTime
     return OffsetDateTime._(dateTime, instant, offset);
   }
 
-  /// Constructs an `OffsetDateTime` from a `LocalDateTime` at a fixed
-  /// offset from UTC.
-  factory OffsetDateTime.fromLocalDateTime(
-      LocalDateTime dt, ZoneOffset offset) {
-    return OffsetDateTime(offset, dt.year, dt.month, dt.day, dt.hour, dt.minute,
-        dt.second, dt.nanosecond);
+  /// Constructs an `OffsetDateTime` from a `LocalDateTime`.
+  ///
+  /// {@template offset_unset}
+  /// If [offset] is not specified, the result will have the offset from
+  /// [defaultZoneId].
+  /// {@endtemplate}
+  factory OffsetDateTime.fromLocalDateTime(LocalDateTime dt,
+      [ZoneOffset? offset]) {
+    if (offset != null) {
+      return OffsetDateTime.withOffset(offset, dt.year, dt.month, dt.day,
+          dt.hour, dt.minute, dt.second, dt.nanosecond);
+    } else {
+      return OffsetDateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute,
+          dt.second, dt.nanosecond);
+    }
   }
 
-  /// Constructs an `OffsetDateTime` with the current date and time in the
-  /// local time zone.
+  /// Constructs an `OffsetDateTime` with the current date and time.
+  ///
+  /// The resulting object will have the offset of [defaultZoneId].
   OffsetDateTime.now() : this.fromDateTime(DateTime.now());
 
   /// Constructs an `OffsetDateTime` from a `DateTime`.
@@ -73,24 +105,25 @@ class OffsetDateTime
                 Timespan(microseconds: dateTime.microsecondsSinceEpoch)),
             ZoneOffset.fromDuration(dateTime.timeZoneOffset));
 
-  /// Constructs an `OffsetDateTime` from an `Instant` and a fixed offset
-  /// from UTC.
+  /// Convenience constructor to make [OffsetDateTime.fromInstant] simpler.
+  OffsetDateTime._fromInstantWithOffset(Instant instant, this.offset)
+      : _dateTime = _mkDateTime(instant, offset),
+        _instant = instant;
+
+  /// Constructs an `OffsetDateTime` from an `Instant`.
   ///
-  /// If [offset] is unset, this defaults to zero, making this equal to
-  /// UTC.
+  /// {@macro offset_unset}
   OffsetDateTime.fromInstant(HasInstant hasInstant, [ZoneOffset? offset])
-      : offset = offset ?? ZoneOffset(0),
-        _dateTime =
-            _mkDateTime(hasInstant.toInstant(), offset ?? ZoneOffset(0)),
-        _instant = hasInstant.toInstant();
+      : this._fromInstantWithOffset(hasInstant.toInstant(),
+            offset ?? _defaultOffset(hasInstant.toInstant()));
 
   /// Constructs an `OffsetDateTime` from an unix timestamp and a fixed offset
   /// from UTC.
   ///
-  /// If [offset] is unset, this defaults to zero, making this equal to
-  /// UTC.
-  OffsetDateTime.fromUnix(Timespan unixTimestamp, [ZoneOffset? offset])
-      : this.fromInstant(Instant.fromUnix(unixTimestamp), offset);
+  /// {@macro offset_unset}
+  factory OffsetDateTime.fromUnix(Timespan unixTimestamp,
+          [ZoneOffset? offset]) =>
+      OffsetDateTime.fromInstant(Instant.fromUnix(unixTimestamp), offset);
 
   /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///

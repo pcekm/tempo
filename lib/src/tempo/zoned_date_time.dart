@@ -195,7 +195,17 @@ class ZonedDateTime
   LocalDateTime toLocal() => _dateTime.toLocal();
 
   /// Returns an equivalent [OffsetDateTime] with the same offset.
+  ///
+  /// To convert this to an `OffsetDateTime` with a different offset, use
+  /// [atOffset].
   OffsetDateTime get asOffsetDateTime => _dateTime;
+
+  /// Converts this to an `OffsetDateTime`.
+  ///
+  /// If unspecified, [offset] defaults to the offset for [defaultZoneId].
+  /// To retain the existing offset, use [asOffsetDateTime].
+  @override
+  OffsetDateTime atOffset([ZoneOffset? offset]);
 
   /// Converts this to a standard Dart [DateTime] in the **local** time zone.
   ///

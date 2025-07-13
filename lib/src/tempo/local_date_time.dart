@@ -180,7 +180,7 @@ class LocalDateTime
   Instant toInstant() => Instant._fromJulianDay(_julianDay);
 
   @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
+  OffsetDateTime atOffset([ZoneOffset? offset]) =>
       OffsetDateTime.fromLocalDateTime(this, offset);
 
   @override

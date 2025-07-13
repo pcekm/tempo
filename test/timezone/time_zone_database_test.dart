@@ -47,28 +47,32 @@ void main() {
     });
 
     test('in the middle std', () {
-      var offset = rules.offsetFor(OffsetDateTime(ZoneOffset(0), 2000, 1, 1));
+      var offset =
+          rules.offsetFor(OffsetDateTime.withOffset(ZoneOffset(0), 2000, 1, 1));
       expect(offset.name, 'PST');
       expect(offset.isDst, false);
       expect(offset, ZoneOffset(-8));
     });
 
     test('in the middle dst', () {
-      var offset = rules.offsetFor(OffsetDateTime(ZoneOffset(0), 2000, 7, 1));
+      var offset =
+          rules.offsetFor(OffsetDateTime.withOffset(ZoneOffset(0), 2000, 7, 1));
       expect(offset.name, 'PDT');
       expect(offset.isDst, true);
       expect(offset, ZoneOffset(-7));
     });
 
     test('after the last transition std', () {
-      var offset = rules.offsetFor(OffsetDateTime(ZoneOffset(0), 9999, 1, 1));
+      var offset =
+          rules.offsetFor(OffsetDateTime.withOffset(ZoneOffset(0), 9999, 1, 1));
       expect(offset.name, 'PST');
       expect(offset.isDst, false);
       expect(offset, ZoneOffset(-8));
     });
 
     test('after the last transition dst', () {
-      var offset = rules.offsetFor(OffsetDateTime(ZoneOffset(0), 9999, 7, 1));
+      var offset =
+          rules.offsetFor(OffsetDateTime.withOffset(ZoneOffset(0), 9999, 7, 1));
       expect(offset.name, 'PDT');
       expect(offset.isDst, true);
       expect(offset, ZoneOffset(-7));

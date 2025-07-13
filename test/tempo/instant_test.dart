@@ -13,6 +13,10 @@ void main() {
         Instant.fromUnix(Timespan(seconds: 946872306, nanoseconds: 123456789)),
   });
 
+  setUp(() {
+    defaultZoneId = 'Pacific/Kiritimati';
+  });
+
   test('parse()', () {
     final want = timeline[946872306];
     expect(Instant.parse('2000-01-03T04:05:06.123456789'), want);
@@ -35,9 +39,15 @@ void main() {
         greaterThan(Timespan(seconds: 1682977179)));
   });
 
-  test('atOffset()', () {
+  test('atOffset() default', () {
+    defaultZoneId = 'America/Los_Angeles';
+    expect(Instant.fromUnix(Timespan()).atOffset(),
+        OffsetDateTime.withOffset(ZoneOffset(-8), 1969, 12, 31, 16));
+  });
+
+  test('atOffset() specified offset', () {
     expect(Instant.fromUnix(Timespan()).atOffset(ZoneOffset(1)),
-        OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+        OffsetDateTime.withOffset(ZoneOffset(1), 1970, 1, 1, 1));
   });
 
   test('timespanUntil()', () {

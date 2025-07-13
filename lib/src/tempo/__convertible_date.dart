@@ -7,11 +7,13 @@ abstract interface class _ConvertibleDate implements _InstantConvertible {
 
   /// Converts this to a ZonedDateTime.
   ///
-  /// If unspecified, [zoneId] defaults to [ZonedDateTime.defaultZoneId].
+  /// If unspecified, [zoneId] defaults to [defaultZoneId].
   ZonedDateTime inTimezone([String? zoneId]);
 
   /// Converts this to an OffsetDateTime with the given offset.
-  OffsetDateTime atOffset(ZoneOffset offset);
+  ///
+  /// If unspecified, [offset] defaults to the offset for [defaultZoneId].
+  OffsetDateTime atOffset([ZoneOffset? offset]);
 
   /// Converts this to a LocalDateTime.
   LocalDateTime toLocal();

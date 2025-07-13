@@ -118,11 +118,12 @@ OffsetDateTime(ZoneOffset(3), 2023, 1, 2, 3).toInstant();
 ZonedDateTime('America/Los_Angeles', 2023, 1, 2, 3).toInstant();
 ```
 
-The default for [`ZonedDateTime`][ZonedDateTime] is "UTC." You can change this
-by setting [`defaultZoneId`][defaultZoneId]:
+The default for [`ZonedDateTime`][ZonedDateTime] and
+[`OffsetDateTime`][OffsetDateTime] is "UTC." You can change this by setting
+[`defaultZoneId`][defaultZoneId]:
 
 ```dart
-ZonedDateTime.defaultZoneId = 'America/Los_Angeles';
+defaultZoneId = 'America/Los_Angeles';
 ```
 
 Determining the system time zone in plain Dart in a portable way is impossible.
@@ -132,7 +133,7 @@ However, if you're using Flutter, you have options. I recommend the
 ```dart
 import 'package:flutter_timezone/flutter_timezone.dart';
 
-ZonedDateTime.defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
 ```
 
 You can get a list of time zones nearest to a geographical location, optionally
@@ -189,7 +190,7 @@ expect(dt, hasTime(3, 4));
 [Instant]: https://pub.dev/documentation/tempo/latest/tempo/Instant-class.html
 [OffsetDateTime]: https://pub.dev/documentation/tempo/latest/tempo/OffsetDateTime-class.html
 [ZonedDateTime]: https://pub.dev/documentation/tempo/latest/tempo/ZonedDateTime-class.html
-[defaultZoneId]: https://pub.dev/documentation/tempo/latest/tempo/ZonedDateTime/defaultZoneId.html
+[defaultZoneId]: https://pub.dev/documentation/tempo/latest/tempo/defaultZoneId.html
 [Period]: https://pub.dev/documentation/tempo/latest/tempo/Period-class.html
 [Timespan]: https://pub.dev/documentation/tempo/latest/tempo/Timespan-class.html
 [allTimeZones]: https://pub.dev/documentation/tempo/latest/timezone/allTimeZones.html

@@ -17,7 +17,7 @@ extension TempoDateTime on DateTime {
 
   /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
   ///
-  /// Uses [ZonedDateTime.defaultZoneId] if [zoneId] is not given.
+  /// Uses [defaultZoneId] if [zoneId] is not given.
   ///
   /// ## Caveats
   ///

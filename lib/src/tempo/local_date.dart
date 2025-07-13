@@ -87,7 +87,7 @@ class LocalDate
   DateTime toDateTime() => DateTime(year, month, day);
 
   @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
+  OffsetDateTime atOffset([ZoneOffset? offset]) =>
       OffsetDateTime.fromLocalDateTime(toLocal(), offset);
 
   @override

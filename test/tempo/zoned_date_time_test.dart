@@ -288,11 +288,17 @@ void main() {
       expect(odt, hasOffset(-5));
     });
 
-    test('atOffset()', () {
+    test('atOffset() with no offset', () {
+      defaultZoneId = 'America/Toronto';
+      expect(ZonedDateTime.withZoneId('UTC', 1970, 1, 1, 0).atOffset(),
+          OffsetDateTime.withOffset(ZoneOffset(-5), 1969, 12, 31, 19));
+    });
+
+    test('atOffset() with given offset', () {
       expect(
           ZonedDateTime.withZoneId('UTC', 1970, 1, 1, 0)
               .atOffset(ZoneOffset(1)),
-          OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+          OffsetDateTime.withOffset(ZoneOffset(1), 1970, 1, 1, 1));
     });
 
     test('toDateTime', () {

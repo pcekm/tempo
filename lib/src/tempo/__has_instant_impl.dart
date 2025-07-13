@@ -20,7 +20,7 @@ abstract mixin class _HasInstantImpl implements HasInstant {
   bool operator <=(HasInstant other) => compareTo(other) <= 0;
 
   @override
-  OffsetDateTime atOffset(ZoneOffset offset) =>
+  OffsetDateTime atOffset([ZoneOffset? offset]) =>
       OffsetDateTime.fromInstant(this, offset);
 
   @override

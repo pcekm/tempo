@@ -39,7 +39,7 @@ abstract interface class HasInstant
 
   /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
   ///
-  /// Uses [ZonedDateTime.defaultZoneId] if [zoneId] is not given.
+  /// Uses [defaultZoneId] if [zoneId] is not given.
   ZonedDateTime inTimezone([String? zoneId]);
 
   /// Finds the amount of time between this and another instant in time.

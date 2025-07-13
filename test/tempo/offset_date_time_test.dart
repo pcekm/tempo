@@ -15,7 +15,7 @@ void main() {
 
   // Newfoundland in the winter is UTC-0330:
   final nstOffset = ZoneOffset(-3, -30);
-  final nstTime = OffsetDateTime(nstOffset, 2001);
+  final nstTime = OffsetDateTime.withOffset(nstOffset, 2001);
 
   // Difference between nepalTime and ndtTime:
   final delta = Timespan(days: 365, seconds: 22254, nanoseconds: nano - 6);
@@ -25,9 +25,25 @@ void main() {
     defaultZoneId = 'Pacific/Kiritimati';
   });
 
-  group('Default constructor', () {
+  test('Default constructor', () {
+    defaultZoneId = 'Asia/Kathmandu';
+    var dt = OffsetDateTime(
+        nepalTime.year,
+        nepalTime.month,
+        nepalTime.day,
+        nepalTime.hour,
+        nepalTime.minute,
+        nepalTime.second,
+        nepalTime.nanosecond);
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
+    expect(dt.offset, nepalOffset);
+    expect(dt, hasInstant(nepalInstant));
+  });
+
+  group('withOffset', () {
     test('hour+minute offset', () {
-      var dt = OffsetDateTime(
+      var dt = OffsetDateTime.withOffset(
           nepalOffset,
           nepalTime.year,
           nepalTime.month,
@@ -43,7 +59,7 @@ void main() {
     });
 
     test('hour+minute+second offset', () {
-      var dt = OffsetDateTime(ZoneOffset(1, 2, 3), 1970);
+      var dt = OffsetDateTime.withOffset(ZoneOffset(1, 2, 3), 1970);
       expect(dt, hasDate(1970, 1, 1));
       expect(dt, hasTime(0));
       expect(dt.offset, ZoneOffset(1, 2, 3));
@@ -62,18 +78,29 @@ void main() {
     expect(dt, hasInstant(nepalInstant));
   });
 
+  test('fromLocalDateTime() default offset', () {
+    defaultZoneId = 'Asia/Kathmandu';
+    var dt = OffsetDateTime.fromLocalDateTime(nepalTime);
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
+    expect(dt.offset, ZoneOffset(5, 45));
+    expect(dt, hasInstant(nepalInstant));
+  });
+
   group('fromDateTime()', () {
     test('fromDateTime() microsecond precision', () {
       var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
       var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
-      var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006007000);
+      var want =
+          OffsetDateTime.withOffset(offset, 2000, 1, 2, 3, 4, 5, 006007000);
       expect(OffsetDateTime.fromDateTime(dt), want);
     }, testOn: '!js');
 
     test('fromDateTime() millisecond precision', () {
       var dt = DateTime(2000, 1, 2, 3, 4, 5, 6);
       var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
-      var want = OffsetDateTime(offset, 2000, 1, 2, 3, 4, 5, 006000000);
+      var want =
+          OffsetDateTime.withOffset(offset, 2000, 1, 2, 3, 4, 5, 006000000);
       expect(OffsetDateTime.fromDateTime(dt), want);
     }, testOn: 'js');
   });
@@ -102,6 +129,15 @@ void main() {
     });
   });
 
+  test('fromInstant() default offset', () {
+    defaultZoneId = 'Asia/Kathmandu';
+    var dt = OffsetDateTime.fromInstant(nepalInstant);
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
+    expect(dt.offset, ZoneOffset(5, 45));
+    expect(dt, hasInstant(nepalInstant));
+  });
+
   group('fromUnix()', () {
     test('hour+minute offset', () {
       var dt = OffsetDateTime.fromUnix(nepalInstant.unixTimestamp, nepalOffset);
@@ -120,6 +156,15 @@ void main() {
       expect(dt.offset, ZoneOffset(1, 2, 3));
       expect(dt, hasInstant(instant));
     });
+  });
+
+  test('fromUnix() default offset', () {
+    defaultZoneId = 'Asia/Kathmandu';
+    var dt = OffsetDateTime.fromUnix(nepalInstant.unixTimestamp);
+    expect(dt, hasDate(2000, 1, 2));
+    expect(dt, hasTime(3, 4, 5, 6));
+    expect(dt.offset, ZoneOffset(5, 45));
+    expect(dt, hasInstant(nepalInstant));
   });
 
   group('parse()', () {
@@ -181,8 +226,9 @@ void main() {
   group('conversions', () {
     test('atOffset()', () {
       expect(
-          OffsetDateTime(ZoneOffset(0), 1970, 1, 1, 0).atOffset(ZoneOffset(1)),
-          OffsetDateTime(ZoneOffset(1), 1970, 1, 1, 1));
+          OffsetDateTime.withOffset(ZoneOffset(0), 1970, 1, 1, 0)
+              .atOffset(ZoneOffset(1)),
+          OffsetDateTime.withOffset(ZoneOffset(1), 1970, 1, 1, 1));
     });
 
     test('toLocal()', () {
@@ -226,12 +272,12 @@ void main() {
 
   test('plusPeriod()', () {
     expect(nstTime.plusPeriod(Period(months: 1)),
-        OffsetDateTime(nstOffset, 2001, 2, 1));
+        OffsetDateTime.withOffset(nstOffset, 2001, 2, 1));
   });
 
   test('minusPeriod()', () {
     expect(nstTime.minusPeriod(Period(months: 1)),
-        OffsetDateTime(nstOffset, 2000, 12, 1));
+        OffsetDateTime.withOffset(nstOffset, 2000, 12, 1));
   });
 
   test('compareTo()', () {
@@ -259,7 +305,7 @@ void main() {
   });
 
   test('toString()', () {
-    expect(OffsetDateTime(ZoneOffset(-7), 2020, 3, 4).toString(),
+    expect(OffsetDateTime.withOffset(ZoneOffset(-7), 2020, 3, 4).toString(),
         '2020-03-04T00:00-0700');
     expect(nepalOffsetTime.toString(), '2000-01-02T03:04:05.000000006+0545');
   });
@@ -275,8 +321,8 @@ void main() {
   });
 
   test('operator== examples', () {
-    var d1 = OffsetDateTime(ZoneOffset(0), 2023, 1, 1);
-    var d2 = OffsetDateTime(ZoneOffset(-1), 2022, 12, 31, 23);
+    var d1 = OffsetDateTime.withOffset(ZoneOffset(0), 2023, 1, 1);
+    var d2 = OffsetDateTime.withOffset(ZoneOffset(-1), 2022, 12, 31, 23);
 
     expect(d1, isNot(d2));
     expect(d1.compareTo(d2), 0);

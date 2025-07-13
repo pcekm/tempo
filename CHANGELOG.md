@@ -10,7 +10,7 @@ and this project adheres to
 
 - Missing conversion methods, and standardized the existing ones (see the
   library docs for a list of conversion method names)
-- New ISO 8601 `parse()` constructors for Instant and `ZonedDateTime`
+- New ISO 8601 `parse()` constructors for `Instant` and `ZonedDateTime`
 - Parses ISO date times with either a space or no separator instead of a 'T'
 
 ### Changed
@@ -23,8 +23,13 @@ and this project adheres to
 - **Breaking**: `toDateTime()` no longer a part of the `HasDate` interface
 - **Breaking**: `HasInstant` now uses `toInstant()` method instead of
   `asInstant` getter
-- **Breaking**: `OffsetDateTime.parse()` now assumes inputs with no zone offset
-  are in `defaultZoneId` instead of UTC
+- **Breaking**: `OffsetDateTime` now defaults to `defaultZoneId` instead of UTC:
+  - Removed `offset` arg from the unnamed constructor. Use `withOffset`
+    constructor instead
+  - All other `offset` constructor and conversion method args are now optional
+    and default to the time zone in `defaultZoneId`
+  - One exception: the `fromDateTime` constructor continues to use the offset
+    from the `DateTime` it's given
 
 ### Removed
 
