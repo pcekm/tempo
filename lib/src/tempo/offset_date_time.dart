@@ -48,31 +48,24 @@ class OffsetDateTime
         .asOffsetDateTime;
   }
 
+  OffsetDateTime._fromLocalWithRequiredOffset(
+      LocalDateTime dt, ZoneOffset offset)
+      : this._(dt, dt.toInstant().minusTimespan(offset.asTimespan), offset);
+
   /// Constructs an `OffsetDateTime` from an offset and the individual
   /// components of the date and time.
   ///
   /// {@macro astro_year}
-  factory OffsetDateTime.withOffset(ZoneOffset offset, int year,
+  OffsetDateTime.withOffset(ZoneOffset offset, int year,
       [int month = 1,
       int day = 1,
       int hour = 0,
       int minute = 0,
       int second = 0,
-      int nanosecond = 0]) {
-    var dateTime =
-        LocalDateTime(year, month, day, hour, minute, second, nanosecond);
-    var instant = Instant._fromJulianDay(
-      gregorianToJulianDay(
-        Gregorian(
-          year,
-          month,
-          day,
-          dateTime.time.nanosecondsSinceMidnight,
-        ),
-      ),
-    ).minusTimespan(offset.asTimespan);
-    return OffsetDateTime._(dateTime, instant, offset);
-  }
+      int nanosecond = 0])
+      : this._fromLocalWithRequiredOffset(
+            LocalDateTime(year, month, day, hour, minute, second, nanosecond),
+            offset);
 
   /// Constructs an `OffsetDateTime` from a `LocalDateTime`.
   ///
@@ -83,11 +76,9 @@ class OffsetDateTime
   factory OffsetDateTime.fromLocalDateTime(LocalDateTime dt,
       [ZoneOffset? offset]) {
     if (offset != null) {
-      return OffsetDateTime.withOffset(offset, dt.year, dt.month, dt.day,
-          dt.hour, dt.minute, dt.second, dt.nanosecond);
+      return OffsetDateTime._fromLocalWithRequiredOffset(dt, offset);
     } else {
-      return OffsetDateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute,
-          dt.second, dt.nanosecond);
+      return ZonedDateTime._forLocal(dt).asOffsetDateTime;
     }
   }
 
@@ -121,9 +112,8 @@ class OffsetDateTime
   /// from UTC.
   ///
   /// {@macro offset_unset}
-  factory OffsetDateTime.fromUnix(Timespan unixTimestamp,
-          [ZoneOffset? offset]) =>
-      OffsetDateTime.fromInstant(Instant.fromUnix(unixTimestamp), offset);
+  OffsetDateTime.fromUnix(Timespan unixTimestamp, [ZoneOffset? offset])
+      : this.fromInstant(Instant.fromUnix(unixTimestamp), offset);
 
   /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///

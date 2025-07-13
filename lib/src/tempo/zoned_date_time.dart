@@ -28,7 +28,9 @@ class ZonedDateTime
   @override
   Timespan get unixTimestamp => _dateTime.unixTimestamp;
 
-  ZonedDateTime._(this._dateTime, this.zoneId, this.offset);
+  ZonedDateTime._fromInstantWithZoneId(
+      Instant instant, this.zoneId, this.offset)
+      : _dateTime = OffsetDateTime.fromInstant(instant, offset);
 
   /// Constructs a `ZonedDateTime` from an [Instant].
   ///
@@ -36,12 +38,11 @@ class ZonedDateTime
   /// The resulting object will be in [zoneId] if it's given, or [defaultZoneId]
   /// if not.
   /// {@endtemplate}
-  factory ZonedDateTime.fromInstant(HasInstant instant, [String? zoneId]) {
-    zoneId ??= defaultZoneId;
-    var offset = _lookupTimeZone(zoneId, instant);
-    var dateTime = OffsetDateTime.fromInstant(instant, offset);
-    return ZonedDateTime._(dateTime, zoneId, offset);
-  }
+  ZonedDateTime.fromInstant(HasInstant instant, [String? zoneId])
+      : this._fromInstantWithZoneId(
+            instant.toInstant(),
+            zoneId ?? defaultZoneId,
+            _lookupTimeZone(zoneId ?? defaultZoneId, instant));
 
   /// Creates a ZonedDateTime using a time since midnight, January 1, 1970 UTC.
   ///
@@ -55,8 +56,8 @@ class ZonedDateTime
   /// ZonedDateTime.fromUnix(Timespan(milliseconds: 1000));
   /// ZonedDateTime.fromUnix(Timespan(nanoseconds: 1000000000));
   /// ```
-  factory ZonedDateTime.fromUnix(Timespan unixTimestamp, [String? zoneId]) =>
-      ZonedDateTime.fromInstant(Instant.fromUnix(unixTimestamp), zoneId);
+  ZonedDateTime.fromUnix(Timespan unixTimestamp, [String? zoneId])
+      : this.fromInstant(Instant.fromUnix(unixTimestamp), zoneId);
 
   /// Parses a `ZonedDateTime` from an ISO-8601 formatted string.
   ///
@@ -132,14 +133,14 @@ class ZonedDateTime
   /// soon as possible. To catch these issues in unit tests, set [defaultZoneId]
   /// to something that's likely to always conflict with the system time zone. I
   /// suggest "Pacific/Kiritimati."
-  factory ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId]) =>
-      ZonedDateTime.fromInstant(Instant.fromDateTime(dateTime), zoneId);
+  ZonedDateTime.fromDateTime(DateTime dateTime, [String? zoneId])
+      : this.fromInstant(Instant.fromDateTime(dateTime), zoneId);
 
   /// Creates a `ZonedDateTime` using the current time.
   ///
   /// {@macro zone_id}
-  factory ZonedDateTime.now([String? zoneId]) =>
-      ZonedDateTime.fromDateTime(DateTime.now(), zoneId);
+  ZonedDateTime.now([String? zoneId])
+      : this.fromDateTime(DateTime.now(), zoneId);
 
   /// Looks up a time zone and throws ArgumentError if it's invalid.
   static NamedZoneOffset _lookupTimeZone(String zoneId, HasInstant instant) {
@@ -150,6 +151,8 @@ class ZonedDateTime
     return tz;
   }
 
+  /// Builds a `ZonedDateTime` for the given LocalDateTime and zone id.
+  ///
   /// What's going on here:
   /// There's a chicken and egg problem. We need an Instant to determine
   /// the correct time zone (that's how they're defined in IANA's data),

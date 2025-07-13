@@ -89,11 +89,11 @@ class LocalDateTime
   LocalDateTime.combine(this.date, [LocalTime? time])
       : time = time ?? LocalTime();
 
-  factory LocalDateTime._fromJulianDay(Timespan julianDay) {
-    var parts = julianDayToGregorian(julianDay);
-    return LocalDateTime(
-        parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
-  }
+  LocalDateTime._fromGregorian(Gregorian parts)
+      : this(parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
+
+  LocalDateTime._fromJulianDay(Timespan julianDay)
+      : this._fromGregorian(julianDayToGregorian(julianDay));
 
   /// Parses an ISO 8601 datetime string. Discards the zone offset (if any).
   ///

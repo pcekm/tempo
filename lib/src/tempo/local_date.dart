@@ -34,10 +34,11 @@ class LocalDate
     _validate();
   }
 
-  factory LocalDate._fromJulianDay(Timespan julianDay) {
-    var parts = julianDayToGregorian(julianDay);
-    return LocalDate(parts.year, parts.month, parts.day);
-  }
+  LocalDate._fromGregorian(Gregorian parts)
+      : this(parts.year, parts.month, parts.day);
+
+  LocalDate._fromJulianDay(Timespan julianDay)
+      : this._fromGregorian(julianDayToGregorian(julianDay));
 
   /// Constructs a `LocalDate` with the current date and time in the
   /// current time zone.

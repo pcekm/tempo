@@ -70,21 +70,43 @@ void main() {
     });
   });
 
-  test('fromLocalDateTime()', () {
-    var dt = OffsetDateTime.fromLocalDateTime(nepalTime, nepalOffset);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
-    expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
-  });
+  group('fromLocalDateTime()', () {
+    test('specified offset', () {
+      var dt = OffsetDateTime.fromLocalDateTime(nepalTime, nepalOffset);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
 
-  test('fromLocalDateTime() default offset', () {
-    defaultZoneId = 'Asia/Kathmandu';
-    var dt = OffsetDateTime.fromLocalDateTime(nepalTime);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
-    expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
+    test('default offset', () {
+      defaultZoneId = 'Asia/Kathmandu';
+      var dt = OffsetDateTime.fromLocalDateTime(nepalTime);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
+
+    test('default just before time change', () {
+      defaultZoneId = 'America/Los_Angeles';
+      var dt =
+          OffsetDateTime.fromLocalDateTime(LocalDateTime(2025, 3, 9, 1, 59));
+      expect(dt, hasDate(2025, 3, 9));
+      expect(dt, hasTime(1, 59));
+      expect(dt, hasOffset(-8));
+      expect(dt, hasInstant(Instant.fromUnix(Timespan(seconds: 1741514340))));
+    });
+
+    test('default just after time change', () {
+      defaultZoneId = 'America/Los_Angeles';
+      var dt =
+          OffsetDateTime.fromLocalDateTime(LocalDateTime(2025, 3, 9, 3, 0));
+      expect(dt, hasDate(2025, 3, 9));
+      expect(dt, hasTime(3, 0));
+      expect(dt, hasOffset(-7));
+      expect(dt, hasInstant(Instant.fromUnix(Timespan(seconds: 1741514400))));
+    });
   });
 
   group('fromDateTime()', () {
