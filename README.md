@@ -193,7 +193,7 @@ expect(dt, hasTime(3, 4));
 [defaultZoneId]: https://pub.dev/documentation/tempo/latest/tempo/defaultZoneId.html
 [Period]: https://pub.dev/documentation/tempo/latest/tempo/Period-class.html
 [Timespan]: https://pub.dev/documentation/tempo/latest/tempo/Timespan-class.html
-[allTimeZones]: https://pub.dev/documentation/tempo/latest/timezone/allTimeZones.html
-[timeZonesForCountry]: https://pub.dev/documentation/tempo/latest/timezone/timeZonesForCountry.html
-[timeZonesByProximity]: https://pub.dev/documentation/tempo/latest/timezone/timeZonesByProximity.html
-[ZoneDescription]: https://pub.dev/documentation/tempo/latest/timezone/ZoneDescription-class.html
+[allTimeZones]: https://pub.dev/documentation/tempo/latest/tempo/allTimeZones.html
+[timeZonesForCountry]: https://pub.dev/documentation/tempo/latest/tempo/timeZonesForCountry.html
+[timeZonesByProximity]: https://pub.dev/documentation/tempo/latest/tempo/timeZonesByProximity.html
+[ZoneDescription]: https://pub.dev/documentation/tempo/latest/tempo/ZoneDescription-class.html
