@@ -303,7 +303,7 @@ void main() {
   });
 
   test('compareTo()', () {
-    expect(nepalOffsetTime.compareTo(nstTime), -1);
+    expect(nepalOffsetTime.compareTo(nstTime), isNegative);
   });
 
   test('operator>()', () {

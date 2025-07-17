@@ -394,7 +394,7 @@ void main() {
     });
 
     test('compareTo', () {
-      expect(dt1.compareTo(dt2), -1);
+      expect(dt1.compareTo(dt2), isNegative);
     });
   });
 
