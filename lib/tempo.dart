@@ -52,7 +52,7 @@
 /// do what makes sense for your application. (The only potentially legitimate
 /// reason for this is working with an API you can't change. If you need to
 /// for some other reason, you may need to re-evaluate your approach. In
-/// either case, sticking with Duration and Timespan may be safest approach.)
+/// either case, sticking with Duration and Timespan may be the safest approach.)
 ///
 /// Here are some examples:
 ///
