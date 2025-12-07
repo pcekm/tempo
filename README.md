@@ -133,7 +133,7 @@ However, if you're using Flutter, you have options. I recommend the
 ```dart
 import 'package:flutter_timezone/flutter_timezone.dart';
 
-defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+defaultZoneId = (await FlutterTimeZone.getLocalTimeZone()).identifier;
 ```
 
 You can get a list of time zones nearest to a geographical location, optionally

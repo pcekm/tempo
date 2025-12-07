@@ -13,7 +13,7 @@ String _defaultZoneId = 'UTC';
 /// ```dart
 /// import 'package:flutter_timezone/flutter_timezone.dart';
 ///
-/// defaultZoneId = await FlutterTimeZone.getLocalTimeZone();
+/// defaultZoneId = (await FlutterTimeZone.getLocalTimeZone()).identifier;
 /// ```
 String get defaultZoneId => _defaultZoneId;
 
