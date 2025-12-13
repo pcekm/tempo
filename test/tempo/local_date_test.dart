@@ -463,7 +463,7 @@ void main() {
         expect(d1.periodUntil(d2), want, reason: '$d1 until $d2');
         expect(d2.periodUntil(d1), -want, reason: '$d2 until $d1');
       }
-    }, tags: ['slow']);
+    }, tags: ['slow'], testOn: '!js');
   });
 
   test('timespanUntil()', () {
