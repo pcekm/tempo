@@ -53,28 +53,20 @@ class Timespan implements Comparable<Timespan> {
   /// The fractional part of the number of seconds in nanoseconds.
   final int nanosecondPart;
 
-  Timespan._(this.seconds, this.nanosecondPart);
-
-  /// Constructs a normalized `Timespan` from a seconds and nanoseconds part.
+  /// Constructs a `Timespan` with normalized signs.
   ///
-  /// Either [seconds] or [nanoseconds] may be negative and any value, but
+  /// Either [seconds] or [nanosecondPart] may be negative and any value, but
   /// the result will be normalized as follows:
   ///
-  ///   - `-10^9` < [nanosecondPart] < `10^9`
   ///   - [seconds].sign == [nanosecondPart].sign
-  factory Timespan._fromParts(int seconds, int nanoseconds) {
-    seconds += nanoseconds ~/ _nanosecondsPerSecond;
-    nanoseconds = nanoseconds.remainder(_nanosecondsPerSecond);
-    if (seconds < 0 && nanoseconds > 0) {
-      ++seconds;
-      nanoseconds -= _nanosecondsPerSecond;
-    } else if (seconds > 0 && nanoseconds < 0) {
-      --seconds;
-      nanoseconds += _nanosecondsPerSecond;
-    }
-    assert(seconds.sign * nanoseconds.sign != -1);
-    return Timespan._(seconds, nanoseconds);
-  }
+  const Timespan._normalizedSign(
+      {required int seconds, required int nanosecondPart})
+      : seconds = seconds +
+            (seconds < 0 && nanosecondPart > 0 ? 1 : 0) +
+            (seconds > 0 && nanosecondPart < 0 ? -1 : 0),
+        nanosecondPart = nanosecondPart +
+            (seconds < 0 && nanosecondPart > 0 ? -_nanosecondsPerSecond : 0) +
+            (seconds > 0 && nanosecondPart < 0 ? _nanosecondsPerSecond : 0);
 
   /// Constructs a `Timespan`.
   ///
@@ -85,39 +77,34 @@ class Timespan implements Comparable<Timespan> {
   ///
   ///   - `-10^9` < [nanosecondPart] < `10^9`
   ///   - [seconds].sign == [nanosecondPart].sign
-  factory Timespan(
-      {int days = 0,
-      int hours = 0,
-      int minutes = 0,
-      int seconds = 0,
-      int milliseconds = 0,
-      int microseconds = 0,
-      int nanoseconds = 0}) {
-    var secondPart = days * _secondsPerDay +
-        hours * _secondsPerHour +
-        minutes * _secondsPerMinute +
-        seconds;
-
-    /// Divide seconds out of each fractional part to minimize the risk of
-    /// overflow.
-    secondPart += milliseconds ~/ _millisecondsPerSecond;
-    milliseconds = milliseconds.remainder(_millisecondsPerSecond);
-
-    secondPart += microseconds ~/ _microsecondsPerSecond;
-    microseconds = microseconds.remainder(_microsecondsPerSecond);
-
-    secondPart += nanoseconds ~/ _nanosecondsPerSecond;
-    nanoseconds = nanoseconds.remainder(_nanosecondsPerSecond);
-
-    var nanosecondPart = milliseconds * _nsPerMillisecond +
-        microseconds * _nsPerMicrosecond +
-        nanoseconds;
-    return Timespan._fromParts(secondPart, nanosecondPart);
-  }
+  const Timespan({
+    int days = 0,
+    int hours = 0,
+    int minutes = 0,
+    int seconds = 0,
+    int milliseconds = 0,
+    int microseconds = 0,
+    int nanoseconds = 0,
+  }) : this._normalizedSign(
+            seconds: days * _secondsPerDay +
+                hours * _secondsPerHour +
+                minutes * _secondsPerMinute +
+                seconds +
+                milliseconds ~/ _millisecondsPerSecond +
+                microseconds ~/ _microsecondsPerSecond +
+                nanoseconds ~/ _nanosecondsPerSecond,
+            nanosecondPart: _nsPerMillisecond *
+                    (milliseconds % _millisecondsPerSecond +
+                        (milliseconds < 0 ? -_millisecondsPerSecond : 0)) +
+                _nsPerMicrosecond *
+                    (microseconds % _microsecondsPerSecond +
+                        (microseconds < 0 ? -_microsecondsPerSecond : 0)) +
+                nanoseconds % _nanosecondsPerSecond +
+                (nanoseconds < 0 ? -_nanosecondsPerSecond : 0));
 
   /// Constructs a `Timespan` from a [Duration].
-  factory Timespan.fromDuration(Duration duration) =>
-      Timespan(microseconds: duration.inMicroseconds);
+  Timespan.fromDuration(Duration duration)
+      : this(microseconds: duration.inMicroseconds);
 
   /// Parses an ISO 8601 period string.
   ///
@@ -167,20 +154,23 @@ class Timespan implements Comparable<Timespan> {
   bool get isNegative => seconds.isNegative || nanosecondPart.isNegative;
 
   /// Addition operator.
-  Timespan operator +(Timespan other) => Timespan._fromParts(
-      seconds + other.seconds, nanosecondPart + other.nanosecondPart);
+  Timespan operator +(Timespan other) => Timespan(
+      seconds: seconds + other.seconds,
+      nanoseconds: nanosecondPart + other.nanosecondPart);
 
   /// Subtraction operator.
-  Timespan operator -(Timespan other) => Timespan._fromParts(
-      seconds - other.seconds, nanosecondPart - other.nanosecondPart);
+  Timespan operator -(Timespan other) => Timespan(
+      seconds: seconds - other.seconds,
+      nanoseconds: nanosecondPart - other.nanosecondPart);
 
   /// Multiplication operator. Fractional results are rounded towards zero.
-  Timespan operator *(num other) => Timespan._fromParts(
-      (seconds * other).truncate(), (nanosecondPart * other).truncate());
+  Timespan operator *(num other) => Timespan(
+      seconds: (seconds * other).truncate(),
+      nanoseconds: (nanosecondPart * other).truncate());
 
   /// Integer division operator.
   Timespan operator ~/(num other) =>
-      Timespan._fromParts(seconds ~/ other, nanosecondPart ~/ other);
+      Timespan(seconds: seconds ~/ other, nanoseconds: nanosecondPart ~/ other);
 
   /// Less than operator.
   bool operator <(Timespan other) => compareTo(other) < 0;
@@ -195,7 +185,8 @@ class Timespan implements Comparable<Timespan> {
   bool operator >=(Timespan other) => compareTo(other) >= 0;
 
   /// Unary negation operator.
-  Timespan operator -() => Timespan._fromParts(-seconds, -nanosecondPart);
+  Timespan operator -() =>
+      Timespan(seconds: -seconds, nanoseconds: -nanosecondPart);
 
   /// Converts this to a duration with a loss of precision.
   Duration toDuration() => Duration(microseconds: inMicroseconds);
@@ -204,7 +195,7 @@ class Timespan implements Comparable<Timespan> {
   Timespan abs() {
     // Important: this is only true because both parts are normalized
     // with matching signs.
-    return Timespan._fromParts(seconds.abs(), nanosecondPart.abs());
+    return Timespan(seconds: seconds.abs(), nanoseconds: nanosecondPart.abs());
   }
 
   /// Compares this to another `Timespan`.

@@ -69,7 +69,7 @@ void main() {
     group('component overflow', () {
       test('positive', () {
         // These numbers are the highest they can be without overflowing in
-        // javascript.
+        // javascript (2^53).
         expect(Timespan(days: 104249991374), hasParts(9007199254713600, 0));
         expect(Timespan(hours: 2501999792983), hasParts(9007199254738800, 0));
         expect(
@@ -86,7 +86,7 @@ void main() {
 
       test('negative', () {
         // These numbers are the lowest they can be without overflowing in
-        // javascript.
+        // javascript (-2^52).
         expect(Timespan(days: -52124995688), hasParts(-4503599627443200, 0));
         expect(Timespan(hours: -1250999896492), hasParts(-4503599627371200, 0));
         expect(
