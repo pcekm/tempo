@@ -8,7 +8,9 @@ and this project adheres to
 
 ## Changed
 
-- `Timespan()` constructor is now `const`.
+- Made some constructors `const`:
+  - `Timespan()`
+  - `Instant.fromUnix()`
 
 ## [0.7.1] - 2025-12-10
 

@@ -39,7 +39,7 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// Instant.fromUnix(Timespan(milliseconds: 1000));
   /// Instant.fromUnix(Timespan(nanoseconds: 1000000000));
   /// ```
-  Instant.fromUnix(this.unixTimestamp);
+  const Instant.fromUnix(this.unixTimestamp);
 
   /// Parses an `Instant` from an ISO-8601 formatted string.
   ///
