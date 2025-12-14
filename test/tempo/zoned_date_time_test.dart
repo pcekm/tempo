@@ -230,8 +230,7 @@ void main() {
         var got = withClock(
             Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
             () => ZonedDateTime.now());
-        expect(got,
-            hasInstant(Instant.fromUnix(Timespan(milliseconds: 1765694800))));
+        expect(got, hasUnix(milliseconds: 1765694800));
         expect(got.zoneId, defaultZoneId);
       });
 
@@ -239,8 +238,7 @@ void main() {
         var got = withClock(
             Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
             () => ZonedDateTime.now('America/Denver'));
-        expect(got,
-            hasInstant(Instant.fromUnix(Timespan(milliseconds: 1765694800))));
+        expect(got, hasUnix(milliseconds: 1765694800));
         expect(got.zoneId, 'America/Denver');
       });
     });
@@ -384,7 +382,7 @@ void main() {
     });
   });
 
-  // Basic tests. The heavy lifiting (and more thorough tests) are done
+  // Basic tests. The heavy lifting (and more thorough tests) are done
   // by Instant.
   group('comparisons', () {
     // Same wall time, two adjacent time zones (EST, CET):

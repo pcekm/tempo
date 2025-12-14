@@ -1,10 +1,45 @@
-import 'package:test/test.dart';
-
-import '../../tempo.dart';
+part of '../../testing.dart';
 
 /// Matches the instant from a [HasInstant].
 Matcher hasInstant(Object? matcher) =>
     isA<HasInstant>().having((t) => t.toInstant(), 'instant', matcher);
+
+/// Matches the unix timestamp of a [HasInstant].
+Matcher hasUnix(
+        {Object seconds = anything,
+        Object milliseconds = anything,
+        Object microseconds = anything,
+        Object nanoseconds = anything}) =>
+    isA<HasInstant>().having(
+        (t) => t.toInstant().unixTimestamp,
+        'unixTimestamp',
+        isTimespan(
+            seconds: seconds,
+            milliseconds: milliseconds,
+            microseconds: microseconds,
+            nanoseconds: nanoseconds));
+
+/// Matches a [Timespan] that covers the given times.
+///
+/// Be wary when testing large values of smaller units such as [microseconds]
+/// and [nanoseconds]. They may overflow.
+Matcher isTimespan({
+  Object days = anything,
+  Object hours = anything,
+  Object minutes = anything,
+  Object seconds = anything,
+  Object milliseconds = anything,
+  Object microseconds = anything,
+  Object nanoseconds = anything,
+}) =>
+    isA<Timespan>()
+        .having((t) => t.inDays, 'days', days)
+        .having((t) => t.inHours, 'hours', hours)
+        .having((t) => t.inMinutes, 'minutes', minutes)
+        .having((t) => t.inSeconds, 'seconds', seconds)
+        .having((t) => t.inMilliseconds, 'milliseconds', milliseconds)
+        .having((t) => t.inMicroseconds, 'microseconds', microseconds)
+        .having((t) => t.inNanoseconds, 'nanoseconds', nanoseconds);
 
 /// Matches the year from a [HasDate].
 Matcher hasYear(Object? matcher) =>
