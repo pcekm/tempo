@@ -4,24 +4,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [Unreleased]
 
-## Fixed
-
-- `ZoneOffset` equals and hash code methods now correctly include the `seconds`
-  component.
-
-## Changed
+### Changed
 
 - Made some constructors `const`:
   - `Timespan()`
   - `Instant.fromUnix()`
   - `ZoneOffset()`
 
-## Removed
+### Removed
 
 - **Breaking** `ZoneOffset.local()` removed. Use `offset` on a `ZonedDateTime`
   instead. For example: `ZonedDateTime.now().offset`.
+
+### Fixed
+
+- `ZoneOffset` equals and hash code methods now correctly include the `seconds`
+  component.
 
 ## [0.7.1] - 2025-12-10
 
