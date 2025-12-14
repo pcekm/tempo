@@ -18,7 +18,12 @@ class ZoneOffset {
   /// UTC offset seconds `[-59 to +59]`.
   final int seconds;
 
-  ZoneOffset._(this.hours, this.minutes, this.seconds);
+  const ZoneOffset._fromSeconds(int seconds)
+      : hours = (seconds ~/ 3600) % 24 -
+            (seconds < 0 && (seconds ~/ 3600) % 24 > 0 ? 24 : 0),
+        minutes = (seconds ~/ 60) % 60 -
+            (seconds < 0 && (seconds ~/ 60) % 60 > 0 ? 60 : 0),
+        seconds = seconds % 60 - (seconds < 0 && seconds % 60 > 0 ? 60 : 0);
 
   /// Construct a new ZoneOffset.
   ///
@@ -28,9 +33,8 @@ class ZoneOffset {
   ///    * `-59 <= seconds <= 59`
   ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
   ///      [hours]).
-  ZoneOffset(int hours, [int minutes = 0, int seconds = 0])
-      : this.fromDuration(
-            Duration(hours: hours, minutes: minutes, seconds: seconds));
+  const ZoneOffset(int hours, [int minutes = 0, int seconds = 0])
+      : this._fromSeconds(hours * 3600 + minutes * 60 + seconds);
 
   /// Constructs a new ZoneOffset from a Duration.
   ///
@@ -41,7 +45,7 @@ class ZoneOffset {
   ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
   ///      [hours]).
   ZoneOffset.fromDuration(Duration amount)
-      : this.fromTimespan(Timespan.fromDuration(amount));
+      : this._fromSeconds(amount.inSeconds);
 
   /// Constructs a new ZoneOffset from a Timespan.
   ///
@@ -51,13 +55,7 @@ class ZoneOffset {
   ///    * `-59 <= seconds <= 59`
   ///    * Numeric signs all match
   ZoneOffset.fromTimespan(Timespan amount)
-      : this._(amount.inHours.remainder(24), amount.inMinutes.remainder(60),
-            amount.inSeconds.remainder(60));
-
-  /// Provides the platform's current default zone offset.
-  factory ZoneOffset.local() {
-    return ZoneOffset.fromDuration(DateTime.now().timeZoneOffset);
-  }
+      : this._fromSeconds(amount.inSeconds);
 
   /// Parses an ISO 8601 zone offset string.
   ///
@@ -83,8 +81,11 @@ class ZoneOffset {
   /// Two [ZoneOffset]s are equal if and only if [hours] == [minutes].
   @override
   bool operator ==(Object other) =>
-      (other is ZoneOffset) && hours == other.hours && minutes == other.minutes;
+      (other is ZoneOffset) &&
+      hours == other.hours &&
+      minutes == other.minutes &&
+      seconds == other.seconds;
 
   @override
-  int get hashCode => Object.hash(hours, minutes);
+  int get hashCode => Object.hash(hours, minutes, seconds);
 }

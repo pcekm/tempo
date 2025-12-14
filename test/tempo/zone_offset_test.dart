@@ -1,53 +1,58 @@
 import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
+Matcher isOffset(int hours, [int? minutes, int? seconds]) => isA<ZoneOffset>()
+    .having((z) => z.hours, 'hours', hours)
+    .having((z) => z.minutes, 'minutes', minutes ?? anything)
+    .having((z) => z.seconds, 'seconds', seconds ?? anything);
+
 void main() {
   test('normalization', () {
-    expect(ZoneOffset(24, -30), ZoneOffset(23, 30));
-    expect(ZoneOffset(24, -30, -1), ZoneOffset(23, 29, 59));
-    expect(ZoneOffset(24, 30), ZoneOffset(0, 30));
-    expect(ZoneOffset(48, 0), ZoneOffset(0, 0));
-    expect(ZoneOffset(-24, 30), ZoneOffset(-23, -30));
-    expect(ZoneOffset(-48, 0), ZoneOffset(0, 0));
+    expect(ZoneOffset(24, -30), isOffset(23, 30));
+    expect(ZoneOffset(24, -30, -1), isOffset(23, 29, 59));
+    expect(ZoneOffset(24, 30), isOffset(0, 30));
+    expect(ZoneOffset(48, 0), isOffset(0, 0));
+    expect(ZoneOffset(-24, 30), isOffset(-23, -30));
+    expect(ZoneOffset(-48, 0), isOffset(0, 0));
   });
 
   test('fromDuration()', () {
     expect(ZoneOffset.fromDuration(Duration(hours: 1, minutes: 25)),
-        ZoneOffset(1, 25));
+        isOffset(1, 25));
     expect(ZoneOffset.fromDuration(Duration(hours: -1, minutes: -30)),
-        ZoneOffset(-1, -30));
+        isOffset(-1, -30));
     expect(ZoneOffset.fromDuration(Duration(hours: -1, minutes: 30)),
-        ZoneOffset(0, -30));
+        isOffset(0, -30));
     expect(
         ZoneOffset.fromDuration(Duration(hours: -1, minutes: 30, seconds: 1)),
-        ZoneOffset(0, -29, -59));
+        isOffset(0, -29, -59));
   });
 
   group('parse()', () {
     test('complete', () {
-      expect(ZoneOffset.parse('+02:03:04'), ZoneOffset(2, 3, 4));
-      expect(ZoneOffset.parse('+020304'), ZoneOffset(2, 3, 4));
+      expect(ZoneOffset.parse('+02:03:04'), isOffset(2, 3, 4));
+      expect(ZoneOffset.parse('+020304'), isOffset(2, 3, 4));
     });
 
     test('negative', () {
-      expect(ZoneOffset.parse('-02:03:04'), ZoneOffset(-2, -3, -4));
-      expect(ZoneOffset.parse('-020304'), ZoneOffset(-2, -3, -4));
+      expect(ZoneOffset.parse('-02:03:04'), isOffset(-2, -3, -4));
+      expect(ZoneOffset.parse('-020304'), isOffset(-2, -3, -4));
     });
 
     test('hour minute', () {
-      expect(ZoneOffset.parse('+02:03'), ZoneOffset(2, 3));
-      expect(ZoneOffset.parse('+0203'), ZoneOffset(2, 3));
+      expect(ZoneOffset.parse('+02:03'), isOffset(2, 3));
+      expect(ZoneOffset.parse('+0203'), isOffset(2, 3));
     });
 
     test('hour only', () {
-      expect(ZoneOffset.parse('+02'), ZoneOffset(2));
-      expect(ZoneOffset.parse('+02'), ZoneOffset(2));
+      expect(ZoneOffset.parse('+02'), isOffset(2));
+      expect(ZoneOffset.parse('+02'), isOffset(2));
     });
 
     test('zulu', () {
-      expect(ZoneOffset.parse('+00'), ZoneOffset(0));
-      expect(ZoneOffset.parse('-00'), ZoneOffset(0));
-      expect(ZoneOffset.parse('Z'), ZoneOffset(0));
+      expect(ZoneOffset.parse('+00'), isOffset(0));
+      expect(ZoneOffset.parse('-00'), isOffset(0));
+      expect(ZoneOffset.parse('Z'), isOffset(0));
     });
 
     test('invalid', () {
@@ -63,8 +68,18 @@ void main() {
         Timespan(hours: 1, minutes: 2, seconds: 3));
   });
 
-  test('local() smoke test', () {
-    expect(ZoneOffset.local(), anything);
+  test('equality', () {
+    expect(ZoneOffset(1, 2, 3) == ZoneOffset(1, 2, 3), isTrue);
+    expect(ZoneOffset(1, 2, 3) == ZoneOffset(0, 2, 3), isFalse);
+    expect(ZoneOffset(1, 2, 3) == ZoneOffset(1, 0, 3), isFalse);
+    expect(ZoneOffset(1, 2, 3) == ZoneOffset(1, 2, 0), isFalse);
+  });
+
+  test('hashCode', () {
+    expect(ZoneOffset(1, 2, 3).hashCode, ZoneOffset(1, 2, 3).hashCode);
+    expect(ZoneOffset(1, 2, 3).hashCode, isNot(ZoneOffset(0, 2, 3).hashCode));
+    expect(ZoneOffset(1, 2, 3).hashCode, isNot(ZoneOffset(1, 0, 3).hashCode));
+    expect(ZoneOffset(1, 2, 3).hashCode, isNot(ZoneOffset(1, 2, 0).hashCode));
   });
 
   test('toString()', () {

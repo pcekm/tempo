@@ -6,11 +6,22 @@ and this project adheres to
 
 ## [unreleased]
 
+## Fixed
+
+- `ZoneOffset` equals and hash code methods now correctly include the `seconds`
+  component.
+
 ## Changed
 
 - Made some constructors `const`:
   - `Timespan()`
   - `Instant.fromUnix()`
+  - `ZoneOffset()`
+
+## Removed
+
+- **Breaking** `ZoneOffset.local()` removed. Use `offset` on a `ZonedDateTime`
+  instead. For example: `ZonedDateTime.now().offset`.
 
 ## [0.7.1] - 2025-12-10
 
