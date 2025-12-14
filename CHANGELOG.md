@@ -15,7 +15,7 @@ and this project adheres to
 
 ### Removed
 
-- **Breaking** `ZoneOffset.local()` removed. Use `offset` on a `ZonedDateTime`
+- **Breaking**: `ZoneOffset.local()` removed. Use `offset` on a `ZonedDateTime`
   instead. For example: `ZonedDateTime.now().offset`.
 
 ### Fixed

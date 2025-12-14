@@ -34,8 +34,10 @@ abstract interface class HasInstant
   /// Less than or equals operator.
   bool operator <=(HasInstant other);
 
-  /// Converts this to an [OffsetDateTime] with the given [offset].
-  OffsetDateTime atOffset(ZoneOffset offset);
+  /// Converts this to an [OffsetDateTime] with the given offset.
+  ///
+  /// Derives an offset from [defaultZoneId] if [offset] is not given.
+  OffsetDateTime atOffset([ZoneOffset? offset]);
 
   /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
   ///

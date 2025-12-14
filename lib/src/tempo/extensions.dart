@@ -12,7 +12,7 @@ extension TempoDateTime on DateTime {
   Instant toInstant() => Instant.fromDateTime(this);
 
   /// Converts this to an [OffsetDateTime] with the given [offset].
-  OffsetDateTime atOffset(ZoneOffset offset) =>
+  OffsetDateTime atOffset([ZoneOffset? offset]) =>
       OffsetDateTime.fromDateTime(this);
 
   /// Converts this to a [ZonedDateTime] in the time zone given by [zoneId].
