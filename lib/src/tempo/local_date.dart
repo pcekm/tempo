@@ -44,9 +44,10 @@ class LocalDate
   /// current time zone.
   ///
   /// {@macro datetime_precision}
-  LocalDate.now() : this.fromDateTime(DateTime.now());
+  LocalDate.now() : this.fromDateTime(clock.now());
 
   /// Constructs a `LocalDate` from a standard Dart [DateTime].
+  ///
   /// The timezone (if any) of [dateTime] is ignored.
   LocalDate.fromDateTime(DateTime dateTime)
       : this(dateTime.year, dateTime.month, dateTime.day);

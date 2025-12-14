@@ -159,7 +159,7 @@ allTimeZones();
 
 ## Testing
 
-This package also contains a [`testing`][testing] library with a useful set of
+This package contains a [`testing`][testing] library with a useful set of
 matchers for your unit tests that produce helpful error messages.
 
 ```dart
@@ -172,12 +172,24 @@ expect(dt, hasDate(2020, 1, 2));
 expect(dt, hasTime(3, 4));
 ```
 
+All `now()` constructors use the [`clock` package][clock]. Which means you can
+substitute a known value for the current time in tests:
+
+```dart
+import 'package:clock/clock.dart';
+import 'package:tempo/testing.dart';
+
+var date = withClock(Clock.fixed(DateTime(2000, 1, 2)), () => LocalDate.now());
+expect(date, hasDate(2000, 1, 2));
+```
+
 ## Additional information
 
 - [Tempo API documentation][tempo]
 - [Testing API documentation][testing]
 - [File a bug][bug]
 
+[clock]: https://pub.dev/packages/clock
 [tempo]: https://pub.dev/documentation/tempo/latest/tempo/tempo-library.html
 [testing]: https://pub.dev/documentation/tempo/latest/testing/testing-library.html
 [bug]: https://github.com/pcekm/tempo/issues/new/choose

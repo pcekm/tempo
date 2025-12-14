@@ -71,7 +71,7 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// Creates an instant for the current time.
   ///
   /// {@macro datetime_precision}
-  Instant.now() : this.fromDateTime(DateTime.now());
+  Instant.now() : this.fromDateTime(clock.now());
 
   Instant._fromJulianDay(Timespan julian)
       : unixTimestamp = Timespan(

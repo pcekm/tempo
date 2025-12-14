@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:test/test.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
@@ -224,10 +225,24 @@ void main() {
       expect(got.zoneId, equals('America/St_Johns'));
     });
 
-    test('now() smoke test', () {
-      var got = ZonedDateTime.now('America/Denver');
-      expect(got, hasYear(greaterThanOrEqualTo(2023)));
-      expect(got.zoneId, 'America/Denver');
+    group('now())', () {
+      test('default time zone', () {
+        var got = withClock(
+            Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
+            () => ZonedDateTime.now());
+        expect(got,
+            hasInstant(Instant.fromUnix(Timespan(milliseconds: 1765694800))));
+        expect(got.zoneId, defaultZoneId);
+      });
+
+      test('specified time zone', () {
+        var got = withClock(
+            Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
+            () => ZonedDateTime.now('America/Denver'));
+        expect(got,
+            hasInstant(Instant.fromUnix(Timespan(milliseconds: 1765694800))));
+        expect(got.zoneId, 'America/Denver');
+      });
     });
 
     test('fromDateTime() native', () {

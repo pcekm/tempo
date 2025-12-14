@@ -12,6 +12,8 @@ and this project adheres to
   - `Timespan()`
   - `Instant.fromUnix()`
   - `ZoneOffset()`
+- Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
+  constructors.
 
 ### Removed
 
@@ -22,6 +24,8 @@ and this project adheres to
 
 - `ZoneOffset` equals and hash code methods now correctly include the `seconds`
   component.
+- `OffsetDateTime.now()` now matches its documentation by returning times and
+  offsets in `defaultZoneId`.
 
 ## [0.7.1] - 2025-12-10
 

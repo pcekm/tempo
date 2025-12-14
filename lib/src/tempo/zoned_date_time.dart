@@ -139,8 +139,7 @@ class ZonedDateTime
   /// Creates a `ZonedDateTime` using the current time.
   ///
   /// {@macro zone_id}
-  ZonedDateTime.now([String? zoneId])
-      : this.fromDateTime(DateTime.now(), zoneId);
+  ZonedDateTime.now([String? zoneId]) : this.fromDateTime(clock.now(), zoneId);
 
   /// Looks up a time zone and throws ArgumentError if it's invalid.
   static NamedZoneOffset _lookupTimeZone(String zoneId, HasInstant instant) {

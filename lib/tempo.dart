@@ -76,6 +76,7 @@ library;
 
 import 'dart:math';
 
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:string_scanner/string_scanner.dart';
 

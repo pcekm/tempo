@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
@@ -127,9 +128,14 @@ void main() {
     }, testOn: 'js');
   });
 
-  test('now() smoke test', () {
-    var got = OffsetDateTime.now();
-    expect(got.year, greaterThanOrEqualTo(2023));
+  test('now()', () {
+    defaultZoneId = 'Asia/Kathmandu';
+    var got = withClock(
+        Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800000)),
+        () => OffsetDateTime.now());
+    expect(got,
+        hasInstant(Instant.fromUnix(Timespan(milliseconds: 1765694800000))));
+    expect(got, hasOffset(5, 45));
   });
 
   group('fromInstant()', () {

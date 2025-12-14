@@ -54,7 +54,7 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   ///
   /// This uses [DateTime] underneath, and the resulting time will have the same
   /// precision.
-  LocalTime.now() : this.fromDateTime(DateTime.now());
+  LocalTime.now() : this.fromDateTime(clock.now());
 
   /// Constructs a [LocalTime] from a standard Dart [DateTime].
   ///

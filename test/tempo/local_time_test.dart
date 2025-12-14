@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
@@ -38,12 +39,10 @@ void main() {
       }, testOn: '!js');
     });
 
-    test('now() smoke test', () {
-      var t = LocalTime.now();
-      expect(t, hasHour(greaterThanOrEqualTo(0)));
-      expect(t, hasMinute(greaterThanOrEqualTo(0)));
-      expect(t, hasSecond(greaterThanOrEqualTo(0)));
-      expect(t, hasNanosecond(greaterThanOrEqualTo(0)));
+    test('now()', () {
+      var t = withClock(Clock.fixed(DateTime(2000, 1, 2, 3, 4, 5, 6, 7)),
+          () => LocalTime.now());
+      expect(t, hasTime(3, 4, 5, 006007000));
     });
   });
 

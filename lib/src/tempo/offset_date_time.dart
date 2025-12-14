@@ -85,7 +85,7 @@ class OffsetDateTime
   /// Constructs an `OffsetDateTime` with the current date and time.
   ///
   /// The resulting object will have the offset of [defaultZoneId].
-  OffsetDateTime.now() : this.fromDateTime(DateTime.now());
+  OffsetDateTime.now() : this.fromInstant(ZonedDateTime.now());
 
   /// Constructs an `OffsetDateTime` from a `DateTime`.
   ///

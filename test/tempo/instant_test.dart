@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
@@ -33,10 +34,11 @@ void main() {
         Timespan(microseconds: 1234567890));
   });
 
-  test('now() smoke test', () {
-    var dt = DateTime.now();
-    expect(Instant.fromDateTime(dt).unixTimestamp,
-        greaterThan(Timespan(seconds: 1682977179)));
+  test('now()', () {
+    var instant = withClock(
+        Clock.fixed(DateTime.fromMicrosecondsSinceEpoch(1234567890000)),
+        () => Instant.now());
+    expect(instant.unixTimestamp, Timespan(microseconds: 1234567890000));
   });
 
   test('atOffset() default', () {

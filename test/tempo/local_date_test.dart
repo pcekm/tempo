@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clock/clock.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
@@ -47,9 +48,10 @@ void main() {
       expect(d, hasDate(2000, 1, 2));
     });
 
-    test('now() smoke test', () {
-      var d = LocalDate.now();
-      expect(d, hasYear(greaterThanOrEqualTo(2023)));
+    test('now()', () {
+      var d =
+          withClock(Clock.fixed(DateTime(2000, 1, 2)), () => LocalDate.now());
+      expect(d, hasDate(2000, 1, 2));
     });
   });
 
