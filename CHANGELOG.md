@@ -6,6 +6,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- New matchers for `HasInstant` classes that match the Unix timestamp:
+  - `hasUnixSeconds`
+  - `hasUnixMilliseeconds`
+  - `hasUnixMicroseconds`
+  - `hasUnixNanoseconds`
+  - `hasDateAndTime`
+
 ### Changed
 
 - Made some constructors `const`:
@@ -14,6 +23,7 @@ and this project adheres to
   - `ZoneOffset()`
 - Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
   constructors.
+- Improved failure output of `hasDate` and `hasTime`
 
 ### Removed
 

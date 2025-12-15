@@ -4,42 +4,33 @@ part of '../../testing.dart';
 Matcher hasInstant(Object? matcher) =>
     isA<HasInstant>().having((t) => t.toInstant(), 'instant', matcher);
 
-/// Matches the unix timestamp of a [HasInstant].
-Matcher hasUnix(
-        {Object seconds = anything,
-        Object milliseconds = anything,
-        Object microseconds = anything,
-        Object nanoseconds = anything}) =>
+/// Matches the Unix seconds of a [HasInstant].
+Matcher hasUnixSeconds(Object matcher) => isA<HasInstant>().having(
+    (t) => t.toInstant().unixTimestamp.inSeconds, 'unix seconds', matcher);
+
+/// Matches the Unix milliseconds of a [HasInstant].
+Matcher hasUnixMilliseconds(Object matcher) => isA<HasInstant>().having(
+    (t) => t.toInstant().unixTimestamp.inMilliseconds,
+    'unix milliseconds',
+    matcher);
+
+/// Matches the Unix microseconds of a [HasInstant].
+Matcher hasUnixMicroseconds(Object matcher) => isA<HasInstant>().having(
+    (t) => t.toInstant().unixTimestamp.inMicroseconds,
+    'unix microseconds',
+    matcher);
+
+/// Matches the full precision Unix time of a [HasInstant].
+///
+/// The seconds and nanoseconds parts must be matched separately to avoid
+/// overflow.
+Matcher hasUnixNanoseconds(Object seconds, Object nanoseconds) =>
     isA<HasInstant>().having(
         (t) => t.toInstant().unixTimestamp,
         'unixTimestamp',
-        isTimespan(
-            seconds: seconds,
-            milliseconds: milliseconds,
-            microseconds: microseconds,
-            nanoseconds: nanoseconds));
-
-/// Matches a [Timespan] that covers the given times.
-///
-/// Be wary when testing large values of smaller units such as [microseconds]
-/// and [nanoseconds]. They may overflow.
-Matcher isTimespan({
-  Object days = anything,
-  Object hours = anything,
-  Object minutes = anything,
-  Object seconds = anything,
-  Object milliseconds = anything,
-  Object microseconds = anything,
-  Object nanoseconds = anything,
-}) =>
-    isA<Timespan>()
-        .having((t) => t.inDays, 'days', days)
-        .having((t) => t.inHours, 'hours', hours)
-        .having((t) => t.inMinutes, 'minutes', minutes)
-        .having((t) => t.inSeconds, 'seconds', seconds)
-        .having((t) => t.inMilliseconds, 'milliseconds', milliseconds)
-        .having((t) => t.inMicroseconds, 'microseconds', microseconds)
-        .having((t) => t.inNanoseconds, 'nanoseconds', nanoseconds);
+        isA<Timespan>()
+            .having((u) => u.seconds, 'seconds', seconds)
+            .having((u) => u.nanosecondPart, 'nanosecondPart', nanoseconds));
 
 /// Matches the year from a [HasDate].
 Matcher hasYear(Object? matcher) =>
@@ -75,13 +66,36 @@ Matcher hasNanosecond(Object? matcher) =>
 
 /// Matches the date from a [HasDate].
 Matcher hasDate(Object? year, [Object? month = 1, Object? day = 1]) =>
-    allOf(hasYear(year), hasMonth(month), hasDay(day));
+    isA<HasDate>()
+        .having((d) => d.year, 'year', year)
+        .having((d) => d.month, 'month', month)
+        .having((d) => d.day, 'day', day);
 
 /// Matches the time from a [HasTime].
 Matcher hasTime(Object? hour,
         [Object? minute = 0, Object? second = 0, Object? nanosecond = 0]) =>
-    allOf(hasHour(hour), hasMinute(minute), hasSecond(second),
-        hasNanosecond(nanosecond));
+    isA<HasTime>()
+        .having((t) => t.hour, 'hour', hour)
+        .having((t) => t.minute, 'minute', minute)
+        .having((t) => t.second, 'second', second)
+        .having((t) => t.nanosecond, 'nanosecond', nanosecond);
+
+/// Matches the date and time from a [HasDateTime].
+Matcher hasDateAndTime(Object year,
+        [Object month = 1,
+        Object day = 1,
+        Object hour = 0,
+        Object minute = 0,
+        Object second = 0,
+        Object nanosecond = 0]) =>
+    isA<HasDateTime>()
+        .having((d) => d.year, 'year', year)
+        .having((d) => d.month, 'month', month)
+        .having((d) => d.day, 'day', day)
+        .having((t) => t.hour, 'hour', hour)
+        .having((t) => t.minute, 'minute', minute)
+        .having((t) => t.second, 'second', second)
+        .having((t) => t.nanosecond, 'nanosecond', nanosecond);
 
 /// Matches the values the time zone offset of an [OffsetDateTime] or
 /// [ZonedDateTime].

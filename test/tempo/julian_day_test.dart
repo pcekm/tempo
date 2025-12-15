@@ -6,46 +6,57 @@ const int nano = 1000000000;
 const int dayNano = 86400 * nano;
 const int halfDayNano = dayNano ~/ 2;
 
+Matcher isGregorian(
+        [Object year = anything,
+        Object month = anything,
+        Object day = anything,
+        Object nanosecond = anything]) =>
+    isA<Gregorian>()
+        .having((g) => g.year, 'year', year)
+        .having((g) => g.month, 'month', month)
+        .having((g) => g.day, 'day', day)
+        .having((g) => g.nanosecond, 'nanosecond', nanosecond);
+
 void main() {
   group('julianDayToGregorian()', () {
     Gregorian jdToGregorian(int day, int hours) =>
         julianDayToGregorian(Timespan(days: day, hours: hours));
 
     test('small positive', () {
-      expect(jdToGregorian(0, 0), Gregorian(-4713, 11, 24, halfDayNano),
+      expect(jdToGregorian(0, 0), isGregorian(-4713, 11, 24, halfDayNano),
           reason: 'JD = 0');
-      expect(jdToGregorian(0, 12), Gregorian(-4713, 11, 25, 0),
+      expect(jdToGregorian(0, 12), isGregorian(-4713, 11, 25, 0),
           reason: 'JD = 0.5');
-      expect(jdToGregorian(1, 0), Gregorian(-4713, 11, 25, halfDayNano),
+      expect(jdToGregorian(1, 0), isGregorian(-4713, 11, 25, halfDayNano),
           reason: 'JD = 1');
-      expect(jdToGregorian(1, 12), Gregorian(-4713, 11, 26, 0),
+      expect(jdToGregorian(1, 12), isGregorian(-4713, 11, 26, 0),
           reason: 'JD = 1.5');
     });
 
     test('small negative', () {
-      expect(jdToGregorian(-1, 12), Gregorian(-4713, 11, 24, 0),
+      expect(jdToGregorian(-1, 12), isGregorian(-4713, 11, 24, 0),
           reason: 'JD = -0.5');
-      expect(jdToGregorian(-1, 0), Gregorian(-4713, 11, 23, halfDayNano),
+      expect(jdToGregorian(-1, 0), isGregorian(-4713, 11, 23, halfDayNano),
           reason: 'JD = -1');
-      expect(jdToGregorian(-2, 12), Gregorian(-4713, 11, 23, 0),
+      expect(jdToGregorian(-2, 12), isGregorian(-4713, 11, 23, 0),
           reason: 'JD = -1.5');
-      expect(jdToGregorian(-2, 0), Gregorian(-4713, 11, 22, halfDayNano),
+      expect(jdToGregorian(-2, 0), isGregorian(-4713, 11, 22, halfDayNano),
           reason: 'JD = -2');
     });
 
     test('range limits', () {
-      expect(jdToGregorian(5373483, 12), Gregorian(9999, 12, 31));
-      expect(jdToGregorian(-1930999, -12), Gregorian(-9999, 1, 1, 0));
+      expect(jdToGregorian(5373483, 12), isGregorian(9999, 12, 31, 0));
+      expect(jdToGregorian(-1930999, -12), isGregorian(-9999, 1, 1, 0));
     });
 
     test('important epochs', () {
       // Some important epoch dates.
       // Source: Baum, Peter. (2017). Date Algorithms.
-      expect(jdToGregorian(1721425, 12), Gregorian(1, 1, 1, 0),
+      expect(jdToGregorian(1721425, 12), isGregorian(1, 1, 1, 0),
           reason: 'Rata Die epoch, 0001-01-01');
-      expect(jdToGregorian(2299160, 12), Gregorian(1582, 10, 15, 0),
+      expect(jdToGregorian(2299160, 12), isGregorian(1582, 10, 15, 0),
           reason: 'Gregorian reform, 1582-10-15');
-      expect(jdToGregorian(2440587, 12), Gregorian(1970, 1, 1, 0),
+      expect(jdToGregorian(2440587, 12), isGregorian(1970, 1, 1, 0),
           reason: 'Unix epoch, 1970-01-01');
     });
   });
@@ -87,5 +98,61 @@ void main() {
         Weekday.sunday);
     expect(weekdayForJulianDay(Timespan(days: 2460053, hours: 12)),
         Weekday.wednesday);
+  });
+
+  test('equality', () {
+    expect(
+      Gregorian(
+        1,
+        2,
+        3,
+        4,
+      ),
+      Gregorian(1, 2, 3, 4),
+    );
+    expect(
+      Gregorian(1),
+      isNot(Gregorian(0)),
+    );
+    expect(
+      Gregorian(1, 2),
+      isNot(Gregorian(1, 0)),
+    );
+    expect(
+      Gregorian(1, 2, 3),
+      isNot(Gregorian(1, 2, 0)),
+    );
+    expect(
+      Gregorian(1, 2, 3, 4),
+      isNot(Gregorian(1, 2, 3, 0)),
+    );
+  });
+
+  test('hashCode', () {
+    expect(
+      Gregorian(
+        1,
+        2,
+        3,
+        4,
+      ).hashCode,
+      Gregorian(1, 2, 3, 4).hashCode,
+    );
+    expect(
+      Gregorian(1).hashCode,
+      isNot(Gregorian(0).hashCode),
+    );
+    expect(
+      Gregorian(1, 2).hashCode,
+      isNot(Gregorian(1, 0).hashCode),
+    );
+    expect(
+      Gregorian(1, 2, 3).hashCode,
+      isNot(Gregorian(1, 2, 0).hashCode),
+    );
+    expect(
+      Gregorian(1, 2, 3, 4).hashCode,
+      isNot(Gregorian(1, 2, 3, 0).hashCode),
+    );
   });
 }

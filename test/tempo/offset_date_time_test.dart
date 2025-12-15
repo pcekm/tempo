@@ -96,7 +96,7 @@ void main() {
       expect(dt, hasDate(2025, 3, 9));
       expect(dt, hasTime(1, 59));
       expect(dt, hasOffset(-8));
-      expect(dt, hasUnix(seconds: 1741514340));
+      expect(dt, hasUnixSeconds(1741514340));
     });
 
     test('default just after time change', () {
@@ -106,7 +106,7 @@ void main() {
       expect(dt, hasDate(2025, 3, 9));
       expect(dt, hasTime(3, 0));
       expect(dt, hasOffset(-7));
-      expect(dt, hasUnix(seconds: 1741514400));
+      expect(dt, hasUnixSeconds(1741514400));
     });
   });
 
@@ -133,7 +133,7 @@ void main() {
     var got = withClock(
         Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800000)),
         () => OffsetDateTime.now());
-    expect(got, hasUnix(milliseconds: 1765694800000));
+    expect(got, hasUnixMilliseconds(1765694800000));
     expect(got, hasOffset(5, 45));
   });
 

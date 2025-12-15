@@ -7,63 +7,58 @@ void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
       var d = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
-      expect(d, hasDate(2000, 1, 2));
-      expect(d, hasTime(3, 4, 5, 6));
+      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
     });
 
     test('wrapping times', () {
-      expect(LocalDateTime(2000, 1, 1, 49), LocalDateTime(2000, 1, 3, 1));
-      expect(LocalDateTime(2000, 1, 1, 25), LocalDateTime(2000, 1, 2, 1));
-      expect(LocalDateTime(2000, 1, 1, 24, 1), LocalDateTime(2000, 1, 2, 0, 1));
+      expect(LocalDateTime(2000, 1, 1, 49), hasDateAndTime(2000, 1, 3, 1));
+      expect(LocalDateTime(2000, 1, 1, 25), hasDateAndTime(2000, 1, 2, 1));
+      expect(
+          LocalDateTime(2000, 1, 1, 24, 1), hasDateAndTime(2000, 1, 2, 0, 1));
       expect(LocalDateTime(2000, 1, 1, 24, 0, 1),
-          LocalDateTime(2000, 1, 2, 0, 0, 1));
+          hasDateAndTime(2000, 1, 2, 0, 0, 1));
       expect(LocalDateTime(2000, 1, 1, 24, 0, 0, 1),
-          LocalDateTime(2000, 1, 2, 0, 0, 0, 1));
+          hasDateAndTime(2000, 1, 2, 0, 0, 0, 1));
 
       expect(LocalDateTime(2000, 1, 1, 0, 0, 0, -1),
-          LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
+          hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
       expect(LocalDateTime(2000, 1, 1, 0, 0, -1),
-          LocalDateTime(1999, 12, 31, 23, 59, 59));
+          hasDateAndTime(1999, 12, 31, 23, 59, 59));
       expect(LocalDateTime(2000, 1, 1, 0, -1),
-          LocalDateTime(1999, 12, 31, 23, 59));
-      expect(LocalDateTime(2000, 1, 1, -1), LocalDateTime(1999, 12, 31, 23));
-      expect(LocalDateTime(2000, 1, 1, -24), LocalDateTime(1999, 12, 31));
+          hasDateAndTime(1999, 12, 31, 23, 59));
+      expect(LocalDateTime(2000, 1, 1, -1), hasDateAndTime(1999, 12, 31, 23));
+      expect(LocalDateTime(2000, 1, 1, -24), hasDateAndTime(1999, 12, 31));
     });
 
     group('fromDateTime()', () {
-      test('fromDateTime()', () {
+      test('all platforms', () {
         var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6));
-        expect(d, hasDate(2000, 1, 2));
         // JS platforms can't handle more than milliseconds.
-        expect(d, hasTime(3, 4, 5, 006000000));
+        expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 06000000));
       });
 
       test('vm platforms', () {
         var d = LocalDateTime.fromDateTime(DateTime(2000, 1, 2, 3, 4, 5, 6, 7));
-        expect(d, hasDate(2000, 1, 2));
-        expect(d, hasTime(3, 4, 5, 006007000));
+        expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 06007000));
       }, testOn: '!js');
     });
 
     test('combine()', () {
       var d =
           LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));
-      expect(d, hasDate(2000, 1, 2));
-      expect(d, hasTime(3, 4, 5, 6));
+      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
     });
 
     test('now()', () {
       var d = withClock(Clock.fixed(DateTime(2000, 1, 2, 3, 4, 5, 6, 7)),
           () => LocalDateTime.now());
-      expect(d, hasDate(2000, 1, 2));
-      expect(d, hasTime(3, 4, 5, 006007000));
+      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 006007000));
     });
   });
 
   test('parse()', () {
     var dt = LocalDateTime.parse('2000-03-04T05:06:07.000000008-1011');
-    expect(dt, hasDate(2000, 3, 4));
-    expect(dt, hasTime(5, 6, 7, 8));
+    expect(dt, hasDateAndTime(2000, 3, 4, 5, 6, 7, 8));
   });
 
   test('replace()', () {
@@ -76,8 +71,7 @@ void main() {
         minute: 3,
         second: 2,
         nanosecond: 1);
-    var want = LocalDateTime(7, 6, 5, 4, 3, 2, 1);
-    expect(repl, want);
+    expect(repl, hasDateAndTime(7, 6, 5, 4, 3, 2, 1));
   });
 
   group('weekday', () {
@@ -158,45 +152,45 @@ void main() {
   test('plusTimespan', () {
     var d = LocalDateTime(2000);
     expect(d.plusTimespan(Timespan(seconds: 1)),
-        LocalDateTime(2000, 1, 1, 0, 0, 1));
+        hasDateAndTime(2000, 1, 1, 0, 0, 1));
     expect(d.plusTimespan(Timespan(days: 1, seconds: 1)),
-        LocalDateTime(2000, 1, 2, 0, 0, 1));
+        hasDateAndTime(2000, 1, 2, 0, 0, 1));
     expect(d.plusTimespan(Timespan(nanoseconds: 1)),
-        LocalDateTime(2000, 1, 1, 0, 0, 0, 1));
+        hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
     expect(d.plusTimespan(Timespan(seconds: -1)),
-        LocalDateTime(1999, 12, 31, 23, 59, 59));
+        hasDateAndTime(1999, 12, 31, 23, 59, 59));
     expect(d.plusTimespan(Timespan(days: -1, seconds: -1)),
-        LocalDateTime(1999, 12, 30, 23, 59, 59));
+        hasDateAndTime(1999, 12, 30, 23, 59, 59));
     expect(d.plusTimespan(Timespan(nanoseconds: -1)),
-        LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
+        hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
   });
 
   test('minusTimespan', () {
     var d = LocalDateTime(2000);
     expect(d.minusTimespan(Timespan(seconds: -1)),
-        LocalDateTime(2000, 1, 1, 0, 0, 1));
+        hasDateAndTime(2000, 1, 1, 0, 0, 1));
     expect(d.minusTimespan(Timespan(days: -1, seconds: -1)),
-        LocalDateTime(2000, 1, 2, 0, 0, 1));
+        hasDateAndTime(2000, 1, 2, 0, 0, 1));
     expect(d.minusTimespan(Timespan(nanoseconds: -1)),
-        LocalDateTime(2000, 1, 1, 0, 0, 0, 1));
+        hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
     expect(d.minusTimespan(Timespan(seconds: 1)),
-        LocalDateTime(1999, 12, 31, 23, 59, 59));
+        hasDateAndTime(1999, 12, 31, 23, 59, 59));
     expect(d.minusTimespan(Timespan(days: 1, seconds: 1)),
-        LocalDateTime(1999, 12, 30, 23, 59, 59));
+        hasDateAndTime(1999, 12, 30, 23, 59, 59));
     expect(d.minusTimespan(Timespan(nanoseconds: 1)),
-        LocalDateTime(1999, 12, 31, 23, 59, 59, 999999999));
+        hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
   });
 
   test('plusPeriod', () {
     var d = LocalDateTime(2000);
-    expect(d.plusPeriod(Period(months: 1)), LocalDateTime(2000, 2));
-    expect(d.plusPeriod(Period(months: -1)), LocalDateTime(1999, 12));
+    expect(d.plusPeriod(Period(months: 1)), hasDateAndTime(2000, 2));
+    expect(d.plusPeriod(Period(months: -1)), hasDateAndTime(1999, 12));
   });
 
   test('minusPeriod', () {
     var d = LocalDateTime(2000);
-    expect(d.minusPeriod(Period(months: -1)), LocalDateTime(2000, 2));
-    expect(d.minusPeriod(Period(months: 1)), LocalDateTime(1999, 12));
+    expect(d.minusPeriod(Period(months: -1)), hasDateAndTime(2000, 2));
+    expect(d.minusPeriod(Period(months: 1)), hasDateAndTime(1999, 12));
   });
 
   group('Comparison operator', () {

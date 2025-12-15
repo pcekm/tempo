@@ -96,29 +96,28 @@ void main() {
 
   group('replace()', () {
     test('year', () {
-      expect(LocalDate(2023, 1, 2).replace(year: 1998), LocalDate(1998, 1, 2));
+      expect(LocalDate(2023, 1, 2).replace(year: 1998), hasDate(1998, 1, 2));
     });
 
     test('month', () {
-      expect(LocalDate(2023, 1, 2).replace(month: 11), LocalDate(2023, 11, 2));
+      expect(LocalDate(2023, 1, 2).replace(month: 11), hasDate(2023, 11, 2));
     });
 
     test('day', () {
-      expect(LocalDate(2023, 1, 2).replace(day: 31), LocalDate(2023, 1, 31));
+      expect(LocalDate(2023, 1, 2).replace(day: 31), hasDate(2023, 1, 31));
     });
 
     test('combined', () {
       expect(LocalDate(2023, 1, 2).replace(year: 1985, month: 7, day: 19),
-          LocalDate(1985, 7, 19));
+          hasDate(1985, 7, 19));
     });
 
     test('day adjustment, shorter month', () {
-      expect(LocalDate(2023, 1, 31).replace(month: 6), LocalDate(2023, 6, 30));
+      expect(LocalDate(2023, 1, 31).replace(month: 6), hasDate(2023, 6, 30));
     });
 
     test('day adjustment, leap year', () {
-      expect(
-          LocalDate(2000, 2, 29).replace(year: 2001), LocalDate(2001, 2, 28));
+      expect(LocalDate(2000, 2, 29).replace(year: 2001), hasDate(2001, 2, 28));
     });
   });
 
@@ -237,71 +236,70 @@ void main() {
 
   group('Timespan arithmetic:', () {
     test('plusTimespan()', () {
-      expect(LocalDate(2000).plusTimespan(Timespan(days: 1)),
-          LocalDate(2000, 1, 2));
-      expect(LocalDate(2000).plusTimespan(Timespan(days: -1)),
-          LocalDate(1999, 12, 31));
       expect(
-          LocalDate(2000).plusTimespan(Timespan(hours: 23)), LocalDate(2000));
+          LocalDate(2000).plusTimespan(Timespan(days: 1)), hasDate(2000, 1, 2));
+      expect(LocalDate(2000).plusTimespan(Timespan(days: -1)),
+          hasDate(1999, 12, 31));
+      expect(LocalDate(2000).plusTimespan(Timespan(hours: 23)), hasDate(2000));
       expect(LocalDate(2000).plusTimespan(Timespan(hours: -23)),
-          LocalDate(1999, 12, 31));
+          hasDate(1999, 12, 31));
       expect(LocalDate(2000).plusTimespan(Timespan(seconds: -1)),
-          LocalDate(1999, 12, 31));
+          hasDate(1999, 12, 31));
     });
 
     test('minusTimespan()', () {
       expect(LocalDate(2000).minusTimespan(Timespan(days: 1)),
-          LocalDate(1999, 12, 31));
+          hasDate(1999, 12, 31));
       expect(LocalDate(2000).minusTimespan(Timespan(days: -1)),
-          LocalDate(2000, 1, 2));
+          hasDate(2000, 1, 2));
       expect(
-          LocalDate(2000).minusTimespan(Timespan(hours: -23)), LocalDate(2000));
+          LocalDate(2000).minusTimespan(Timespan(hours: -23)), hasDate(2000));
       expect(LocalDate(2000).minusTimespan(Timespan(hours: 23)),
-          LocalDate(1999, 12, 31));
+          hasDate(1999, 12, 31));
       expect(LocalDate(2000).minusTimespan(Timespan(seconds: 1)),
-          LocalDate(1999, 12, 31));
+          hasDate(1999, 12, 31));
     });
   });
 
   group('Period arithmetic:', () {
     test('single fields', () {
       var d = LocalDate(2001, 2, 3);
-      expect(d.plusPeriod(Period(days: 1)), LocalDate(2001, 2, 4));
-      expect(d.plusPeriod(Period(days: 28)), LocalDate(2001, 3, 3));
-      expect(d.plusPeriod(Period(months: 1)), LocalDate(2001, 3, 3));
-      expect(d.plusPeriod(Period(months: 12)), LocalDate(2002, 2, 3));
-      expect(d.plusPeriod(Period(years: 4)), LocalDate(2005, 2, 3));
+      expect(d.plusPeriod(Period(days: 1)), hasDate(2001, 2, 4));
+      expect(d.plusPeriod(Period(days: 28)), hasDate(2001, 3, 3));
+      expect(d.plusPeriod(Period(months: 1)), hasDate(2001, 3, 3));
+      expect(d.plusPeriod(Period(months: 12)), hasDate(2002, 2, 3));
+      expect(d.plusPeriod(Period(years: 4)), hasDate(2005, 2, 3));
     });
 
     test('negative single fields', () {
       var d = LocalDate(2001, 2, 3);
-      expect(d.plusPeriod(Period(days: -1)), LocalDate(2001, 2, 2));
-      expect(d.plusPeriod(Period(days: -3)), LocalDate(2001, 1, 31));
-      expect(d.plusPeriod(Period(months: -1)), LocalDate(2001, 1, 3));
-      expect(d.plusPeriod(Period(months: -12)), LocalDate(2000, 2, 3));
-      expect(d.plusPeriod(Period(years: -4)), LocalDate(1997, 2, 3));
+      expect(d.plusPeriod(Period(days: -1)), hasDate(2001, 2, 2));
+      expect(d.plusPeriod(Period(days: -3)), hasDate(2001, 1, 31));
+      expect(d.plusPeriod(Period(months: -1)), hasDate(2001, 1, 3));
+      expect(d.plusPeriod(Period(months: -12)), hasDate(2000, 2, 3));
+      expect(d.plusPeriod(Period(years: -4)), hasDate(1997, 2, 3));
     });
 
     test('order of operations', () {
       expect(LocalDate(2023, 1, 31).plusPeriod(Period(months: 1, days: 1)),
-          LocalDate(2023, 3, 1));
+          hasDate(2023, 3, 1));
     });
 
     test('months increment year', () {
       var d = LocalDate(2000, 12, 1);
-      expect(d.plusPeriod(Period(months: 1)), LocalDate(2001, 1, 1));
+      expect(d.plusPeriod(Period(months: 1)), hasDate(2001, 1, 1));
     });
 
     test('months decrement year', () {
       var d = LocalDate(2001, 1, 1);
-      expect(d.plusPeriod(Period(months: -1)), LocalDate(2000, 12, 1));
+      expect(d.plusPeriod(Period(months: -1)), hasDate(2000, 12, 1));
     });
 
     test('month clamping', () {
       var d = LocalDate(1999, 1, 31);
-      expect(d.plusPeriod(Period(months: 1)), LocalDate(1999, 2, 28));
-      expect(d.plusPeriod(Period(months: -2)), LocalDate(1998, 11, 30));
-      expect(d.plusPeriod(Period(years: 1, months: 1)), LocalDate(2000, 2, 29));
+      expect(d.plusPeriod(Period(months: 1)), hasDate(1999, 2, 28));
+      expect(d.plusPeriod(Period(months: -2)), hasDate(1998, 11, 30));
+      expect(d.plusPeriod(Period(years: 1, months: 1)), hasDate(2000, 2, 29));
     });
   });
 

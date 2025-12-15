@@ -22,8 +22,7 @@ void main() {
       var instant =
           Instant.fromUnix(Timespan(seconds: 1672657445, nanoseconds: 6));
       var dt = ZonedDateTime.fromInstant(instant, 'America/Los_Angeles');
-      expect(dt, hasDate(2023, 1, 2));
-      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt, hasDateAndTime(2023, 1, 2, 3, 4, 5, 6));
       expect(dt, isNotDst);
       expect(dt.timeZone, 'PST');
       expect(dt.zoneId, 'America/Los_Angeles');
@@ -32,8 +31,7 @@ void main() {
     test('fromUnix', () {
       var unixTimestamp = Timespan(seconds: 1672657445, nanoseconds: 6);
       var dt = ZonedDateTime.fromUnix(unixTimestamp, 'America/Los_Angeles');
-      expect(dt, hasDate(2023, 1, 2));
-      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt, hasDateAndTime(2023, 1, 2, 3, 4, 5, 6));
       expect(dt, isNotDst);
       expect(dt.timeZone, 'PST');
       expect(dt.zoneId, 'America/Los_Angeles');
@@ -44,16 +42,14 @@ void main() {
         test('provided offset', () {
           final dt = ZonedDateTime.parse(
               '2025-01-02T03:04-0500', 'America/Los_Angeles');
-          expect(dt, hasDate(2025, 1, 2));
-          expect(dt, hasTime(0, 4));
+          expect(dt, hasDateAndTime(2025, 1, 2, 0, 4));
           expect(dt.zoneId, 'America/Los_Angeles');
         });
 
         test('no offset', () {
           final dt =
               ZonedDateTime.parse('2025-01-02T03:04', 'America/Los_Angeles');
-          expect(dt, hasDate(2025, 1, 2));
-          expect(dt, hasTime(3, 4));
+          expect(dt, hasDateAndTime(2025, 1, 2, 3, 4));
           expect(dt.zoneId, 'America/Los_Angeles');
         });
       });
@@ -65,16 +61,14 @@ void main() {
 
         test('provided offset', () {
           final dt = ZonedDateTime.parse('2025-01-02T03:04-0500');
-          expect(dt, hasDate(2025, 1, 2));
-          expect(dt, hasTime(0, 4));
+          expect(dt, hasDateAndTime(2025, 1, 2, 0, 4));
           expect(dt.zoneId, 'America/Los_Angeles');
         });
 
         test('no offset', () {
           final dt =
               ZonedDateTime.parse('2025-01-02T03:04', 'America/Los_Angeles');
-          expect(dt, hasDate(2025, 1, 2));
-          expect(dt, hasTime(3, 4));
+          expect(dt, hasDateAndTime(2025, 1, 2, 3, 4));
           expect(dt.zoneId, 'America/Los_Angeles');
         });
       });
@@ -92,8 +86,7 @@ void main() {
               got,
               hasInstant(Instant.fromUnix(
                   Timespan(seconds: 1672567384, nanoseconds: 5))));
-          expect(got, hasDate(2023, 1, 1));
-          expect(got, hasTime(2, 3, 4, 5));
+          expect(got, hasDateAndTime(2023, 1, 1, 2, 3, 4, 5));
           expect(got, isNotDst);
           expect(got.timeZone, 'PST');
         });
@@ -156,8 +149,7 @@ void main() {
         });
         test('normal std', () {
           var got = ZonedDateTime(2023, 1, 1, 2, 3, 4, 5);
-          expect(got, hasDate(2023, 1, 1));
-          expect(got, hasTime(2, 3, 4, 5));
+          expect(got, hasDateAndTime(2023, 1, 1, 2, 3, 4, 5));
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -167,8 +159,7 @@ void main() {
         });
         test('normal dst', () {
           var got = ZonedDateTime(2023, 6, 1, 2, 3, 4, 5);
-          expect(got, hasDate(2023, 6, 1));
-          expect(got, hasTime(2, 3, 4, 5));
+          expect(got, hasDateAndTime(2023, 6, 1, 2, 3, 4, 5));
           expect(
               got,
               hasInstant(Instant.fromUnix(
@@ -230,7 +221,7 @@ void main() {
         var got = withClock(
             Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
             () => ZonedDateTime.now());
-        expect(got, hasUnix(milliseconds: 1765694800));
+        expect(got, hasUnixMilliseconds(1765694800));
         expect(got.zoneId, defaultZoneId);
       });
 
@@ -238,7 +229,7 @@ void main() {
         var got = withClock(
             Clock.fixed(DateTime.fromMillisecondsSinceEpoch(1765694800)),
             () => ZonedDateTime.now('America/Denver'));
-        expect(got, hasUnix(milliseconds: 1765694800));
+        expect(got, hasUnixMilliseconds(1765694800));
         expect(got.zoneId, 'America/Denver');
       });
     });
@@ -246,16 +237,14 @@ void main() {
     test('fromDateTime() native', () {
       var got = ZonedDateTime.fromDateTime(
           DateTime.utc(2000, 1, 2, 3, 4, 5, 6, 7), 'UTC');
-      expect(got, hasDate(2000, 1, 2));
-      expect(got, hasTime(3, 4, 5, 6007000));
+      expect(got, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6007000));
       expect(got.zoneId, 'UTC');
     }, testOn: '!js');
 
     test('fromDateTime() js', () {
       var got = ZonedDateTime.fromDateTime(
           DateTime.utc(2000, 1, 2, 3, 4, 5, 6), 'UTC');
-      expect(got, hasDate(2000, 1, 2));
-      expect(got, hasTime(3, 4, 5, 6000000));
+      expect(got, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6000000));
       expect(got.zoneId, 'UTC');
     }, testOn: 'js');
   });
@@ -287,8 +276,7 @@ void main() {
               'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6)
           .toLocal();
       expect(local, isA<LocalDateTime>());
-      expect(local, hasDate(2000, 1, 2));
-      expect(local, hasTime(3, 4, 5, 6));
+      expect(local, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
     });
 
     test('asOffsetDateTime', () {
@@ -296,8 +284,7 @@ void main() {
           ZonedDateTime.withZoneId('America/Toronto', 2000, 1, 2, 3, 4, 5, 6)
               .asOffsetDateTime;
       expect(odt, isA<OffsetDateTime>());
-      expect(odt, hasDate(2000, 1, 2));
-      expect(odt, hasTime(3, 4, 5, 6));
+      expect(odt, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
       expect(odt, hasOffset(-5));
     });
 
@@ -347,17 +334,15 @@ void main() {
     test('plusTimespan', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusTimespan(Timespan(days: 120));
-      expect(got, hasDate(2000, 5, 1));
       // One hour ahead because of DST:
-      expect(got, hasTime(4, 4, 5, 6));
+      expect(got, hasDateAndTime(2000, 5, 1, 4, 4, 5, 6));
     });
 
     test('minusTimespan', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusTimespan(Timespan(days: 120));
-      expect(got, hasDate(1999, 9, 4));
       // One hour ahead because of DST:
-      expect(got, hasTime(4, 4, 5, 6));
+      expect(got, hasDateAndTime(1999, 9, 4, 4, 4, 5, 6));
     });
   });
 
@@ -368,17 +353,15 @@ void main() {
     test('plusPeriod', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.plusPeriod(Period(months: 6));
-      expect(got, hasDate(2000, 7, 2));
       // Remains unchanged in spite of DST.
-      expect(got, hasTime(3, 4, 5, 6));
+      expect(got, hasDateAndTime(2000, 7, 2, 3, 4, 5, 6));
     });
 
     test('minusPeriod', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
       var got = dt.minusPeriod(Period(months: 6));
-      expect(got, hasDate(1999, 7, 2));
       // Remains unchanged in spite of DST.
-      expect(got, hasTime(3, 4, 5, 6));
+      expect(got, hasDateAndTime(1999, 7, 2, 3, 4, 5, 6));
     });
   });
 

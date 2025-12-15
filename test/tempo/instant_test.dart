@@ -1,5 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:tempo/tempo.dart';
+import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -30,15 +31,14 @@ void main() {
 
   test('fromDateTime()', () {
     var dt = DateTime.fromMicrosecondsSinceEpoch(1234567890);
-    expect(Instant.fromDateTime(dt).unixTimestamp,
-        Timespan(microseconds: 1234567890));
+    expect(Instant.fromDateTime(dt), hasUnixMicroseconds(1234567890));
   });
 
   test('now()', () {
     var instant = withClock(
         Clock.fixed(DateTime.fromMicrosecondsSinceEpoch(1234567890000)),
         () => Instant.now());
-    expect(instant.unixTimestamp, Timespan(microseconds: 1234567890000));
+    expect(instant, hasUnixMicroseconds(1234567890000));
   });
 
   test('atOffset() default', () {

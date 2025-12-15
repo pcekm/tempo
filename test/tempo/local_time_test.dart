@@ -11,15 +11,15 @@ void main() {
     });
 
     test('Default examples', () {
-      expect(LocalTime(12, 60, 0), LocalTime(13, 0, 0));
-      expect(LocalTime(12, 1, 60), LocalTime(12, 2, 0));
-      expect(LocalTime(23, 60, 0), LocalTime(0, 0, 0));
-      expect(LocalTime(0, 0, -1), LocalTime(23, 59, 59));
+      expect(LocalTime(12, 60, 0), hasTime(13, 0, 0));
+      expect(LocalTime(12, 1, 60), hasTime(12, 2, 0));
+      expect(LocalTime(23, 60, 0), hasTime(0, 0, 0));
+      expect(LocalTime(0, 0, -1), hasTime(23, 59, 59));
     });
 
     test('wrapping', () {
-      expect(LocalTime(23, 59, 59, 1000000000), LocalTime());
-      expect(LocalTime(0, 0, 0, -1), LocalTime(23, 59, 59, 999999999));
+      expect(LocalTime(23, 59, 59, 1000000000), hasTime(0));
+      expect(LocalTime(0, 0, 0, -1), hasTime(23, 59, 59, 999999999));
     });
 
     group('fromDateTime()', () {
@@ -87,12 +87,12 @@ void main() {
 
   test('replace()', () {
     var t = LocalTime(1, 2, 3, 4);
-    expect(t.replace(hour: 10), LocalTime(10, 2, 3, 4));
-    expect(t.replace(minute: 10), LocalTime(1, 10, 3, 4));
-    expect(t.replace(second: 10), LocalTime(1, 2, 10, 4));
-    expect(t.replace(nanosecond: 10), LocalTime(1, 2, 3, 10));
+    expect(t.replace(hour: 10), hasTime(10, 2, 3, 4));
+    expect(t.replace(minute: 10), hasTime(1, 10, 3, 4));
+    expect(t.replace(second: 10), hasTime(1, 2, 10, 4));
+    expect(t.replace(nanosecond: 10), hasTime(1, 2, 3, 10));
     expect(t.replace(hour: 5, minute: 6, second: 7, nanosecond: 8),
-        LocalTime(5, 6, 7, 8));
+        hasTime(5, 6, 7, 8));
   });
 
   test('timespanUntil()', () {
