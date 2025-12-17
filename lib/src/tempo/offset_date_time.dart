@@ -5,7 +5,7 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class OffsetDateTime
-    with _HasInstantImpl
+    with _HasInstantImpl, _Formatting
     implements
         HasInstant,
         HasDateTime,

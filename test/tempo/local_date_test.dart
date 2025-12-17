@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:clock/clock.dart';
+import 'package:intl/intl.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
@@ -184,6 +185,12 @@ void main() {
     expect(LocalDate(-2000).toString(), '-2000-01-01');
     expect(LocalDate(9999).toString(), '9999-01-01');
     expect(LocalDate(10000).toString(), '+10000-01-01');
+  });
+
+  test('format()', () {
+    final d = LocalDate(2000, 1, 2);
+    final format = DateFormat.yMd();
+    expect(d.format(format), '1/2/2000');
   });
 
   test('ordinalDay', () {

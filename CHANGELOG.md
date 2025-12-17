@@ -14,6 +14,8 @@ and this project adheres to
   - `hasUnixMicroseconds`
   - `hasUnixNanoseconds`
   - `hasDateAndTime`
+- Added `format()` methods that take a `DateFormat` from the intl package and
+  return a string.
 
 ### Changed
 

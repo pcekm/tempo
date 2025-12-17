@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:intl/intl.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
@@ -193,5 +194,11 @@ void main() {
     expect(LocalTime(1, 2, 3, 4000).toString(), '01:02:03.000004');
     expect(LocalTime(1, 2, 3, 4).toString(), '01:02:03.000000004');
     expect(LocalTime(23, 59, 59, 999999999).toString(), '23:59:59.999999999');
+  });
+
+  test('format()', () {
+    final d = LocalTime(3, 4, 5, 6);
+    final format = DateFormat.Hms();
+    expect(d.format(format), '03:04:05');
   });
 }

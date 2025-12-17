@@ -63,20 +63,63 @@
 /// dt.atOffset(ZoneOffset(-5)) =
 ///   OffsetDateTime(ZoneOffset(-5), 2024, 12, 31, 19, 0);
 /// dt.inTimeZone('America/New_York') ==
-///   ZonedDateTime.inTimeZone('America/New_York', 2024, 12, 31, 19, 0);
+///   ZonedDateTime.withZoneId('America/New_York', 2024, 12, 31, 19, 0);
 ///
 /// var LocalDateTime ldt = LocalDateTime(2025, 1, 1);
 /// ldt.inTimeZone('America/New_York') ==
-///    ZonedDateTime.inTimeZone('America/New_York', 2025, 1, 1);
+///    ZonedDateTime.withZoneId('America/New_York', 2025, 1, 1);
 ///
 /// var zdt = ZonedDateTime(2025, 1, 1);
 /// zdt.toLocal() == LocalDateTime(2025, 1, 1);
+/// ```
+///
+/// # Formatting
+///
+/// Date and time objects may be formatted and parsed as ISO 8601 strings, and
+/// formatted using the [intl](https://pub.dev/packages/intl) package.
+///
+/// ## ISO 8601
+///
+/// Local, absolute, and relative times may all be formatted as ISO 8601 strings
+/// either by calling their `toString` methods, or interpolating them into a
+/// string:
+///
+/// ```dart
+/// final d = ZonedDateTime.withZoneId('America/Los_Angeles', 2025, 1, 2, 3, 4, 5, 6);
+/// print(d.toString);  // Outputs '2025-01-02T03:04:05.000000006-0800'
+/// print('Date: $d');  // Outputs 'Date: 2025-01-02T03:04:05.000000006-0800'
+/// ```
+///
+/// Similarly, they can all be parsed by using their `parse` constructors:
+///
+/// ```dart
+/// OffsetDateTime.parse('2025-01-02T03:04:05+0200');
+/// ZonedDateTime.parse('2025-01-02T03:04:05-0800');
+/// ```
+///
+/// ## Custom formats with intl
+///
+/// All local and absolute time objects have a `format` method that accepts a
+/// [DateFormat] object and returns a string. Since different objects convert to
+/// [DateTime] differently, using tempo's `format` methods instead of calling
+/// [DateFormat.format] directly can avoid some surprising results.
+///
+/// ```dart
+/// final dtFormat = DateTime.yMMMd().add_Hm();
+/// final date = ZonedDateTime(2005, 1, 2, 3, 4);
+///
+/// // Do this:
+/// date.format(dtFormat) == 'Jan 2, 2025 03:04';
+///
+/// // Don't do this:
+/// dtFormat.format(date.toDateTime()) == '???';
 /// ```
 library;
 
 import 'dart:math';
 
 import 'package:clock/clock.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:string_scanner/string_scanner.dart';
 
@@ -92,6 +135,7 @@ export 'timezone.dart'
         ZoneDescription;
 
 part 'src/tempo/__convertible_date.dart';
+part 'src/tempo/__formatting.dart';
 part 'src/tempo/__has_instant_impl.dart';
 part 'src/tempo/__instant_convertible.dart';
 part 'src/tempo/__period_arithmetic.dart';

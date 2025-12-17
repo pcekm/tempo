@@ -7,7 +7,7 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class ZonedDateTime
-    with _HasInstantImpl
+    with _HasInstantImpl, _Formatting
     implements HasDateTime, HasInstant, _ConvertibleDate {
   /// The earliest possible datetime.
   static final ZonedDateTime minimum =

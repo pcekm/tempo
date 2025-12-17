@@ -144,6 +144,12 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   @override
   int get hashCode => nanosecondsSinceMidnight.hashCode;
 
+  /// Formats object using the given format.
+  ///
+  /// The results for formats that include year, month or day is unspecified.
+  String format(DateFormat format) =>
+      format.format(DateTime(0, 1, 1, hour, minute, second));
+
   /// Returns the time in ISO 8601 format.
   ///
   /// ```dart

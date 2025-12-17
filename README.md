@@ -13,6 +13,7 @@ Everything [`DateTime`][DateTime] can do, plus:
   - Add and subtract months or years without changing the day or time
   - Count the number of years, months and days between two dates
 - Create and parse ISO 8601 strings
+- Formatting using the [intl package][intl]
 - Easy conversion to and from [`DateTime`][DateTime]
 - Lookup time zones by name, country and geographic coordinates
 - Nanosecond precision
@@ -189,10 +190,11 @@ expect(date, hasDate(2000, 1, 2));
 - [Testing API documentation][testing]
 - [File a bug][bug]
 
+[bug]: https://github.com/pcekm/tempo/issues/new/choose
 [clock]: https://pub.dev/packages/clock
+[intl]: https://pub.dev/packages/intl
 [tempo]: https://pub.dev/documentation/tempo/latest/tempo/tempo-library.html
 [testing]: https://pub.dev/documentation/tempo/latest/testing/testing-library.html
-[bug]: https://github.com/pcekm/tempo/issues/new/choose
 [UTC]: https://en.wikipedia.org/wiki/UTC
 [DateTime]: https://api.dart.dev/stable/dart-core/DateTime-class.html
 [Duration]: https://api.dart.dev/stable/dart-core/Duration-class.html

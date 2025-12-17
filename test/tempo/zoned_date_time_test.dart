@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:intl/intl.dart';
 import 'package:test/test.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
@@ -392,6 +393,13 @@ void main() {
     test('compareTo', () {
       expect(dt1.compareTo(dt2), isNegative);
     });
+  });
+
+  test('format()', () {
+    final d =
+        ZonedDateTime.withZoneId('Europe/Tallinn', 2000, 1, 2, 3, 4, 5, 6);
+    final format = DateFormat.yMd().add_Hms();
+    expect(d.format(format), '1/2/2000 03:04:05');
   });
 
   test('toString()', () {

@@ -5,6 +5,7 @@ part of '../../tempo.dart';
 /// {@category local}
 @immutable
 class LocalDate
+    with _Formatting
     implements
         HasDate,
         Comparable<LocalDate>,
