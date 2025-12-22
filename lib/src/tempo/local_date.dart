@@ -12,28 +12,34 @@ class LocalDate
         _PeriodArithmetic<LocalDate>,
         _ConvertibleDate {
   /// The earliest supported date.
-  static final LocalDate minimum = LocalDate(-9999, 1, 1);
+  static const LocalDate minimum = LocalDate(-9999, 1, 1);
 
   /// The latest supported date.
-  static final LocalDate maximum = LocalDate(9999, 12, 31);
-
-  @override
-  final int year;
-
-  @override
-  final int month;
-
-  @override
-  final int day;
+  static const LocalDate maximum = LocalDate(9999, 12, 31);
 
   /// Constructs a `LocalDate` from individual parts.
   ///
   /// {@macro astro_year}
   ///
-  /// Throws an exception if the date is invalid.
-  LocalDate([this.year = 0, this.month = 1, this.day = 1]) {
-    _validate();
-  }
+  /// The resulting date is guaranteed to be valid, even if the inputs are
+  /// not. Callers should not depend on any specific date resulting from
+  /// invalid inputs.
+  const LocalDate([int year = 0, int month = 1, int day = 1])
+      : this._jdStep1(year, month, day, (14 - month) ~/ 12);
+
+  /// Step 1 in the Julian day calculation.
+  const LocalDate._jdStep1(int year, int month, int day, int a)
+      : this._jdStep2(day, a, year + 4800 - a, month + 12 * a - 3);
+
+  /// Step 2 in the Julian day calculation.
+  const LocalDate._jdStep2(int day, int a, int y, int m)
+      : _julianDayNumber = day +
+            (153 * m + 2) ~/ 5 +
+            365 * y +
+            y ~/ 4 -
+            y ~/ 100 +
+            y ~/ 400 -
+            32045;
 
   LocalDate._fromGregorian(Gregorian parts)
       : this(parts.year, parts.month, parts.day);
@@ -76,15 +82,28 @@ class LocalDate
     return LocalDate(year, month, day);
   }
 
-  // The Julian day represented by this date.
-  Timespan get _julianDay =>
-      gregorianToJulianDay(Gregorian(year, month, day, 0));
+  Gregorian get _asGregorian => julianDayToGregorian(_julianDate);
+
+  @override
+  int get year => _asGregorian.year;
+
+  @override
+  int get month => _asGregorian.month;
+
+  @override
+  int get day => _asGregorian.day;
+
+  /// The Julian day number (JDN).
+  final int _julianDayNumber;
+
+  /// The Julian date represented by this date.
+  Timespan get _julianDate => Timespan(days: _julianDayNumber, hours: -12);
 
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
   @override
-  Weekday get weekday => weekdayForJulianDay(_julianDay);
+  Weekday get weekday => weekdayForJulianDay(_julianDate);
 
   @override
   DateTime toDateTime() => DateTime(year, month, day);
@@ -98,14 +117,14 @@ class LocalDate
       ZonedDateTime.withZoneId(zoneId ?? defaultZoneId, year, month, day);
 
   @override
-  Instant toInstant() => Instant._fromJulianDay(_julianDay);
+  Instant toInstant() => Instant._fromJulianDay(_julianDate);
 
   @override
   LocalDateTime toLocal() => LocalDateTime.combine(this);
 
   @override
   int get ordinalDay =>
-      _julianDay.inDays - LocalDate(year)._julianDay.inDays + 1;
+      _julianDate.inDays - LocalDate(year)._julianDate.inDays + 1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
@@ -138,7 +157,7 @@ class LocalDate
     late int sign;
     late LocalDate d1;
     late LocalDate d2;
-    if (otherDate._julianDay.inDays >= _julianDay.inDays) {
+    if (otherDate._julianDate.inDays >= _julianDate.inDays) {
       sign = 1;
       d1 = this;
       d2 = otherDate;
@@ -170,21 +189,21 @@ class LocalDate
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
   Timespan timespanUntil(LocalDate other) =>
-      Timespan(days: other._julianDay.inDays - _julianDay.inDays);
+      Timespan(days: other._julianDate.inDays - _julianDate.inDays);
 
   /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate plusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDay + t);
+      LocalDate._fromJulianDay(_julianDate + t);
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate minusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDay - t);
+      LocalDate._fromJulianDay(_julianDate - t);
 
   /// Adds [Period] of time.
   ///
@@ -226,7 +245,7 @@ class LocalDate
 
   @override
   int compareTo(LocalDate other) {
-    return _julianDay.compareTo(other._julianDay);
+    return _julianDate.compareTo(other._julianDate);
   }
 
   /// Greater than operator.
@@ -249,21 +268,11 @@ class LocalDate
       day == other.day;
 
   @override
-  int get hashCode => _julianDay.hashCode;
+  int get hashCode => _julianDate.hashCode;
 
   /// Returns the date in ISO 8601 format.
   ///
   /// For example, 2000-01-02.
   @override
   String toString() => _iso8601Date(this);
-
-  // Throws an error if this date is invalid.
-  void _validate() {
-    if (month < 1 || month > 12) {
-      throw ArgumentError.value(toString(), 'month');
-    }
-    if (day < 1 || day > daysInMonth(year, month)) {
-      throw ArgumentError.value(toString(), 'day');
-    }
-  }
 }

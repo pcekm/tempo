@@ -23,9 +23,12 @@ and this project adheres to
   - `Timespan()`
   - `Instant.fromUnix()`
   - `ZoneOffset()`
+  - `LocalDate()`
 - Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
   constructors.
 - Improved failure output of `hasDate` and `hasTime`
+- Constructors no longer throw exceptions when given an invalid date, but they
+  do guarantee a valid, albeit unspecified, result.
 
 ### Removed
 

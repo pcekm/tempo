@@ -6,6 +6,19 @@ import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 import 'package:test/test.dart';
 
+final isValidDate = predicate((LocalDate d) {
+  if (d.month < 1 || d.month > 12) return false;
+  final isLeapYear =
+      d.year % 4 == 0 && (d.year % 100 != 0 || d.year % 400 == 0);
+  final daysInMonth = switch (d.month) {
+    1 || 3 || 5 || 7 || 8 || 10 || 12 => 31,
+    4 || 6 || 9 || 11 => 30,
+    2 => isLeapYear ? 29 : 28,
+    _ => throw Exception('Bad month number')
+  };
+  return d.day >= 1 && d.day <= daysInMonth;
+});
+
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
@@ -14,34 +27,21 @@ void main() {
     });
 
     test('Invalid dates', () {
-      expect(() => LocalDate(1999, 0, 1), throwsArgumentError);
-      expect(() => LocalDate(1999, 13, 1), throwsArgumentError);
-      expect(() => LocalDate(1999, 1, 0), throwsArgumentError);
-      expect(() => LocalDate(1999, 1, 1), returnsNormally);
-      expect(() => LocalDate(1999, 1, 31), returnsNormally);
-      expect(() => LocalDate(1999, 2, 29), throwsArgumentError);
-      expect(() => LocalDate(2000, 2, 29), returnsNormally);
-      expect(() => LocalDate(2000, 2, 30), throwsArgumentError);
-      expect(() => LocalDate(1999, 3, 31), returnsNormally);
-      expect(() => LocalDate(1999, 3, 32), throwsArgumentError);
-      expect(() => LocalDate(1999, 4, 30), returnsNormally);
-      expect(() => LocalDate(1999, 4, 31), throwsArgumentError);
-      expect(() => LocalDate(1999, 5, 31), returnsNormally);
-      expect(() => LocalDate(1999, 5, 32), throwsArgumentError);
-      expect(() => LocalDate(1999, 6, 30), returnsNormally);
-      expect(() => LocalDate(1999, 6, 31), throwsArgumentError);
-      expect(() => LocalDate(1999, 7, 31), returnsNormally);
-      expect(() => LocalDate(1999, 7, 32), throwsArgumentError);
-      expect(() => LocalDate(1999, 8, 31), returnsNormally);
-      expect(() => LocalDate(1999, 8, 32), throwsArgumentError);
-      expect(() => LocalDate(1999, 9, 30), returnsNormally);
-      expect(() => LocalDate(1999, 9, 31), throwsArgumentError);
-      expect(() => LocalDate(1999, 10, 31), returnsNormally);
-      expect(() => LocalDate(1999, 10, 32), throwsArgumentError);
-      expect(() => LocalDate(1999, 11, 30), returnsNormally);
-      expect(() => LocalDate(1999, 11, 31), throwsArgumentError);
-      expect(() => LocalDate(1999, 12, 31), returnsNormally);
-      expect(() => LocalDate(1999, 12, 32), throwsArgumentError);
+      expect(LocalDate(1999, 0, 1), isValidDate);
+      expect(LocalDate(1999, 13, 1), isValidDate);
+      expect(LocalDate(1999, 1, 0), isValidDate);
+      expect(LocalDate(1999, 2, 29), isValidDate);
+      expect(LocalDate(2000, 2, 30), isValidDate);
+      expect(LocalDate(1999, 3, 32), isValidDate);
+      expect(LocalDate(1999, 4, 31), isValidDate);
+      expect(LocalDate(1999, 5, 32), isValidDate);
+      expect(LocalDate(1999, 6, 31), isValidDate);
+      expect(LocalDate(1999, 7, 32), isValidDate);
+      expect(LocalDate(1999, 8, 32), isValidDate);
+      expect(LocalDate(1999, 9, 31), isValidDate);
+      expect(LocalDate(1999, 10, 32), isValidDate);
+      expect(LocalDate(1999, 11, 31), isValidDate);
+      expect(LocalDate(1999, 12, 32), isValidDate);
     });
 
     test('fromDateTime()', () {
