@@ -4,19 +4,13 @@ part of '../../tempo.dart';
 ///
 /// {@category local}
 @immutable
-class LocalDate
+class LocalDate extends _JulianDate
     with _Formatting
     implements
         HasDate,
         Comparable<LocalDate>,
         _PeriodArithmetic<LocalDate>,
         _ConvertibleDate {
-  /// The earliest supported date.
-  static const LocalDate minimum = LocalDate(-9999, 1, 1);
-
-  /// The latest supported date.
-  static const LocalDate maximum = LocalDate(9999, 12, 31);
-
   /// Constructs a `LocalDate` from individual parts.
   ///
   /// {@macro astro_year}
@@ -25,21 +19,7 @@ class LocalDate
   /// not. Callers should not depend on any specific date resulting from
   /// invalid inputs.
   const LocalDate([int year = 0, int month = 1, int day = 1])
-      : this._jdStep1(year, month, day, (14 - month) ~/ 12);
-
-  /// Step 1 in the Julian day calculation.
-  const LocalDate._jdStep1(int year, int month, int day, int a)
-      : this._jdStep2(day, a, year + 4800 - a, month + 12 * a - 3);
-
-  /// Step 2 in the Julian day calculation.
-  const LocalDate._jdStep2(int day, int a, int y, int m)
-      : _julianDayNumber = day +
-            (153 * m + 2) ~/ 5 +
-            365 * y +
-            y ~/ 4 -
-            y ~/ 100 +
-            y ~/ 400 -
-            32045;
+      : super(year, month, day, 0, 0, 0, 0);
 
   LocalDate._fromGregorian(Gregorian parts)
       : this(parts.year, parts.month, parts.day);
@@ -82,28 +62,17 @@ class LocalDate
     return LocalDate(year, month, day);
   }
 
-  Gregorian get _asGregorian => julianDayToGregorian(_julianDate);
+  /// The earliest supported date.
+  static const LocalDate minimum = LocalDate(-9999, 1, 1);
 
-  @override
-  int get year => _asGregorian.year;
-
-  @override
-  int get month => _asGregorian.month;
-
-  @override
-  int get day => _asGregorian.day;
-
-  /// The Julian day number (JDN).
-  final int _julianDayNumber;
-
-  /// The Julian date represented by this date.
-  Timespan get _julianDate => Timespan(days: _julianDayNumber, hours: -12);
+  /// The latest supported date.
+  static const LocalDate maximum = LocalDate(9999, 12, 31);
 
   /// True if this date falls in a leap year.
   bool get isLeapYear => checkLeapYear(year);
 
   @override
-  Weekday get weekday => weekdayForJulianDay(_julianDate);
+  Weekday get weekday => Weekday.values[_julianDayNumber % 7 + 1];
 
   @override
   DateTime toDateTime() => DateTime(year, month, day);
