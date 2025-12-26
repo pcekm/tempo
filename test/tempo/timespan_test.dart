@@ -163,55 +163,120 @@ void main() {
   });
 
   group('arithmetic', () {
-    test('operator+', () {
-      var t = Timespan(seconds: -10);
-      expect(t + Timespan(seconds: 1), hasParts(-9, 0));
-      expect(t + Timespan(seconds: 5), hasParts(-5, 0));
-      expect(t + Timespan(seconds: 10), hasParts(0, 0));
-      expect(t + Timespan(seconds: 11), hasParts(1, 0));
+    group('operator+', () {
+      final t = Timespan(seconds: -10);
+      test('seconds', () {
+        expect(t + Timespan(seconds: 1), hasParts(-9, 0));
+        expect(t + Timespan(seconds: 5), hasParts(-5, 0));
+        expect(t + Timespan(seconds: 10), hasParts(0, 0));
+        expect(t + Timespan(seconds: 11), hasParts(1, 0));
+      });
 
-      expect(t + Timespan(nanoseconds: 1), hasParts(-9, -_secondNano + 1));
-      expect(t + Timespan(nanoseconds: _secondNano - 1), hasParts(-9, -1));
-      expect(t + Timespan(nanoseconds: _secondNano), hasParts(-9, 0));
-      expect(t + Timespan(nanoseconds: 2 * _secondNano - 1), hasParts(-8, -1));
-      expect(t + Timespan(nanoseconds: 2 * _secondNano), hasParts(-8, 0));
-      expect(t + Timespan(nanoseconds: 2 * _secondNano + 1),
-          hasParts(-7, -_secondNano + 1));
+      test('nanoseconds', () {
+        expect(t + Timespan(nanoseconds: 1), hasParts(-9, -_secondNano + 1));
+        expect(t + Timespan(nanoseconds: _secondNano - 1), hasParts(-9, -1));
+        expect(t + Timespan(nanoseconds: _secondNano), hasParts(-9, 0));
+        expect(
+            t + Timespan(nanoseconds: 2 * _secondNano - 1), hasParts(-8, -1));
+        expect(t + Timespan(nanoseconds: 2 * _secondNano), hasParts(-8, 0));
+        expect(t + Timespan(nanoseconds: 2 * _secondNano + 1),
+            hasParts(-7, -_secondNano + 1));
 
-      expect(t + Timespan(nanoseconds: 10 * _secondNano - 1), hasParts(0, -1));
-      expect(t + Timespan(nanoseconds: 10 * _secondNano), hasParts(0, 0));
-      expect(t + Timespan(nanoseconds: 10 * _secondNano + 1), hasParts(0, 1));
+        expect(
+            t + Timespan(nanoseconds: 10 * _secondNano - 1), hasParts(0, -1));
+        expect(t + Timespan(nanoseconds: 10 * _secondNano), hasParts(0, 0));
+        expect(t + Timespan(nanoseconds: 10 * _secondNano + 1), hasParts(0, 1));
 
-      expect(t + Timespan(nanoseconds: 20 * _secondNano - 1),
-          hasParts(9, _secondNano - 1));
-      expect(t + Timespan(nanoseconds: 20 * _secondNano), hasParts(10, 0));
-      expect(t + Timespan(nanoseconds: 20 * _secondNano + 1), hasParts(10, 1));
+        expect(t + Timespan(nanoseconds: 20 * _secondNano - 1),
+            hasParts(9, _secondNano - 1));
+        expect(t + Timespan(nanoseconds: 20 * _secondNano), hasParts(10, 0));
+        expect(
+            t + Timespan(nanoseconds: 20 * _secondNano + 1), hasParts(10, 1));
+      });
+
+      test('carries', () {
+        expect(
+          Timespan(nanoseconds: 1) + Timespan(nanoseconds: _secondNano - 1),
+          hasParts(1, 0),
+        );
+      });
+
+      test('borrows', () {
+        expect(
+          Timespan(seconds: 1) + Timespan(nanoseconds: -(_secondNano - 1)),
+          hasParts(0, 1),
+        );
+      });
+
+      test('large but precise', () {
+        expect(Timespan(seconds: 9007199254740991) + Timespan(nanoseconds: 1),
+            hasParts(9007199254740991, 1));
+        expect(Timespan(seconds: 9007199254740991) + Timespan(nanoseconds: -1),
+            hasParts(9007199254740990, 999999999));
+
+        expect(Timespan(seconds: -4503599627370496) + Timespan(nanoseconds: 1),
+            hasParts(-4503599627370495, -999999999));
+        expect(Timespan(seconds: -4503599627370496) + Timespan(nanoseconds: -1),
+            hasParts(-4503599627370496, -1));
+      });
     });
 
-    test('operator-', () {
-      var t = Timespan(seconds: 10);
-      expect(t - Timespan(seconds: 1), hasParts(9, 0));
-      expect(t - Timespan(seconds: 5), hasParts(5, 0));
-      expect(t - Timespan(seconds: 10), hasParts(0, 0));
-      expect(t - Timespan(seconds: 11), hasParts(-1, 0));
+    group('operator-', () {
+      final t = Timespan(seconds: 10);
 
-      expect(t - Timespan(nanoseconds: 1), hasParts(9, _secondNano - 1));
-      expect(t - Timespan(nanoseconds: _secondNano - 1), hasParts(9, 1));
-      expect(t - Timespan(nanoseconds: _secondNano), hasParts(9, 0));
-      expect(t - Timespan(nanoseconds: 2 * _secondNano - 1), hasParts(8, 1));
-      expect(t - Timespan(nanoseconds: 2 * _secondNano), hasParts(8, 0));
-      expect(t - Timespan(nanoseconds: 2 * _secondNano + 1),
-          hasParts(7, _secondNano - 1));
+      test('seconds', () {
+        expect(t - Timespan(seconds: 1), hasParts(9, 0));
+        expect(t - Timespan(seconds: 5), hasParts(5, 0));
+        expect(t - Timespan(seconds: 10), hasParts(0, 0));
+        expect(t - Timespan(seconds: 11), hasParts(-1, 0));
+      });
 
-      expect(t - Timespan(nanoseconds: 10 * _secondNano - 1), hasParts(0, 1));
-      expect(t - Timespan(nanoseconds: 10 * _secondNano), hasParts(0, 0));
-      expect(t - Timespan(nanoseconds: 10 * _secondNano + 1), hasParts(0, -1));
+      test('nanoseconds', () {
+        expect(t - Timespan(nanoseconds: 1), hasParts(9, _secondNano - 1));
+        expect(t - Timespan(nanoseconds: _secondNano - 1), hasParts(9, 1));
+        expect(t - Timespan(nanoseconds: _secondNano), hasParts(9, 0));
+        expect(t - Timespan(nanoseconds: 2 * _secondNano - 1), hasParts(8, 1));
+        expect(t - Timespan(nanoseconds: 2 * _secondNano), hasParts(8, 0));
+        expect(t - Timespan(nanoseconds: 2 * _secondNano + 1),
+            hasParts(7, _secondNano - 1));
 
-      expect(t - Timespan(nanoseconds: 20 * _secondNano - 1),
-          hasParts(-9, -_secondNano + 1));
-      expect(t - Timespan(nanoseconds: 20 * _secondNano), hasParts(-10, 0));
-      expect(
-          t - Timespan(nanoseconds: 20 * _secondNano + 1), hasParts(-10, -1));
+        expect(t - Timespan(nanoseconds: 10 * _secondNano - 1), hasParts(0, 1));
+        expect(t - Timespan(nanoseconds: 10 * _secondNano), hasParts(0, 0));
+        expect(
+            t - Timespan(nanoseconds: 10 * _secondNano + 1), hasParts(0, -1));
+
+        expect(t - Timespan(nanoseconds: 20 * _secondNano - 1),
+            hasParts(-9, -_secondNano + 1));
+        expect(t - Timespan(nanoseconds: 20 * _secondNano), hasParts(-10, 0));
+        expect(
+            t - Timespan(nanoseconds: 20 * _secondNano + 1), hasParts(-10, -1));
+      });
+
+      test('carries', () {
+        expect(
+          Timespan(seconds: 1) - Timespan(nanoseconds: _secondNano - 1),
+          hasParts(0, 1),
+        );
+      });
+
+      test('borrows', () {
+        expect(
+          Timespan(nanoseconds: 1) - Timespan(nanoseconds: -(_secondNano - 1)),
+          hasParts(1, 0),
+        );
+      });
+
+      test('large but precise', () {
+        expect(Timespan(seconds: 9007199254740991) - Timespan(nanoseconds: -1),
+            hasParts(9007199254740991, 1));
+        expect(Timespan(seconds: 9007199254740991) - Timespan(nanoseconds: 1),
+            hasParts(9007199254740990, 999999999));
+
+        expect(Timespan(seconds: -4503599627370496) - Timespan(nanoseconds: -1),
+            hasParts(-4503599627370495, -999999999));
+        expect(Timespan(seconds: -4503599627370496) - Timespan(nanoseconds: 1),
+            hasParts(-4503599627370496, -1));
+      });
     });
 
     test('operator*', () {

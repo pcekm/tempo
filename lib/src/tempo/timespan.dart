@@ -32,7 +32,7 @@ part of '../../tempo.dart';
 ///
 /// {@category relative}
 @immutable
-class Timespan implements Comparable<Timespan> {
+class Timespan extends _BigTime implements Comparable<Timespan> {
   static const int _hoursPerDay = 24;
   static const int _minutesPerHour = 60;
   static const int _secondsPerMinute = 60;
@@ -48,25 +48,10 @@ class Timespan implements Comparable<Timespan> {
   static const int _nsPerMillisecond = 1000000;
 
   /// The whole number of seconds.
-  final int seconds;
+  int get seconds => _secondPart;
 
   /// The fractional part of the number of seconds in nanoseconds.
-  final int nanosecondPart;
-
-  /// Constructs a `Timespan` with normalized signs.
-  ///
-  /// Either [seconds] or [nanosecondPart] may be negative and any value, but
-  /// the result will be normalized as follows:
-  ///
-  ///   - [seconds].sign == [nanosecondPart].sign
-  const Timespan._normalizedSign(
-      {required int seconds, required int nanosecondPart})
-      : seconds = seconds +
-            (seconds < 0 && nanosecondPart > 0 ? 1 : 0) +
-            (seconds > 0 && nanosecondPart < 0 ? -1 : 0),
-        nanosecondPart = nanosecondPart +
-            (seconds < 0 && nanosecondPart > 0 ? -_nanosecondsPerSecond : 0) +
-            (seconds > 0 && nanosecondPart < 0 ? _nanosecondsPerSecond : 0);
+  int get nanosecondPart => _nanosecondPart;
 
   /// Constructs a `Timespan`.
   ///
@@ -85,15 +70,15 @@ class Timespan implements Comparable<Timespan> {
     int milliseconds = 0,
     int microseconds = 0,
     int nanoseconds = 0,
-  }) : this._normalizedSign(
-            seconds: days * _secondsPerDay +
+  }) : super(
+            days * _secondsPerDay +
                 hours * _secondsPerHour +
                 minutes * _secondsPerMinute +
                 seconds +
                 milliseconds ~/ _millisecondsPerSecond +
                 microseconds ~/ _microsecondsPerSecond +
                 nanoseconds ~/ _nanosecondsPerSecond,
-            nanosecondPart: _nsPerMillisecond *
+            _nsPerMillisecond *
                     (milliseconds % _millisecondsPerSecond +
                         (milliseconds < 0 ? -_millisecondsPerSecond : 0)) +
                 _nsPerMicrosecond *
@@ -126,6 +111,8 @@ class Timespan implements Comparable<Timespan> {
         nanoseconds: fields.nanoseconds);
   }
 
+  Timespan._downcast(super.bn) : super.copy();
+
   /// Gets the timespan in days.
   int get inDays => (seconds ~/ _secondsPerDay).truncate();
 
@@ -151,64 +138,50 @@ class Timespan implements Comparable<Timespan> {
   int get inNanoseconds => _sum(_nanosecondsPerSecond, 1);
 
   /// Determines if the timespan is negative.
-  bool get isNegative => seconds.isNegative || nanosecondPart.isNegative;
+  bool get isNegative => _isNegative;
 
   /// Addition operator.
-  Timespan operator +(Timespan other) => Timespan(
-      seconds: seconds + other.seconds,
-      nanoseconds: nanosecondPart + other.nanosecondPart);
+  Timespan operator +(Timespan other) => Timespan._downcast(_add(other));
 
   /// Subtraction operator.
-  Timespan operator -(Timespan other) => Timespan(
-      seconds: seconds - other.seconds,
-      nanoseconds: nanosecondPart - other.nanosecondPart);
+  Timespan operator -(Timespan other) => Timespan._downcast(_add(-other));
 
   /// Multiplication operator. Fractional results are rounded towards zero.
-  Timespan operator *(num other) => Timespan(
-      seconds: (seconds * other).truncate(),
-      nanoseconds: (nanosecondPart * other).truncate());
+  Timespan operator *(num other) {
+    final result = _mul(other);
+    return Timespan(
+        seconds: result._secondPart, nanoseconds: result._nanosecondPart);
+  }
 
   /// Integer division operator.
-  Timespan operator ~/(num other) =>
-      Timespan(seconds: seconds ~/ other, nanoseconds: nanosecondPart ~/ other);
+  Timespan operator ~/(num other) => Timespan._downcast(_div(other));
 
   /// Less than operator.
-  bool operator <(Timespan other) => compareTo(other) < 0;
+  bool operator <(Timespan other) => _compareTo(other) < 0;
 
   /// Less than or equal operator.
-  bool operator <=(Timespan other) => compareTo(other) <= 0;
+  bool operator <=(Timespan other) => _compareTo(other) <= 0;
 
   /// Greater than operator.
-  bool operator >(Timespan other) => compareTo(other) > 0;
+  bool operator >(Timespan other) => _compareTo(other) > 0;
 
   /// Greater than or equal operator.
-  bool operator >=(Timespan other) => compareTo(other) >= 0;
+  bool operator >=(Timespan other) => _compareTo(other) >= 0;
 
   /// Unary negation operator.
-  Timespan operator -() =>
-      Timespan(seconds: -seconds, nanoseconds: -nanosecondPart);
+  Timespan operator -() => Timespan._downcast(_neg());
 
   /// Converts this to a duration with a loss of precision.
   Duration toDuration() => Duration(microseconds: inMicroseconds);
 
   /// Returns the absolute value of this `Timespan`.
-  Timespan abs() {
-    // Important: this is only true because both parts are normalized
-    // with matching signs.
-    return Timespan(seconds: seconds.abs(), nanoseconds: nanosecondPart.abs());
-  }
+  Timespan abs() => Timespan._downcast(_abs());
 
   /// Compares this to another `Timespan`.
   ///
   /// Returns 0 if they are equal, -1 if this < [other] and 1 if this > [other].
   @override
-  int compareTo(Timespan other) {
-    int secondCmp = Comparable.compare(seconds, other.seconds);
-    if (secondCmp == 0) {
-      return Comparable.compare(nanosecondPart, other.nanosecondPart);
-    }
-    return secondCmp;
-  }
+  int compareTo(Timespan other) => _compareTo(other);
 
   /// Returns a string formatted as an ISO 8601 time duration.
   ///

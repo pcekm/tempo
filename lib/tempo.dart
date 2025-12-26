@@ -134,6 +134,7 @@ export 'timezone.dart'
         timeZonesByProximity,
         ZoneDescription;
 
+part 'src/tempo/__big_time.dart';
 part 'src/tempo/__convertible_date.dart';
 part 'src/tempo/__formatting.dart';
 part 'src/tempo/__has_instant_impl.dart';
