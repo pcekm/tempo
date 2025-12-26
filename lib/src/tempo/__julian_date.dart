@@ -1,7 +1,13 @@
 part of '../../tempo.dart';
 
 /// Base class for classes that have a Julian Date.
-abstract class _JulianDate implements HasDate {
+///
+/// At its core, this is a single number representing seconds and nanoseconds
+/// since the start of the Julian period at noon, November 24, 4714 BC on the
+/// proleptic Gregorian calendar.
+abstract class _JulianDate extends _BigTime implements HasDate {
+  _JulianDate._fromBigTime(super.ts) : super.copy();
+
   /// Builds a Julian date from individual parts.
   ///
   /// The resulting date is guaranteed to be valid, even if the inputs are
@@ -51,25 +57,18 @@ abstract class _JulianDate implements HasDate {
 
   /// Step 2 in the Julian date calculation.
   const _JulianDate._jdStep2(int jdn, int nanos)
-      : _julianDateDays = jdn - (nanos >= _noonNs ? 1 : 0),
-        _julianDateNanoseconds = (nanos + _noonNs) % _nsPerDay;
+      : super(_sPerDay * (jdn - (nanos >= _noonNs ? 1 : 0)),
+            (nanos + _noonNs) % _nsPerDay);
 
+  static const _sPerDay = 86400;
   static const _nsPerSecond = 1000000000;
   static const _nsPerMinute = 60 * _nsPerSecond;
   static const _nsPerHour = 60 * _nsPerMinute;
   static const _nsPerDay = 24 * _nsPerHour;
   static const _noonNs = _nsPerDay ~/ 2;
 
-  /// The whole days part of the Julian date.
-  final int _julianDateDays;
-
-  /// The fractional part of the Julian date in Nanoseconds.
-  ///
-  /// This will always be less than 1 day (86,400 billion nanoseconds).
-  final int _julianDateNanoseconds;
-
   Timespan get _julianDate =>
-      Timespan(days: _julianDateDays, nanoseconds: _julianDateNanoseconds);
+      Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
   /// The Julian Day Number of the day this date lands on.
   ///
@@ -79,27 +78,7 @@ abstract class _JulianDate implements HasDate {
 
   /// Converts a Julian day to years, months, days, and nanoseconds past
   /// midnight on the Gregorian calendar.
-  Gregorian get _asGregorian {
-    // See: Baum, Peter. (2017). Date Algorithms.
-    int z = _julianDateDays -
-        1721118 +
-        ((_julianDateNanoseconds - (_nsPerDay / 2).floor()) / _nsPerDay)
-            .floor();
-    int remainder =
-        (_julianDateNanoseconds - (_nsPerDay / 2).floor()) % _nsPerDay;
-    int h = 100 * z - 25;
-    int a = (h / 3652425).floor();
-    int b = a - (a / 4).floor();
-    int Y = ((100 * b + h) / 36525).floor();
-    int c = b + z - 365 * Y - (Y / 4).floor();
-    int M = (5 * c + 456) ~/ 153;
-    int D = c - (153 * M - 457) ~/ 5;
-    if (M > 12) {
-      ++Y;
-      M -= 12;
-    }
-    return Gregorian(Y, M, D, remainder);
-  }
+  Gregorian get _asGregorian => julianDayToGregorian(_julianDate);
 
   @override
   int get year => _asGregorian.year;

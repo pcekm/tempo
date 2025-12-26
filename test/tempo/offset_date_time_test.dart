@@ -12,12 +12,16 @@ void main() {
   final nepalTime = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
   final nepalOffsetTime =
       OffsetDateTime.fromLocalDateTime(nepalTime, nepalOffset);
+  final nepalUnixSeconds = 946761545;
+  final nepalUnixNanoseconds = 6;
   final nepalInstant =
       Instant.fromUnix(Timespan(seconds: 946761545, nanoseconds: 6));
 
   // Newfoundland in the winter is UTC-0330:
   final nstOffset = ZoneOffset(-3, -30);
   final nstTime = OffsetDateTime.withOffset(nstOffset, 2001);
+  final nstUnixSeconds = 978319800;
+  final nstUnixNanoseconds = 0;
 
   // Difference between nepalTime and ndtTime:
   final delta = Timespan(days: 365, seconds: 22254, nanoseconds: nano - 6);
@@ -37,10 +41,9 @@ void main() {
         nepalTime.minute,
         nepalTime.second,
         nepalTime.nanosecond);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
+    expect(dt, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
     expect(dt.offset, nepalOffset);
-    expect(dt, hasInstant(nepalInstant));
+    expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
   });
 
   group('withOffset', () {
@@ -57,7 +60,7 @@ void main() {
       expect(dt, hasDate(2000, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt.offset, ZoneOffset(5, 45));
-      expect(dt, hasInstant(nepalInstant));
+      expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('hour+minute+second offset', () {
@@ -78,7 +81,7 @@ void main() {
       expect(dt, hasDate(2000, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt.offset, ZoneOffset(5, 45));
-      expect(dt, hasInstant(nepalInstant));
+      expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('default offset', () {
@@ -87,7 +90,7 @@ void main() {
       expect(dt, hasDate(2000, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt.offset, ZoneOffset(5, 45));
-      expect(dt, hasInstant(nepalInstant));
+      expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('default just before time change', () {
@@ -112,7 +115,7 @@ void main() {
   });
 
   group('fromDateTime()', () {
-    test('fromDateTime() microsecond precision', () {
+    test('microsecond precision', () {
       var dt = DateTime(2000, 1, 2, 3, 4, 5, 6, 7);
       var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
       var want =
@@ -120,13 +123,13 @@ void main() {
       expect(OffsetDateTime.fromDateTime(dt), want);
     }, testOn: '!js');
 
-    test('fromDateTime() millisecond precision', () {
+    test('millisecond precision', () {
       var dt = DateTime(2000, 1, 2, 3, 4, 5, 6);
       var offset = ZoneOffset.fromDuration(dt.timeZoneOffset);
       var want =
           OffsetDateTime.withOffset(offset, 2000, 1, 2, 3, 4, 5, 006000000);
       expect(OffsetDateTime.fromDateTime(dt), want);
-    }, testOn: 'js');
+    });
   });
 
   test('now()', () {
@@ -144,7 +147,7 @@ void main() {
       expect(dt, hasDate(2000, 1, 2));
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt.offset, ZoneOffset(5, 45));
-      expect(dt, hasInstant(nepalInstant));
+      expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('hour+minute+second offset', () {
@@ -153,7 +156,7 @@ void main() {
       expect(dt, hasDate(1970, 1, 1));
       expect(dt, hasTime(1, 2, 3));
       expect(dt.offset, ZoneOffset(1, 2, 3));
-      expect(dt, hasInstant(instant));
+      expect(dt, hasUnixSeconds(0));
     });
   });
 
@@ -163,7 +166,7 @@ void main() {
     expect(dt, hasDate(2000, 1, 2));
     expect(dt, hasTime(3, 4, 5, 6));
     expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
+    expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
   });
 
   group('fromUnix()', () {
@@ -173,6 +176,7 @@ void main() {
       expect(dt, hasTime(3, 4, 5, 6));
       expect(dt.offset, ZoneOffset(5, 45));
       expect(dt, hasInstant(nepalInstant));
+      expect(dt, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('hour+minute+second offset', () {
@@ -183,16 +187,17 @@ void main() {
       expect(dt, hasTime(1, 2, 3));
       expect(dt.offset, ZoneOffset(1, 2, 3));
       expect(dt, hasInstant(instant));
+      expect(dt, hasUnixSeconds(0));
     });
-  });
 
-  test('fromUnix() default offset', () {
-    defaultZoneId = 'Asia/Kathmandu';
-    var dt = OffsetDateTime.fromUnix(nepalInstant.unixTimestamp);
-    expect(dt, hasDate(2000, 1, 2));
-    expect(dt, hasTime(3, 4, 5, 6));
-    expect(dt.offset, ZoneOffset(5, 45));
-    expect(dt, hasInstant(nepalInstant));
+    test('default offset', () {
+      defaultZoneId = 'Asia/Kathmandu';
+      var dt = OffsetDateTime.fromUnix(nepalInstant.unixTimestamp);
+      expect(dt, hasDate(2000, 1, 2));
+      expect(dt, hasTime(3, 4, 5, 6));
+      expect(dt.offset, ZoneOffset(5, 45));
+      expect(dt, hasInstant(nepalInstant));
+    });
   });
 
   group('parse()', () {
@@ -264,23 +269,26 @@ void main() {
     });
 
     test('toDateTime()', () {
-      var want = DateTime.fromMicrosecondsSinceEpoch(
-          nepalInstant.unixTimestamp.inMicroseconds);
+      var want =
+          DateTime.fromMicrosecondsSinceEpoch(nepalUnixSeconds * 1000000);
       expect(nepalOffsetTime.toDateTime(), want);
     });
 
     test('toInstant()', () {
-      expect(nepalOffsetTime.toInstant(), nepalInstant);
+      expect(nepalOffsetTime.toInstant(),
+          hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
     });
 
     test('inTimezone()', () {
-      expect(nepalOffsetTime.inTimezone(),
-          ZonedDateTime.fromInstant(nepalInstant));
+      final got = nepalOffsetTime.inTimezone();
+      expect(got, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
+      expect(got.zoneId, defaultZoneId);
     });
 
     test('inTimezone() with time zone', () {
-      expect(nepalOffsetTime.inTimezone('America/Los_Angeles'),
-          ZonedDateTime.fromInstant(nepalInstant, 'America/Los_Angeles'));
+      final got = nepalOffsetTime.inTimezone('America/Los_Angeles');
+      expect(got, hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
+      expect(got.zoneId, 'America/Los_Angeles');
     });
   });
 
@@ -290,12 +298,13 @@ void main() {
 
   test('plusTimespan()', () {
     var got = nepalOffsetTime.plusTimespan(delta);
-    expect(got.toInstant(), nstTime.toInstant());
+    expect(got, hasUnixNanoseconds(nstUnixSeconds, nstUnixNanoseconds));
   });
 
   test('minusTimespan()', () {
     var got = nstTime.minusTimespan(delta);
-    expect(got.toInstant(), nepalOffsetTime.toInstant());
+    expect(got.toInstant(),
+        hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
   });
 
   test('plusPeriod()', () {
