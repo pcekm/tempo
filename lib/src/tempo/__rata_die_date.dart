@@ -1,19 +1,18 @@
 part of '../../tempo.dart';
 
-/// Base class for classes that have a Julian Date.
+/// Base class for classes based on a Rata Die date.
 ///
 /// At its core, this is a single number representing seconds and nanoseconds
-/// since the start of the Julian period at noon, November 24, 4714 BC on the
-/// proleptic Gregorian calendar.
-abstract class _JulianDate extends _BigTime implements HasDate {
-  _JulianDate._fromBigTime(super.ts) : super.copy();
+/// since January 1, AD 1 on the proleptic Gregorian calendar.
+class _RataDieDate extends _BigTime implements HasDate {
+  _RataDieDate._fromBigTime(super.ts) : super.copy();
 
-  /// Builds a Julian date from individual parts.
+  /// Builds a Rata Die date from individual parts.
   ///
   /// The resulting date is guaranteed to be valid, even if the inputs are
   /// not. Callers should not depend on any specific date resulting from
   /// invalid inputs.
-  const _JulianDate(
+  const _RataDieDate(
       [int year = 0,
       int month = 1,
       int day = 1,
@@ -21,8 +20,13 @@ abstract class _JulianDate extends _BigTime implements HasDate {
       int minute = 0,
       int seconds = 0,
       int nanosecond = 0])
-      // See: Baum, Peter. (2017). Date Algorithms.
-      : this._jdStep1(
+      // Step 1: Adjust the year and month to create an alternative calendar
+      // that begins on March 1, where months are numbered 3=March to
+      // 14=February. On this calendar that leap days occur on the last day of
+      // the year.
+      //
+      // (See: Baum, Peter. (2017). Date Algorithms.)
+      : this._rdStep2(
             year + (month - 14) ~/ 12, // Subtracts 1 if month is Jan or Feb
             (month - 3) % 12 + 3, // Remaps 1 -> 13 and 2 -> 14.
             day,
@@ -31,9 +35,9 @@ abstract class _JulianDate extends _BigTime implements HasDate {
                 seconds * _nsPerSecond +
                 nanosecond);
 
-  /// Step 1 in the Julian date calculation.
-  const _JulianDate._jdStep1(int yearPrime, int monthPrime, int day, int nanos)
-      : this._jdStep2(
+  /// Step 2: Find the fractional number of days since midnight, Jan 1, AD 1.
+  const _RataDieDate._rdStep2(int yearPrime, int monthPrime, int day, int nanos)
+      : this._rdStep3(
             day +
                 // This one is supposed to be truncating division, not floor
                 // like the others below:
@@ -48,42 +52,61 @@ abstract class _JulianDate extends _BigTime implements HasDate {
                     : (yearPrime + 1) ~/ 100 - 1) +
                 (yearPrime >= 0
                     ? yearPrime ~/ 400
-                    : (yearPrime + 1) ~/ 400 - 1) +
-                1721118 +
+                    : (yearPrime + 1) ~/ 400 - 1) -
+                306 +
                 (nanos >= 0
                     ? nanos ~/ _nsPerDay
                     : (nanos + 1) ~/ _nsPerDay - 1),
             nanos % _nsPerDay);
 
-  /// Step 2 in the Julian date calculation.
-  const _JulianDate._jdStep2(int jdn, int nanos)
-      : super(_sPerDay * (jdn - (nanos >= _noonNs ? 1 : 0)),
-            (nanos + _noonNs) % _nsPerDay);
+  /// Step 3: Scale days to seconds.
+  const _RataDieDate._rdStep3(int days, int nanos)
+      : super(days * _sPerDay, nanos);
 
   static const _sPerDay = 86400;
   static const _nsPerSecond = 1000000000;
   static const _nsPerMinute = 60 * _nsPerSecond;
   static const _nsPerHour = 60 * _nsPerMinute;
   static const _nsPerDay = 24 * _nsPerHour;
-  static const _noonNs = _nsPerDay ~/ 2;
 
-  Timespan get _julianDate =>
+  Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
-  /// The Julian Day Number of the day this date lands on.
-  ///
-  /// This is a whole number of days, and will be the same for all times of day on
-  /// a given date. (Unlike [_julianDateDays], which changes at noon.)
-  int get _julianDayNumber => (_julianDate + Timespan(hours: 12)).inDays;
+  Timespan get _asJulianDate =>
+      _asTimespan + Timespan(days: 1721424, hours: 12);
 
-  /// Converts a Julian day to years, months, days, and nanoseconds past
+  /// Converts a Rata Die date to years, months, days, and nanoseconds past
   /// midnight on the Gregorian calendar.
-  Gregorian get _asGregorian => julianDayToGregorian(_julianDate);
+  Gregorian get _asGregorian {
+    final rd = _asTimespan.inDays;
 
+    // See: Baum, Peter. (2017). Date Algorithms.
+    final z = rd + 306;
+    final g = z - 0.25;
+    final a = (g / 36524.25).floor();
+    final b = a - (a / 4).floor();
+    final y = ((b + g) / 365.25).floor();
+    final c = z + a - (a / 4).floor() - (365.25 * y).floor();
+    final m = (5 * c + 456) ~/ 153;
+    final f = (153 * m - 457) ~/ 5;
+
+    return Gregorian(y + m ~/ 13, m - 12 * (m ~/ 13), c - f, 0);
+  }
+
+  // See: Baum, Peter. (2017). Date Algorithms.
   @override
   int get year => _asGregorian.year;
+
   @override
   int get month => _asGregorian.month;
+
   @override
   int get day => _asGregorian.day;
+
+  @override
+  Weekday get weekday => Weekday.values[(_asTimespan.inDays - 1) % 7 + 1];
+
+  @override
+  int get ordinalDay =>
+      _asTimespan.inDays - LocalDate(year)._asTimespan.inDays + 1;
 }

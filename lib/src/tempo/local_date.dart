@@ -4,7 +4,7 @@ part of '../../tempo.dart';
 ///
 /// {@category local}
 @immutable
-class LocalDate extends _JulianDate
+class LocalDate extends _RataDieDate
     with _Formatting
     implements
         HasDate,
@@ -68,9 +68,6 @@ class LocalDate extends _JulianDate
   bool get isLeapYear => checkLeapYear(year);
 
   @override
-  Weekday get weekday => Weekday.values[_julianDayNumber % 7 + 1];
-
-  @override
   DateTime toDateTime() => DateTime(year, month, day);
 
   @override
@@ -82,14 +79,10 @@ class LocalDate extends _JulianDate
       ZonedDateTime.withZoneId(zoneId ?? defaultZoneId, year, month, day);
 
   @override
-  Instant toInstant() => Instant._fromJulianDay(_julianDate);
+  Instant toInstant() => Instant._fromJulianDay(_asJulianDate);
 
   @override
   LocalDateTime toLocal() => LocalDateTime.combine(this);
-
-  @override
-  int get ordinalDay =>
-      _julianDate.inDays - LocalDate(year)._julianDate.inDays + 1;
 
   /// The number of full months since 0000-01-01 (i.e. not including the
   /// current month).
@@ -122,7 +115,7 @@ class LocalDate extends _JulianDate
     late int sign;
     late LocalDate d1;
     late LocalDate d2;
-    if (otherDate._julianDate.inDays >= _julianDate.inDays) {
+    if (otherDate._asTimespan.inDays >= _asTimespan.inDays) {
       sign = 1;
       d1 = this;
       d2 = otherDate;
@@ -154,21 +147,21 @@ class LocalDate extends _JulianDate
   /// To find the number of years, months and days between two dates, use
   /// [periodUntil()].
   Timespan timespanUntil(LocalDate other) =>
-      Timespan(days: other._julianDate.inDays - _julianDate.inDays);
+      Timespan(days: other._asTimespan.inDays - _asTimespan.inDays);
 
   /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate plusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDate + t);
+      LocalDate._fromJulianDay(_asTimespan + t);
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate minusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_julianDate - t);
+      LocalDate._fromJulianDay(_asTimespan - t);
 
   /// Adds [Period] of time.
   ///
@@ -210,7 +203,7 @@ class LocalDate extends _JulianDate
 
   @override
   int compareTo(LocalDate other) {
-    return _julianDate.compareTo(other._julianDate);
+    return _asTimespan.compareTo(other._asTimespan);
   }
 
   /// Greater than operator.
@@ -233,7 +226,7 @@ class LocalDate extends _JulianDate
       day == other.day;
 
   @override
-  int get hashCode => _julianDate.hashCode;
+  int get hashCode => _asTimespan.hashCode;
 
   /// Returns the date in ISO 8601 format.
   ///
