@@ -21,7 +21,7 @@ class LocalDate extends _RataDieDate
   const LocalDate([int year = 0, int month = 1, int day = 1])
       : super(year, month, day, 0, 0, 0, 0);
 
-  LocalDate._fromJulianDay(Timespan super.julianDay) : super._fromBigTime();
+  LocalDate._fromRataDieDate(super.bigTime) : super._fromBigTime();
 
   /// Constructs a `LocalDate` with the current date and time in the
   /// current time zone.
@@ -154,14 +154,14 @@ class LocalDate extends _RataDieDate
   /// The date is incremented or decremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate plusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_asTimespan + t);
+      LocalDate._fromRataDieDate(_asTimespan + t);
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
   /// timespan. Fractional results are rounded down.
   LocalDate minusTimespan(Timespan t) =>
-      LocalDate._fromJulianDay(_asTimespan - t);
+      LocalDate._fromRataDieDate(_asTimespan - t);
 
   /// Adds [Period] of time.
   ///

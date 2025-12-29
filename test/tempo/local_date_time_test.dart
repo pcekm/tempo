@@ -44,10 +44,17 @@ void main() {
       }, testOn: '!js');
     });
 
-    test('combine()', () {
-      var d =
-          LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));
-      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
+    group('combine()', () {
+      test('date only', () {
+        var d = LocalDateTime.combine(LocalDate(2000, 1, 2));
+        expect(d, hasDateAndTime(2000, 1, 2));
+      });
+
+      test('both', () {
+        var d =
+            LocalDateTime.combine(LocalDate(2000, 1, 2), LocalTime(3, 4, 5, 6));
+        expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
+      });
     });
 
     test('now()', () {

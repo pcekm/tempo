@@ -24,6 +24,8 @@ and this project adheres to
   - `Instant.fromUnix()`
   - `ZoneOffset()`
   - `LocalDate()`
+  - `LocalTime()`
+  - `LocalDateTime()`
 - Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
   constructors.
 - Improved failure output of `hasDate` and `hasTime`

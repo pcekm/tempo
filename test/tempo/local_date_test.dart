@@ -209,7 +209,7 @@ void main() {
 
   group('conversions', () {
     final date = LocalDate(2000, 1, 2);
-    final sinceEpoch = Timespan(seconds: 946771200);
+    final unixSeconds = 946771200;
 
     test('toDateTime', () {
       final want = DateTime(2000, 1, 2);
@@ -217,27 +217,25 @@ void main() {
     });
 
     test('toInstant', () {
-      final want = Instant.fromUnix(sinceEpoch);
-      expect(date.toInstant(), want);
+      expect(date.toInstant(), hasUnixSeconds(unixSeconds));
     });
 
     test('inTimezone', () {
-      final want = ZonedDateTime.fromUnix(sinceEpoch);
-      expect(date.inTimezone(), want);
+      expect(date.inTimezone(), hasUnixSeconds(unixSeconds));
+      expect(date.inTimezone().zoneId, defaultZoneId);
     });
 
     test('inTimezone with time zone', () {
-      final want = ZonedDateTime.fromUnix(sinceEpoch, 'UTC');
-      expect(date.inTimezone(), want);
+      expect(date.inTimezone('UTC'), hasUnixSeconds(unixSeconds));
+      expect(date.inTimezone('UTC').zoneId, 'UTC');
     });
 
     test('atOffset', () {
-      final want = OffsetDateTime.fromUnix(sinceEpoch);
-      expect(date.atOffset(ZoneOffset(0)), want);
+      expect(date.atOffset(ZoneOffset(0)), hasUnixSeconds(unixSeconds));
     });
 
     test('toLocal', () {
-      expect(date.toLocal(), LocalDateTime(2000, 1, 2));
+      expect(date.toLocal(), hasDateAndTime(2000, 1, 2));
     });
   });
 

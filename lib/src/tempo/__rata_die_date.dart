@@ -5,7 +5,7 @@ part of '../../tempo.dart';
 /// At its core, this is a single number representing seconds and nanoseconds
 /// since January 1, AD 1 on the proleptic Gregorian calendar.
 class _RataDieDate extends _BigTime implements HasDate {
-  _RataDieDate._fromBigTime(super.ts) : super.copy();
+  _RataDieDate._fromBigTime(super.bigTime) : super.copy();
 
   /// Builds a Rata Die date from individual parts.
   ///
@@ -30,15 +30,16 @@ class _RataDieDate extends _BigTime implements HasDate {
             year + (month - 14) ~/ 12, // Subtracts 1 if month is Jan or Feb
             (month - 3) % 12 + 3, // Remaps 1 -> 13 and 2 -> 14.
             day,
-            hour * _nsPerHour +
-                minute * _nsPerMinute +
-                seconds * _nsPerSecond +
-                nanosecond);
+            hour,
+            minute,
+            seconds,
+            nanosecond);
 
   /// Step 2: Find the fractional number of days since midnight, Jan 1, AD 1.
-  const _RataDieDate._rdStep2(int yearPrime, int monthPrime, int day, int nanos)
-      : this._rdStep3(
-            day +
+  const _RataDieDate._rdStep2(int yearPrime, int monthPrime, int day, int hour,
+      int minute, int seconds, int nanosecond)
+      : super(
+            days: (day +
                 // This one is supposed to be truncating division, not floor
                 // like the others below:
                 (monthPrime * 153 - 457) ~/ 5 +
@@ -53,21 +54,11 @@ class _RataDieDate extends _BigTime implements HasDate {
                 (yearPrime >= 0
                     ? yearPrime ~/ 400
                     : (yearPrime + 1) ~/ 400 - 1) -
-                306 +
-                (nanos >= 0
-                    ? nanos ~/ _nsPerDay
-                    : (nanos + 1) ~/ _nsPerDay - 1),
-            nanos % _nsPerDay);
-
-  /// Step 3: Scale days to seconds.
-  const _RataDieDate._rdStep3(int days, int nanos)
-      : super(days * _sPerDay, nanos);
-
-  static const _sPerDay = 86400;
-  static const _nsPerSecond = 1000000000;
-  static const _nsPerMinute = 60 * _nsPerSecond;
-  static const _nsPerHour = 60 * _nsPerMinute;
-  static const _nsPerDay = 24 * _nsPerHour;
+                306),
+            hours: hour,
+            minutes: minute,
+            seconds: seconds,
+            nanoseconds: nanosecond);
 
   Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
@@ -77,7 +68,7 @@ class _RataDieDate extends _BigTime implements HasDate {
 
   /// Converts a Rata Die date to years, months, days, and nanoseconds past
   /// midnight on the Gregorian calendar.
-  Gregorian get _asGregorian {
+  ({int year, int month, int day}) get _asGregorian {
     final rd = _asTimespan.inDays;
 
     // See: Baum, Peter. (2017). Date Algorithms.
@@ -90,7 +81,8 @@ class _RataDieDate extends _BigTime implements HasDate {
     final m = (5 * c + 456) ~/ 153;
     final f = (153 * m - 457) ~/ 5;
 
-    return Gregorian(y + m ~/ 13, m - 12 * (m ~/ 13), c - f, 0);
+    final res = (year: y + m ~/ 13, month: m - 12 * (m ~/ 13), day: c - f);
+    return res;
   }
 
   // See: Baum, Peter. (2017). Date Algorithms.

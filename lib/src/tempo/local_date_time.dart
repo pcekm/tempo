@@ -7,34 +7,13 @@ part of '../../tempo.dart';
 ///
 /// {@category local}
 @immutable
-class LocalDateTime
+class LocalDateTime extends _RataDieDate
     with _Formatting
     implements
         Comparable<LocalDateTime>,
         HasDateTime,
         _PeriodArithmetic<LocalDateTime>,
         _ConvertibleDate {
-  /// The earliest possible datetime.
-  static final LocalDateTime minimum =
-      LocalDateTime.combine(LocalDate.minimum, LocalTime.minimum);
-
-  /// The latest possible datetime.
-  static final LocalDateTime maximum =
-      LocalDateTime.combine(LocalDate.maximum, LocalTime.maximum);
-
-  static const int _nsPerMicrosecond = 1000;
-  static const int _nsPerMillisecond = 1000000;
-  static const int _nsPerSecond = 1000000000;
-
-  static const int _nsPerMinute = 60 * _nsPerSecond;
-  static const int _nsPerHour = 60 * _nsPerMinute;
-
-  /// The date part of this [DateTime].
-  final LocalDate date;
-
-  /// The time part of this [DateTime].
-  final LocalTime time;
-
   /// Constructs a new `LocalDateTime`.
   ///
   /// The time arguments wrap in exactly the same way they do in [LocalTime],
@@ -50,20 +29,14 @@ class LocalDateTime
   /// ```
   ///
   /// {@macro astro_year}
-  LocalDateTime(
-      [int year = 0,
-      int month = 1,
-      int day = 1,
-      int hour = 0,
-      int minute = 0,
-      int second = 0,
-      int nanosecond = 0])
-      : time = LocalTime(hour, minute, second, nanosecond),
-        date = LocalDate(year, month, day).plusTimespan(Timespan(
-            hours: hour,
-            minutes: minute,
-            seconds: second,
-            nanoseconds: nanosecond));
+  const LocalDateTime(
+      [super.year,
+      super.month,
+      super.day,
+      super.hour,
+      super.minute,
+      super.second,
+      super.nanosecond]);
 
   /// Constructs a `LocalDateTime` with the current date and time in the
   /// current time zone.
@@ -88,8 +61,9 @@ class LocalDateTime
   /// Makes a `LocalDateTime` from a [LocalDate] and an optional [LocalTime].
   ///
   /// Uses midnight if no time is provided.
-  LocalDateTime.combine(this.date, [LocalTime? time])
-      : time = time ?? LocalTime();
+  LocalDateTime.combine(LocalDate date, [LocalTime? time])
+      : this(date.year, date.month, date.day, time?.hour ?? 0,
+            time?.minute ?? 0, time?.second ?? 0, time?.nanosecond ?? 0);
 
   LocalDateTime._fromGregorian(Gregorian parts)
       : this(parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
@@ -106,14 +80,23 @@ class LocalDateTime
   factory LocalDateTime.parse(String dateTime) =>
       _parseIso8160DateTime(dateTime).datetime;
 
-  Timespan get _julianDay => gregorianToJulianDay(Gregorian(
-      year,
-      month,
-      day,
-      hour * _nsPerHour +
-          minute * _nsPerMinute +
-          second * _nsPerSecond +
-          nanosecond));
+  /// The earliest possible datetime.
+  static const minimum = LocalDateTime(-9999);
+
+  /// The latest possible datetime.
+  static const maximum = LocalDateTime(9999, 12, 31, 23, 59, 59, 999999999);
+
+  static const _nsPerMicrosecond = 1000;
+  static const _nsPerMillisecond = 1000000;
+
+  static const _sPerDay = 86400;
+
+  /// The date part of this [DateTime].
+  LocalDate get date => LocalDate._fromRataDieDate(this);
+
+  /// The time part of this [DateTime].
+  LocalTime get time =>
+      LocalTime(0, 0, _secondPart.remainder(_sPerDay), _nanosecondPart);
 
   /// Returns a new datetime with one or more fields replaced.
   ///
@@ -143,21 +126,6 @@ class LocalDateTime
   }
 
   @override
-  int get year => date.year;
-
-  @override
-  int get month => date.month;
-
-  @override
-  int get day => date.day;
-
-  @override
-  Weekday get weekday => date.weekday;
-
-  @override
-  int get ordinalDay => date.ordinalDay;
-
-  @override
   int get hour => time.hour;
 
   @override
@@ -179,7 +147,7 @@ class LocalDateTime
 
   /// Converts this to an Instant.
   @override
-  Instant toInstant() => Instant._fromJulianDay(_julianDay);
+  Instant toInstant() => Instant._fromJulianDay(_asJulianDate);
 
   @override
   OffsetDateTime atOffset([ZoneOffset? offset]) =>
@@ -207,7 +175,8 @@ class LocalDateTime
   /// LocalDateTime dt2 = LocalDateTime(2000, 2, 2, 3);
   /// dt1.timespanUntil(dt2) == Timespan(days: 32, hours: 1);
   /// ```
-  Timespan timespanUntil(LocalDateTime other) => other._julianDay - _julianDay;
+  Timespan timespanUntil(LocalDateTime other) =>
+      other._asJulianDate - _asJulianDate;
 
   /// Finds the [Period] between this and another [HasDate].
   ///
@@ -268,7 +237,7 @@ class LocalDateTime
   /// dt.plusTimespan(timespan) == LocalDateTime(2000, 1, 31, 1);
   /// ```
   LocalDateTime plusTimespan(Timespan amount) =>
-      LocalDateTime._fromJulianDay(_julianDay + amount);
+      LocalDateTime._fromJulianDay(_asJulianDate + amount);
 
   /// Subtracts a [Timespan].
   ///
@@ -278,10 +247,11 @@ class LocalDateTime
   /// dt.minusTimespan(timespan) == LocalDateTime(2000, 1, 1, 23);
   /// ```
   LocalDateTime minusTimespan(Timespan amount) =>
-      LocalDateTime._fromJulianDay(_julianDay - amount);
+      LocalDateTime._fromJulianDay(_asJulianDate - amount);
 
   @override
-  int compareTo(LocalDateTime other) => _julianDay.compareTo(other._julianDay);
+  int compareTo(LocalDateTime other) =>
+      _asJulianDate.compareTo(other._asJulianDate);
 
   /// Greater than operator.
   bool operator >(LocalDateTime other) => compareTo(other) > 0;

@@ -8,27 +8,6 @@ part of '../../tempo.dart';
 /// {@category local}
 @immutable
 class LocalTime implements Comparable<LocalTime>, HasTime {
-  /// The earliest possible time.
-  static final LocalTime minimum = LocalTime(0);
-
-  /// The latest possible time.
-  static final LocalTime maximum = LocalTime(23, 59, 59, _nano - 1);
-
-  static const int _nano = 1000000000;
-
-  static const int _nsPerS = 1000000000;
-  static const int _nsPerMs = 1000000;
-  static const int _nsPerUs = 1000;
-
-  static const int _secsPerDay = 86400;
-  static const int _secsPerMinute = 60;
-  static const int _minsPerHour = 60;
-  static const int _secsPerHour = 3600;
-  static const int _hoursPerDay = 24;
-
-  /// The time in nanoseconds relative to midnight.
-  final int nanosecondsSinceMidnight;
-
   /// Constructs a new [LocalTime].
   ///
   /// If the provided values are bigger than expected (e.g. minute = 61),
@@ -43,7 +22,8 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   /// LocalTime(23, 60, 0) == LocalTime(0, 0, 0);
   /// LocalTime(0, 0, -1) == LocalTime(23, 59, 59);
   /// ```
-  LocalTime([int hour = 0, int minute = 0, int second = 0, int nanosecond = 0])
+  const LocalTime(
+      [int hour = 0, int minute = 0, int second = 0, int nanosecond = 0])
       : nanosecondsSinceMidnight = (hour * _secsPerHour * _nano +
                 minute * _secsPerMinute * _nano +
                 second * _nsPerS +
@@ -84,6 +64,27 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
     nanosecond ??= this.nanosecond;
     return LocalTime(hour, minute, second, nanosecond);
   }
+
+  /// The earliest possible time.
+  static const minimum = LocalTime(0);
+
+  /// The latest possible time.
+  static const maximum = LocalTime(23, 59, 59, _nano - 1);
+
+  static const _nano = 1000000000;
+
+  static const _nsPerS = 1000000000;
+  static const _nsPerMs = 1000000;
+  static const _nsPerUs = 1000;
+
+  static const _secsPerDay = 86400;
+  static const _secsPerMinute = 60;
+  static const _minsPerHour = 60;
+  static const _secsPerHour = 3600;
+  static const _hoursPerDay = 24;
+
+  /// The time in nanoseconds relative to midnight.
+  final int nanosecondsSinceMidnight;
 
   @override
   int get hour =>

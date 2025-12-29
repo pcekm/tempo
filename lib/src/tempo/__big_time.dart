@@ -34,30 +34,61 @@ part of '../../tempo.dart';
 class _BigTime {
   /// Constructs a `_BigTime` with normalized signs.
   ///
-  /// Either [secondPart] or [nanosecondPart] may be negative and any value, but
+  /// Either [_secondPart] or [_nanosecondPart] may be negative and any value, but
   /// the result will be normalized as follows:
   ///
-  ///   - [secondPart].sign == [nanosecondPart].sign
-  const _BigTime(int secondPart, int nanosecondPart)
-      : this._maybeCarry(
-            secondPart +
-                (secondPart < 0 && nanosecondPart > 0 ? 1 : 0) +
-                (secondPart > 0 && nanosecondPart < 0 ? -1 : 0),
-            nanosecondPart +
-                (secondPart < 0 && nanosecondPart > 0 ? -_nsPerSecond : 0) +
-                (secondPart > 0 && nanosecondPart < 0 ? _nsPerSecond : 0));
+  ///   - `-10^9` < [_nanosecondPart] < `10^9`
+  ///   - [_secondPart].sign == [_nanosecondPart].sign
+  const _BigTime({
+    int days = 0,
+    int hours = 0,
+    int minutes = 0,
+    int seconds = 0,
+    int milliseconds = 0,
+    int microseconds = 0,
+    int nanoseconds = 0,
+  }) : this._normalizedSign(
+            days * _secondsPerDay +
+                hours * _secondsPerHour +
+                minutes * _secondsPerMinute +
+                seconds +
+                milliseconds ~/ _millisecondsPerSecond +
+                microseconds ~/ _microsecondsPerSecond +
+                nanoseconds ~/ _nsPerSecond,
+            _nsPerMillisecond *
+                    (milliseconds % _millisecondsPerSecond +
+                        (milliseconds < 0 ? -_millisecondsPerSecond : 0)) +
+                _nsPerMicrosecond *
+                    (microseconds % _microsecondsPerSecond +
+                        (microseconds < 0 ? -_microsecondsPerSecond : 0)) +
+                nanoseconds % _nsPerSecond +
+                (nanoseconds < 0 ? -_nsPerSecond : 0));
 
-  /// Performs a carry if needed.
-  const _BigTime._maybeCarry(int secondPart, int nanosecondPart)
-      : _secondPart = secondPart + nanosecondPart ~/ _nsPerSecond,
-        _nanosecondPart = nanosecondPart % _nsPerSecond -
-            (nanosecondPart < 0 ? _nsPerSecond : 0);
+  const _BigTime._normalizedSign(int secondPart, int nanosecondPart)
+      : _secondPart = secondPart +
+            (secondPart < 0 && nanosecondPart > 0 ? 1 : 0) +
+            (secondPart > 0 && nanosecondPart < 0 ? -1 : 0),
+        _nanosecondPart = nanosecondPart +
+            (secondPart < 0 && nanosecondPart > 0 ? -_nsPerSecond : 0) +
+            (secondPart > 0 && nanosecondPart < 0 ? _nsPerSecond : 0);
 
-  _BigTime.copy(_BigTime bn)
-      : _secondPart = bn._secondPart,
-        _nanosecondPart = bn._nanosecondPart;
+  _BigTime.copy(_BigTime bigTime)
+      : _secondPart = bigTime._secondPart,
+        _nanosecondPart = bigTime._nanosecondPart;
 
-  static const int _nsPerSecond = 1000000000;
+  static const _hoursPerDay = 24;
+  static const _minutesPerHour = 60;
+  static const _secondsPerMinute = 60;
+  static const _millisecondsPerSecond = 1000;
+  static const _microsecondsPerSecond = 1000000;
+  static const _nsPerSecond = 1000000000;
+  static const _secondsPerHour = _minutesPerHour * _secondsPerMinute;
+
+  static const _minutesPerDay = _minutesPerHour * _hoursPerDay;
+  static const _secondsPerDay = _secondsPerMinute * _minutesPerDay;
+
+  static const _nsPerMicrosecond = 1000;
+  static const _nsPerMillisecond = 1000000;
 
   /// The whole part of the number.
   final int _secondPart;
@@ -70,24 +101,28 @@ class _BigTime {
 
   /// Addition operation.
   _BigTime _add(_BigTime other) => _BigTime(
-      _secondPart + other._secondPart, _nanosecondPart + other._nanosecondPart);
+      seconds: _secondPart + other._secondPart,
+      nanoseconds: _nanosecondPart + other._nanosecondPart);
 
   /// Multiplication operation. Fractional results are rounded towards zero.
   _BigTime _mul(num other) => _BigTime(
-      (_secondPart * other).truncate(), (_nanosecondPart * other).truncate());
+      seconds: (_secondPart * other).truncate(),
+      nanoseconds: (_nanosecondPart * other).truncate());
 
   /// Integer truncating division operation.
-  _BigTime _div(num other) =>
-      _BigTime(_secondPart ~/ other, _nanosecondPart ~/ other);
+  _BigTime _div(num other) => _BigTime(
+      seconds: _secondPart ~/ other, nanoseconds: _nanosecondPart ~/ other);
 
   /// Unary negation operation.
-  _BigTime _neg() => _BigTime(-_secondPart, -_nanosecondPart);
+  _BigTime _neg() =>
+      _BigTime(seconds: -_secondPart, nanoseconds: -_nanosecondPart);
 
   /// Returns the absolute value of this `_BigTime`.
   _BigTime _abs() {
     // Important: this is only true because both parts are normalized
     // with matching signs.
-    return _BigTime(_secondPart.abs(), _nanosecondPart.abs());
+    return _BigTime(
+        seconds: _secondPart.abs(), nanoseconds: _nanosecondPart.abs());
   }
 
   /// Compares this to another `_BigTime`.

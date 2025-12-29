@@ -63,29 +63,14 @@ class Timespan extends _BigTime implements Comparable<Timespan> {
   ///   - `-10^9` < [nanosecondPart] < `10^9`
   ///   - [seconds].sign == [nanosecondPart].sign
   const Timespan({
-    int days = 0,
-    int hours = 0,
-    int minutes = 0,
-    int seconds = 0,
-    int milliseconds = 0,
-    int microseconds = 0,
-    int nanoseconds = 0,
-  }) : super(
-            days * _secondsPerDay +
-                hours * _secondsPerHour +
-                minutes * _secondsPerMinute +
-                seconds +
-                milliseconds ~/ _millisecondsPerSecond +
-                microseconds ~/ _microsecondsPerSecond +
-                nanoseconds ~/ _nanosecondsPerSecond,
-            _nsPerMillisecond *
-                    (milliseconds % _millisecondsPerSecond +
-                        (milliseconds < 0 ? -_millisecondsPerSecond : 0)) +
-                _nsPerMicrosecond *
-                    (microseconds % _microsecondsPerSecond +
-                        (microseconds < 0 ? -_microsecondsPerSecond : 0)) +
-                nanoseconds % _nanosecondsPerSecond +
-                (nanoseconds < 0 ? -_nanosecondsPerSecond : 0));
+    super.days,
+    super.hours,
+    super.minutes,
+    super.seconds,
+    super.milliseconds,
+    super.microseconds,
+    super.nanoseconds,
+  }) : super();
 
   /// Constructs a `Timespan` from a [Duration].
   Timespan.fromDuration(Duration duration)
