@@ -63,6 +63,9 @@ class _RataDieDate extends _BigTime implements HasDate {
   Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
+  /// Converts this to a Julian Date.
+  ///
+  /// Assumes that this is time in UTC.
   Timespan get _asJulianDate =>
       _asTimespan + Timespan(days: 1721424, hours: 12);
 
