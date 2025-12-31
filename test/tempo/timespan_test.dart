@@ -36,6 +36,26 @@ void main() {
               nanoseconds: 7),
           hasParts(
               1 * _daySecs + 2 * _hourSecs + 3 * _minuteSecs + 4, 5006007));
+      expect(
+          Timespan(
+              days: 1,
+              hours: -1,
+              minutes: -1,
+              seconds: -1,
+              milliseconds: -1,
+              microseconds: -1,
+              nanoseconds: -1),
+          hasParts(22 * _hourSecs + 58 * _minuteSecs + 58, 998998999));
+      expect(
+          Timespan(
+              days: -1,
+              hours: 1,
+              minutes: 1,
+              seconds: 1,
+              milliseconds: 1,
+              microseconds: 1,
+              nanoseconds: 1),
+          hasParts(-22 * _hourSecs - 58 * _minuteSecs - 58, -998998999));
     });
 
     test('normalization', () {

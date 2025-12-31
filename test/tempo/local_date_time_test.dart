@@ -7,8 +7,19 @@ import 'package:test/test.dart';
 void main() {
   group('Constructors and basic getters:', () {
     test('Default', () {
-      var d = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);
-      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
+      expect(LocalDateTime(2000, 1, 2, 3, 4, 5, 6),
+          hasDateAndTime(2000, 1, 2, 3, 4, 5, 6));
+      expect(LocalDateTime(1, 2, 3, 4, 5, 6, 7),
+          hasDateAndTime(1, 2, 3, 4, 5, 6, 7));
+      expect(LocalDateTime(9999, 12, 31, 23, 59, 59, 999999999),
+          hasDateAndTime(9999, 12, 31, 23, 59, 59, 999999999));
+    });
+
+    test('negative epoch times', () {
+      expect(LocalDateTime(0, 1, 2, 3, 4, 5, 6),
+          hasDateAndTime(0, 1, 2, 3, 4, 5, 6));
+      expect(LocalDateTime(-1000, 1, 1), hasDateAndTime(-1000, 1, 1));
+      expect(LocalDateTime(-9999, 1, 1), hasDateAndTime(-9999, 1, 1));
     });
 
     test('wrapping times', () {
