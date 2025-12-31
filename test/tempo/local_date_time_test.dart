@@ -16,10 +16,12 @@ void main() {
     });
 
     test('negative epoch times', () {
+      expect(LocalDateTime(0, 1, 1), hasDateAndTime(0, 1, 1));
       expect(LocalDateTime(0, 1, 2, 3, 4, 5, 6),
           hasDateAndTime(0, 1, 2, 3, 4, 5, 6));
-      expect(LocalDateTime(-1000, 1, 1), hasDateAndTime(-1000, 1, 1));
       expect(LocalDateTime(-9999, 1, 1), hasDateAndTime(-9999, 1, 1));
+      expect(LocalDateTime(-9999, 1, 2, 3, 4, 5, 6),
+          hasDateAndTime(-9999, 1, 2, 3, 4, 5, 6));
     });
 
     test('wrapping times', () {

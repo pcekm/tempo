@@ -60,22 +60,26 @@ class _RataDieDate extends _BigTime implements HasDate {
             seconds: seconds,
             nanoseconds: nanosecond);
 
+  static const _nsPerSecond = 1000000000;
+  static const _sPerDay = 86400;
+  static const _nsPerDay = 86400 * _nsPerSecond;
+
   Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
   /// Converts this to a Julian Date.
   ///
-  /// Assumes that this is time in UTC.
+  /// Assumes this is time in UTC.
   Timespan get _asJulianDate =>
       _asTimespan + Timespan(days: 1721424, hours: 12);
 
   /// Converts a Rata Die date to years, months, days, and nanoseconds past
   /// midnight on the Gregorian calendar.
-  ({int year, int month, int day}) get _asGregorian {
-    final rd = _asTimespan.inDays;
-
+  ({int year, int month, int day}) _toGregorian() {
     // See: Baum, Peter. (2017). Date Algorithms.
-    final z = rd + 306;
+    final nanosOfDay = _asTimespan.inSeconds.remainder(_sPerDay) +
+        (_asTimespan.nanosecondPart / _nsPerDay).floor();
+    final z = _asTimespan.inDays + 306 + (nanosOfDay / _nsPerDay).floor();
     final g = z - 0.25;
     final a = (g / 36524.25).floor();
     final b = a - (a / 4).floor();
@@ -90,13 +94,13 @@ class _RataDieDate extends _BigTime implements HasDate {
 
   // See: Baum, Peter. (2017). Date Algorithms.
   @override
-  int get year => _asGregorian.year;
+  int get year => _toGregorian().year;
 
   @override
-  int get month => _asGregorian.month;
+  int get month => _toGregorian().month;
 
   @override
-  int get day => _asGregorian.day;
+  int get day => _toGregorian().day;
 
   @override
   Weekday get weekday => Weekday.values[(_asTimespan.inDays - 1) % 7 + 1];
