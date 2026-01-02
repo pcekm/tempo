@@ -121,6 +121,14 @@ void main() {
     });
   });
 
+  test('inLeapYear', () {
+    expect(LocalDateTime(1900).inLeapYear, false, reason: 'year = 1900');
+    expect(LocalDateTime(1904).inLeapYear, true, reason: 'year = 1904');
+    expect(LocalDateTime(1996).inLeapYear, true, reason: 'year = 1996');
+    expect(LocalDateTime(1997).inLeapYear, false, reason: 'year = 1997');
+    expect(LocalDateTime(2000).inLeapYear, true, reason: 'year = 2000');
+  });
+
   group('conversions', () {
     final dt = LocalDateTime(2000, 1, 2, 3, 4, 5, 006007008);
     final sinceEpoch = Timespan(seconds: 946782245, nanoseconds: 006007008);

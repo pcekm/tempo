@@ -8,12 +8,12 @@ import 'package:test/test.dart';
 
 final isValidDate = predicate((LocalDate d) {
   if (d.month < 1 || d.month > 12) return false;
-  final isLeapYear =
+  final inLeapYear =
       d.year % 4 == 0 && (d.year % 100 != 0 || d.year % 400 == 0);
   final daysInMonth = switch (d.month) {
     1 || 3 || 5 || 7 || 8 || 10 || 12 => 31,
     4 || 6 || 9 || 11 => 30,
-    2 => isLeapYear ? 29 : 28,
+    2 => inLeapYear ? 29 : 28,
     _ => throw Exception('Bad month number')
   };
   return d.day >= 1 && d.day <= daysInMonth;
@@ -199,12 +199,12 @@ void main() {
     expect(LocalDate(2023, 12, 31).ordinalDay, 365);
   });
 
-  test('isLeapYear', () {
-    expect(LocalDate(1900).isLeapYear, false, reason: 'year = 1900');
-    expect(LocalDate(1904).isLeapYear, true, reason: 'year = 1904');
-    expect(LocalDate(1996).isLeapYear, true, reason: 'year = 1996');
-    expect(LocalDate(1997).isLeapYear, false, reason: 'year = 1997');
-    expect(LocalDate(2000).isLeapYear, true, reason: 'year = 2000');
+  test('inLeapYear', () {
+    expect(LocalDate(1900).inLeapYear, false, reason: 'year = 1900');
+    expect(LocalDate(1904).inLeapYear, true, reason: 'year = 1904');
+    expect(LocalDate(1996).inLeapYear, true, reason: 'year = 1996');
+    expect(LocalDate(1997).inLeapYear, false, reason: 'year = 1997');
+    expect(LocalDate(2000).inLeapYear, true, reason: 'year = 2000');
   });
 
   group('conversions', () {

@@ -65,7 +65,8 @@ class LocalDate extends _RataDieDate
   static const LocalDate maximum = LocalDate(9999, 12, 31);
 
   /// True if this date falls in a leap year.
-  bool get isLeapYear => checkLeapYear(year);
+  @Deprecated('Use inLeapyear instead.')
+  bool get isLeapYear => inLeapYear;
 
   @override
   DateTime toDateTime() => DateTime(year, month, day);

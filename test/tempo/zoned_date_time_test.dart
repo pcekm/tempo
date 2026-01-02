@@ -271,6 +271,14 @@ void main() {
     });
   });
 
+  test('inLeapYear', () {
+    expect(ZonedDateTime(1900).inLeapYear, false, reason: 'year = 1900');
+    expect(ZonedDateTime(1904).inLeapYear, true, reason: 'year = 1904');
+    expect(ZonedDateTime(1996).inLeapYear, true, reason: 'year = 1996');
+    expect(ZonedDateTime(1997).inLeapYear, false, reason: 'year = 1997');
+    expect(ZonedDateTime(2000).inLeapYear, true, reason: 'year = 2000');
+  });
+
   group('conversions', () {
     test('toLocal', () {
       var local = ZonedDateTime.withZoneId(

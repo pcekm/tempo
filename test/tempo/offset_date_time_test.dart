@@ -256,6 +256,14 @@ void main() {
     });
   });
 
+  test('inLeapYear', () {
+    expect(OffsetDateTime(1900).inLeapYear, false, reason: 'year = 1900');
+    expect(OffsetDateTime(1904).inLeapYear, true, reason: 'year = 1904');
+    expect(OffsetDateTime(1996).inLeapYear, true, reason: 'year = 1996');
+    expect(OffsetDateTime(1997).inLeapYear, false, reason: 'year = 1997');
+    expect(OffsetDateTime(2000).inLeapYear, true, reason: 'year = 2000');
+  });
+
   group('conversions', () {
     test('atOffset()', () {
       expect(

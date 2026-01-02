@@ -102,4 +102,7 @@ class _RataDieDate extends _BigTime implements HasDate {
   @override
   int get ordinalDay =>
       _asTimespan.inDays - LocalDate(year)._asTimespan.inDays + 1;
+
+  @override
+  bool get inLeapYear => checkLeapYear(year);
 }

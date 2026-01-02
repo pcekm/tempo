@@ -293,6 +293,9 @@ class ZonedDateTime
   @override
   int get ordinalDay => _dateTime.ordinalDay;
 
+  @override
+  bool get inLeapYear => _dateTime.inLeapYear;
+
   /// Returns this as an ISO 8601-formatted string with an offset.
   ///
   /// ```dart

@@ -36,4 +36,7 @@ abstract interface class HasDate {
   ///
   /// Ranges from 1 to 365 (or 366 on a leap year).
   int get ordinalDay;
+
+  /// Determines if this date falls in a leap year.
+  bool get inLeapYear;
 }

@@ -16,6 +16,7 @@ and this project adheres to
   - `hasDateAndTime`
 - Added `format()` methods that take a `DateFormat` from the intl package and
   return a string.
+- All date and datetime objects have an `inLeapYear` property.
 
 ### Changed
 
@@ -34,6 +35,10 @@ and this project adheres to
 - Constructors no longer throw exceptions when given an invalid date, but they
   do guarantee a valid, albeit unspecified, result. (Other than `ZonedDateTime`,
   which will still throw for invalid zone ids.)
+
+### Deprecated
+
+- `LocalDate.isLeapYear`: Use `inLeapYear` instead.
 
 ### Removed
 
