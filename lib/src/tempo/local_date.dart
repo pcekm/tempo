@@ -220,10 +220,7 @@ class LocalDate extends _RataDieDate
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDate &&
-      year == other.year &&
-      month == other.month &&
-      day == other.day;
+      other is LocalDate && _asTimespan == other._asTimespan;
 
   @override
   int get hashCode => _asTimespan.hashCode;

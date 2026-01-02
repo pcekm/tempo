@@ -248,10 +248,10 @@ class LocalDateTime extends _RataDieDate
 
   @override
   bool operator ==(Object other) =>
-      other is LocalDateTime && date == other.date && time == other.time;
+      other is LocalDateTime && _asTimespan == other._asTimespan;
 
   @override
-  int get hashCode => Object.hash(date, time);
+  int get hashCode => _asTimespan.hashCode;
 
   /// Returns the date and time in ISO 8601 format.
   ///
