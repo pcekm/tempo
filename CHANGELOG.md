@@ -27,11 +27,13 @@ and this project adheres to
   - `LocalTime()`
   - `LocalDateTime()`
   - `OffsetDateTime.withOffset()`
+- All `minimum` and `maximum` date time values are `const` instead of `final`.
 - Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
   constructors.
 - Improved failure output of `hasDate` and `hasTime`
 - Constructors no longer throw exceptions when given an invalid date, but they
-  do guarantee a valid, albeit unspecified, result.
+  do guarantee a valid, albeit unspecified, result. (Other than `ZonedDateTime`,
+  which will still throw for invalid zone ids.)
 
 ### Removed
 

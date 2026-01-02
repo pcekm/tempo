@@ -9,24 +9,10 @@ part of '../../tempo.dart';
 class ZonedDateTime
     with _HasInstantImpl, _Formatting
     implements HasDateTime, HasInstant, _ConvertibleDate {
-  /// The earliest possible datetime.
-  static final ZonedDateTime minimum =
-      ZonedDateTime.fromInstant(Instant.minimum, 'UTC');
-
-  /// The latest possible datetime.
-  static final ZonedDateTime maximum =
-      ZonedDateTime.fromInstant(Instant.maximum, 'UTC');
-
-  final OffsetDateTime _dateTime;
-
-  /// The offset from UTC.
-  final NamedZoneOffset offset;
-
-  /// A string that uniquely identifies the time zone.
-  final String zoneId;
-
   @override
   Timespan get unixTimestamp => _dateTime.unixTimestamp;
+
+  const ZonedDateTime._(this._dateTime, this.offset, this.zoneId);
 
   ZonedDateTime._fromInstantWithZoneId(
       Instant instant, this.zoneId, this.offset)
@@ -179,6 +165,22 @@ class ZonedDateTime
     }
     return candidate;
   }
+
+  /// The earliest possible datetime.
+  static const ZonedDateTime minimum = ZonedDateTime._(
+      OffsetDateTime.minimum, NamedZoneOffset('UTC', false, 0), 'UTC');
+
+  /// The latest possible datetime.
+  static const ZonedDateTime maximum = ZonedDateTime._(
+      OffsetDateTime.maximum, NamedZoneOffset('UTC', false, 0), 'UTC');
+
+  final OffsetDateTime _dateTime;
+
+  /// The offset from UTC.
+  final NamedZoneOffset offset;
+
+  /// A string that uniquely identifies the time zone.
+  final String zoneId;
 
   /// The common designation for the time zone (e.g. UTC, PST, PDT, CET, CEST).
   ///

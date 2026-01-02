@@ -36,7 +36,7 @@ class NamedZoneOffset extends ZoneOffset {
   ///    * `-59 <= seconds <= 59`
   ///    * Numeric signs all match (Changes [minutes] and [seconds] to match
   ///      [hours]).
-  NamedZoneOffset(this.name, this.isDst, super.hours,
+  const NamedZoneOffset(this.name, this.isDst, super.hours,
       [super.minutes = 0, super.seconds = 0]);
 
   /// Constructs a new NamedZoneOffset from a Timespan.
