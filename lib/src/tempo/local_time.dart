@@ -24,11 +24,11 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   /// ```
   const LocalTime(
       [int hour = 0, int minute = 0, int second = 0, int nanosecond = 0])
-      : nanosecondsSinceMidnight = (hour * _secsPerHour * _nano +
-                minute * _secsPerMinute * _nano +
-                second * _nsPerS +
+      : nanosecondsSinceMidnight = (hour * nsPerHour +
+                minute * nsPerMinute +
+                second * nsPerSecond +
                 nanosecond) %
-            (_secsPerDay * _nano);
+            nsPerDay;
 
   /// Constructs a [LocalTime] with the current time in the current time zone.
   ///
@@ -40,8 +40,12 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   ///
   /// The timezone (if any) of [dateTime] is ignored.
   LocalTime.fromDateTime(DateTime dateTime)
-      : this(dateTime.hour, dateTime.minute, dateTime.second,
-            dateTime.millisecond * _nsPerMs + dateTime.microsecond * _nsPerUs);
+      : this(
+            dateTime.hour,
+            dateTime.minute,
+            dateTime.second,
+            dateTime.millisecond * nsPerMillisecond +
+                dateTime.microsecond * nsPerMicrosecond);
 
   /// Parses an ISO 8601 time string.
   ///
@@ -69,36 +73,22 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   static const minimum = LocalTime(0);
 
   /// The latest possible time.
-  static const maximum = LocalTime(23, 59, 59, _nano - 1);
-
-  static const _nano = 1000000000;
-
-  static const _nsPerS = 1000000000;
-  static const _nsPerMs = 1000000;
-  static const _nsPerUs = 1000;
-
-  static const _secsPerDay = 86400;
-  static const _secsPerMinute = 60;
-  static const _minsPerHour = 60;
-  static const _secsPerHour = 3600;
-  static const _hoursPerDay = 24;
+  static const maximum = LocalTime(23, 59, 59, nsPerSecond - 1);
 
   /// The time in nanoseconds relative to midnight.
   final int nanosecondsSinceMidnight;
 
   @override
-  int get hour =>
-      (nanosecondsSinceMidnight ~/ (_secsPerHour * _nano)) % _hoursPerDay;
+  int get hour => (nanosecondsSinceMidnight ~/ nsPerHour) % hoursPerDay;
 
   @override
-  int get minute =>
-      (nanosecondsSinceMidnight ~/ (_secsPerMinute * _nano)) % _minsPerHour;
+  int get minute => (nanosecondsSinceMidnight ~/ nsPerMinute) % minutesPerHour;
 
   @override
-  int get second => (nanosecondsSinceMidnight ~/ _nano) % _secsPerMinute;
+  int get second => (nanosecondsSinceMidnight ~/ nsPerSecond) % sPerMinute;
 
   @override
-  int get nanosecond => nanosecondsSinceMidnight % _nsPerS;
+  int get nanosecond => nanosecondsSinceMidnight % nsPerSecond;
 
   /// Finds the [Timespan] between two times. The result will be negative if
   /// [other] is earlier than this.

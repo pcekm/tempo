@@ -9,15 +9,6 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class ZoneOffset {
-  /// UTC offset hours `[-23 to +23]`.
-  final int hours;
-
-  /// UTC offset minutes `[-59 to +59]`.
-  final int minutes;
-
-  /// UTC offset seconds `[-59 to +59]`.
-  final int seconds;
-
   const ZoneOffset._fromSeconds(int seconds)
       : hours = (seconds ~/ 3600) % 24 -
             (seconds < 0 && (seconds ~/ 3600) % 24 > 0 ? 24 : 0),
@@ -62,6 +53,15 @@ class ZoneOffset {
   /// Normally these don't occur by themselves. This is mostly here for
   /// testing purposes.
   factory ZoneOffset.parse(String offset) => _parseIso8601Offset(offset);
+
+  /// UTC offset hours `[-23 to +23]`.
+  final int hours;
+
+  /// UTC offset minutes `[-59 to +59]`.
+  final int minutes;
+
+  /// UTC offset seconds `[-59 to +59]`.
+  final int seconds;
 
   /// Converts this to a [Timespan].
   Timespan get asTimespan =>

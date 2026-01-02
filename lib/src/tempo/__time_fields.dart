@@ -2,11 +2,9 @@ part of '../../tempo.dart';
 
 /// Adds time-related fields to a [_RataDieDate].
 mixin _TimeFields on _RataDieDate implements HasTime {
-  static const _sPerDay = 86400;
-
   /// The time part of this [DateTime].
   LocalTime get _time =>
-      LocalTime(0, 0, _secondPart.remainder(_sPerDay), _nanosecondPart);
+      LocalTime(0, 0, _secondPart.remainder(sPerDay), _nanosecondPart);
 
   @override
   int get hour => _time.hour;

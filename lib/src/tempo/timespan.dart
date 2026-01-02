@@ -33,26 +33,6 @@ part of '../../tempo.dart';
 /// {@category relative}
 @immutable
 class Timespan extends _BigTime implements Comparable<Timespan> {
-  static const int _hoursPerDay = 24;
-  static const int _minutesPerHour = 60;
-  static const int _secondsPerMinute = 60;
-  static const int _millisecondsPerSecond = 1000;
-  static const int _microsecondsPerSecond = 1000000;
-  static const int _nanosecondsPerSecond = 1000000000;
-  static const int _secondsPerHour = _minutesPerHour * _secondsPerMinute;
-
-  static const int _minutesPerDay = _minutesPerHour * _hoursPerDay;
-  static const int _secondsPerDay = _secondsPerMinute * _minutesPerDay;
-
-  static const int _nsPerMicrosecond = 1000;
-  static const int _nsPerMillisecond = 1000000;
-
-  /// The whole number of seconds.
-  int get seconds => _secondPart;
-
-  /// The fractional part of the number of seconds in nanoseconds.
-  int get nanosecondPart => _nanosecondPart;
-
   /// Constructs a `Timespan`.
   ///
   /// This is meant to work much like a higher-precision [Duration].
@@ -98,14 +78,20 @@ class Timespan extends _BigTime implements Comparable<Timespan> {
 
   Timespan._downcast(super.bn) : super.copy();
 
+  /// The whole number of seconds.
+  int get seconds => _secondPart;
+
+  /// The fractional part of the number of seconds in nanoseconds.
+  int get nanosecondPart => _nanosecondPart;
+
   /// Gets the timespan in days.
-  int get inDays => (seconds ~/ _secondsPerDay).truncate();
+  int get inDays => (seconds ~/ sPerDay).truncate();
 
   /// Gets the timespan in hours.
-  int get inHours => seconds ~/ _secondsPerHour;
+  int get inHours => seconds ~/ sPerHour;
 
   /// Gets the timespan in minutes.
-  int get inMinutes => seconds ~/ _secondsPerMinute;
+  int get inMinutes => seconds ~/ sPerMinute;
 
   /// Gets the timespan in seconds.
   int get inSeconds => seconds;
@@ -114,13 +100,13 @@ class Timespan extends _BigTime implements Comparable<Timespan> {
       (seconds * secondMultiplier + nanosecondPart / nanoDivisor).truncate();
 
   /// Gets the timespan in milliseconds.
-  int get inMilliseconds => _sum(_millisecondsPerSecond, _nsPerMillisecond);
+  int get inMilliseconds => _sum(msPerSecond, nsPerMillisecond);
 
   /// Gets the timespan in microseconds.
-  int get inMicroseconds => _sum(_microsecondsPerSecond, _nsPerMicrosecond);
+  int get inMicroseconds => _sum(usPerSecond, nsPerMicrosecond);
 
   /// Gets the timespan in nanoseconds.
-  int get inNanoseconds => _sum(_nanosecondsPerSecond, 1);
+  int get inNanoseconds => _sum(nsPerSecond, 1);
 
   /// Determines if the timespan is negative.
   bool get isNegative => _isNegative;
@@ -181,10 +167,10 @@ class Timespan extends _BigTime implements Comparable<Timespan> {
       return 'P0D';
     }
 
-    int days = seconds ~/ _secondsPerDay;
-    int hours = (seconds ~/ _secondsPerHour).remainder(_hoursPerDay);
-    int minutes = (seconds ~/ _secondsPerMinute).remainder(_minutesPerHour);
-    int secondsOfDay = seconds.remainder(_secondsPerMinute);
+    int days = seconds ~/ sPerDay;
+    int hours = (seconds ~/ sPerHour).remainder(hoursPerDay);
+    int minutes = (seconds ~/ sPerMinute).remainder(minutesPerHour);
+    int secondsOfDay = seconds.remainder(sPerMinute);
 
     var d = days != 0 ? '${days}D' : '';
     var h = hours != 0 ? '${hours}H' : '';

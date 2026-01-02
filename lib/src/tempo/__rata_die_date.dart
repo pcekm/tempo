@@ -60,10 +60,6 @@ class _RataDieDate extends _BigTime implements HasDate {
             seconds: seconds,
             nanoseconds: nanosecond);
 
-  static const _nsPerSecond = 1000000000;
-  static const _sPerDay = 86400;
-  static const _nsPerDay = 86400 * _nsPerSecond;
-
   Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
@@ -71,9 +67,9 @@ class _RataDieDate extends _BigTime implements HasDate {
   /// midnight on the Gregorian calendar.
   ({int year, int month, int day}) _toGregorian() {
     // See: Baum, Peter. (2017). Date Algorithms.
-    final nanosOfDay = _asTimespan.inSeconds.remainder(_sPerDay) +
-        (_asTimespan.nanosecondPart / _nsPerDay).floor();
-    final z = _asTimespan.inDays + 306 + (nanosOfDay / _nsPerDay).floor();
+    final nanosOfDay = _asTimespan.inSeconds.remainder(sPerDay) +
+        (_asTimespan.nanosecondPart / nsPerDay).floor();
+    final z = _asTimespan.inDays + 306 + (nanosOfDay / nsPerDay).floor();
     final g = z - 0.25;
     final a = (g / 36524.25).floor();
     final b = a - (a / 4).floor();

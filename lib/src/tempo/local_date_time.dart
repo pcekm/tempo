@@ -55,8 +55,8 @@ class LocalDateTime extends _RataDieDate
             dateTime.hour,
             dateTime.minute,
             dateTime.second,
-            dateTime.millisecond * _nsPerMillisecond +
-                dateTime.microsecond * _nsPerMicrosecond);
+            dateTime.millisecond * nsPerMillisecond +
+                dateTime.microsecond * nsPerMicrosecond);
 
   /// Makes a `LocalDateTime` from a [LocalDate] and an optional [LocalTime].
   ///
@@ -81,9 +81,6 @@ class LocalDateTime extends _RataDieDate
 
   /// The latest possible datetime.
   static const maximum = LocalDateTime(9999, 12, 31, 23, 59, 59, 999999999);
-
-  static const _nsPerMicrosecond = 1000;
-  static const _nsPerMillisecond = 1000000;
 
   /// The date part of this [DateTime].
   LocalDate get date => LocalDate._fromRataDieDate(this);

@@ -76,6 +76,7 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   static const Instant maximum =
       Instant.fromUnix(Timespan(seconds: 253402300799, nanoseconds: 999999999));
 
+  /// The offset between Rata Die and Unix.
   static const Timespan _rataDieOffset = Timespan(days: 719163);
 
   @override
