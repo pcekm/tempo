@@ -22,7 +22,7 @@ class _RataDieDate extends _BigTime implements HasDate {
       int nanosecond = 0])
       // Step 1: Adjust the year and month to create an alternative calendar
       // that begins on March 1, where months are numbered 3=March to
-      // 14=February. On this calendar that leap days occur on the last day of
+      // 14=February. On this calendar, leap days occur on the last day of
       // the year.
       //
       // (See: Baum, Peter. (2017). Date Algorithms.)
