@@ -4,32 +4,13 @@ part of '../../tempo.dart';
 ///
 /// {@category absolute}
 @immutable
-class OffsetDateTime
-    with _HasInstantImpl, _Formatting
+class OffsetDateTime extends _RataDieDate
+    with _TimeFields, _HasInstantImpl, _Formatting
     implements
         HasInstant,
         HasDateTime,
         _PeriodArithmetic<OffsetDateTime>,
         _ConvertibleDate {
-  /// The earliest possible datetime.
-  static final OffsetDateTime minimum =
-      OffsetDateTime.fromLocalDateTime(LocalDateTime.minimum, ZoneOffset(0));
-
-  /// The latest possible datetime.
-  static final OffsetDateTime maximum =
-      OffsetDateTime.fromLocalDateTime(LocalDateTime.maximum, ZoneOffset(0));
-
-  static LocalDateTime _mkDateTime(Instant instant, ZoneOffset offset) {
-    var parts = julianDayToGregorian(
-        instant.plusTimespan(offset.asTimespan)._julianDay);
-    return LocalDateTime(
-        parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
-  }
-
-  static ZoneOffset _defaultOffset(Instant instant) {
-    return TimeZoneDatabase().rules[defaultZoneId]!.offsetFor(instant);
-  }
-
   /// Constructs an `OffsetDateTime` from the individual components of a date
   /// and time.
   ///
@@ -48,24 +29,18 @@ class OffsetDateTime
         .asOffsetDateTime;
   }
 
-  OffsetDateTime._fromLocalWithRequiredOffset(
-      LocalDateTime dt, ZoneOffset offset)
-      : this._(dt, dt.toInstant().minusTimespan(offset.asTimespan), offset);
-
   /// Constructs an `OffsetDateTime` from an offset and the individual
   /// components of the date and time.
   ///
   /// {@macro astro_year}
-  OffsetDateTime.withOffset(ZoneOffset offset, int year,
+  const OffsetDateTime.withOffset(this.offset, int year,
       [int month = 1,
       int day = 1,
       int hour = 0,
       int minute = 0,
       int second = 0,
       int nanosecond = 0])
-      : this._fromLocalWithRequiredOffset(
-            LocalDateTime(year, month, day, hour, minute, second, nanosecond),
-            offset);
+      : super(year, month, day, hour, minute, second, nanosecond);
 
   /// Constructs an `OffsetDateTime` from a `LocalDateTime`.
   ///
@@ -76,7 +51,7 @@ class OffsetDateTime
   factory OffsetDateTime.fromLocalDateTime(LocalDateTime dt,
       [ZoneOffset? offset]) {
     if (offset != null) {
-      return OffsetDateTime._fromLocalWithRequiredOffset(dt, offset);
+      return OffsetDateTime._fromRataDieDate(dt, offset);
     } else {
       return ZonedDateTime._forLocal(dt).asOffsetDateTime;
     }
@@ -91,22 +66,18 @@ class OffsetDateTime
   ///
   /// This will have the same time zone offset as the `DateTime`.
   OffsetDateTime.fromDateTime(DateTime dateTime)
-      : this.fromInstant(
-            Instant.fromUnix(
-                Timespan(microseconds: dateTime.microsecondsSinceEpoch)),
+      : this.fromInstant(Instant.fromDateTime(dateTime),
             ZoneOffset.fromDuration(dateTime.timeZoneOffset));
-
-  /// Convenience constructor to make [OffsetDateTime.fromInstant] simpler.
-  OffsetDateTime._fromInstantWithOffset(Instant instant, this.offset)
-      : _dateTime = _mkDateTime(instant, offset),
-        _instant = instant;
 
   /// Constructs an `OffsetDateTime` from an `Instant`.
   ///
   /// {@macro offset_unset}
   OffsetDateTime.fromInstant(HasInstant hasInstant, [ZoneOffset? offset])
-      : this._fromInstantWithOffset(hasInstant.toInstant(),
+      : this._fromInstant(hasInstant.toInstant(),
             offset ?? _defaultOffset(hasInstant.toInstant()));
+
+  OffsetDateTime._fromInstant(Instant instant, this.offset)
+      : super._fromBigTime(instant._asRataDie + offset.asTimespan);
 
   /// Constructs an `OffsetDateTime` from an unix timestamp and a fixed offset
   /// from UTC.
@@ -114,6 +85,8 @@ class OffsetDateTime
   /// {@macro offset_unset}
   OffsetDateTime.fromUnix(Timespan unixTimestamp, [ZoneOffset? offset])
       : this.fromInstant(Instant.fromUnix(unixTimestamp), offset);
+
+  OffsetDateTime._fromRataDieDate(super.rd, this.offset) : super._fromBigTime();
 
   /// Parses an `OffsetDateTime` from an ISO-8601 formatted string.
   ///
@@ -134,10 +107,20 @@ class OffsetDateTime
     }
   }
 
-  OffsetDateTime._(this._dateTime, this._instant, this.offset);
+  /// The earliest supported datetime.
+  static const OffsetDateTime minimum =
+      OffsetDateTime.withOffset(ZoneOffset(0), -9999);
 
-  final LocalDateTime _dateTime;
-  final Instant _instant;
+  /// The latest supported datetime.
+  static const OffsetDateTime maximum = OffsetDateTime.withOffset(
+      ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999);
+
+  static ZoneOffset _defaultOffset(Instant instant) {
+    return TimeZoneDatabase().rules[defaultZoneId]!.offsetFor(instant);
+  }
+
+  LocalDateTime get _dateTime => LocalDateTime._fromRataDieDate(this);
+  Instant get _instant => Instant._fromRataDieDate(_add(-offset.asTimespan));
 
   /// The amount the time zone is offset from UTC.
   final ZoneOffset offset;
@@ -158,33 +141,6 @@ class OffsetDateTime
   @override
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
       _instant.unixTimestamp.inMicroseconds);
-
-  @override
-  int get year => _dateTime.year;
-
-  @override
-  int get month => _dateTime.month;
-
-  @override
-  int get day => _dateTime.day;
-
-  @override
-  Weekday get weekday => _dateTime.weekday;
-
-  @override
-  int get ordinalDay => _dateTime.ordinalDay;
-
-  @override
-  int get hour => _dateTime.hour;
-
-  @override
-  int get minute => _dateTime.minute;
-
-  @override
-  int get second => _dateTime.second;
-
-  @override
-  int get nanosecond => _dateTime.nanosecond;
 
   /// Adds a `Timespan`.
   ///
@@ -249,9 +205,10 @@ class OffsetDateTime
   @override
   bool operator ==(Object other) =>
       other is OffsetDateTime &&
-      _dateTime == other._dateTime &&
+      _secondPart == other._secondPart &&
+      _nanosecondPart == other._nanosecondPart &&
       offset == other.offset;
 
   @override
-  int get hashCode => Object.hash(_dateTime, offset);
+  int get hashCode => Object.hash(_secondPart, _nanosecondPart, offset);
 }

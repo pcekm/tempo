@@ -141,6 +141,7 @@ part 'src/tempo/__has_instant_impl.dart';
 part 'src/tempo/__instant_convertible.dart';
 part 'src/tempo/__period_arithmetic.dart';
 part 'src/tempo/__rata_die_date.dart';
+part 'src/tempo/__time_fields.dart';
 part 'src/tempo/extensions.dart';
 part 'src/tempo/has_date.dart';
 part 'src/tempo/has_date_time.dart';

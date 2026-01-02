@@ -8,7 +8,7 @@ part of '../../tempo.dart';
 /// {@category local}
 @immutable
 class LocalDateTime extends _RataDieDate
-    with _Formatting
+    with _TimeFields, _Formatting
     implements
         Comparable<LocalDateTime>,
         HasDateTime,
@@ -71,6 +71,8 @@ class LocalDateTime extends _RataDieDate
   LocalDateTime._fromJulianDay(Timespan julianDay)
       : this._fromGregorian(julianDayToGregorian(julianDay));
 
+  LocalDateTime._fromRataDieDate(super.rd) : super._fromBigTime();
+
   /// Parses an ISO 8601 datetime string. Discards the zone offset (if any).
   ///
   /// ```dart
@@ -89,14 +91,11 @@ class LocalDateTime extends _RataDieDate
   static const _nsPerMicrosecond = 1000;
   static const _nsPerMillisecond = 1000000;
 
-  static const _sPerDay = 86400;
-
   /// The date part of this [DateTime].
   LocalDate get date => LocalDate._fromRataDieDate(this);
 
   /// The time part of this [DateTime].
-  LocalTime get time =>
-      LocalTime(0, 0, _secondPart.remainder(_sPerDay), _nanosecondPart);
+  LocalTime get time => _time;
 
   /// Returns a new datetime with one or more fields replaced.
   ///
@@ -124,18 +123,6 @@ class LocalDateTime extends _RataDieDate
             second: second,
             nanosecond: nanosecond));
   }
-
-  @override
-  int get hour => time.hour;
-
-  @override
-  int get minute => time.minute;
-
-  @override
-  int get second => time.second;
-
-  @override
-  int get nanosecond => time.nanosecond;
 
   /// Converts this to a DateTime.
   ///

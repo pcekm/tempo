@@ -15,20 +15,6 @@ part of '../../tempo.dart';
 /// {@category absolute}
 @immutable
 class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
-  /// The earliest supported instant.
-  static final Instant minimum =
-      OffsetDateTime.withOffset(ZoneOffset(0), -9999, 1, 1).toInstant();
-
-  /// The latest supported instant.
-  static final Instant maximum = OffsetDateTime.withOffset(
-          ZoneOffset(0), 9999, 12, 31, 23, 59, 59, 999999999)
-      .toInstant();
-
-  static final Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
-
-  @override
-  final Timespan unixTimestamp;
-
   /// Creates an instant given a time since midnight, January 1, 1970 UTC.
   ///
   /// The Unix timestamp can be provided in any units supported by [Timespan].
@@ -78,6 +64,29 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
                 seconds: julian.seconds, nanoseconds: julian.nanosecondPart) -
             _julianOffset;
 
+  Instant._fromRataDieDate(_BigTime rd)
+      : unixTimestamp =
+            Timespan(seconds: rd._secondPart, nanoseconds: rd._nanosecondPart) -
+                _rataDieOffset;
+
+  /// The earliest supported instant.
+  ///
+  /// This translates to midnight, -9999-01-01.
+  static const Instant minimum =
+      Instant.fromUnix(Timespan(seconds: -377705116800));
+
+  /// The latest supported instant.
+  ///
+  /// This translates to 9999-12-31 at 23:59:59.999999999.
+  static const Instant maximum =
+      Instant.fromUnix(Timespan(seconds: 253402300799, nanoseconds: 999999999));
+
+  static const Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
+  static const Timespan _rataDieOffset = Timespan(days: 719163);
+
+  @override
+  final Timespan unixTimestamp;
+
   @override
   DateTime toDateTime() =>
       DateTime.fromMicrosecondsSinceEpoch(unixTimestamp.inMicroseconds);
@@ -96,6 +105,8 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
 
   /// Subtracts a [Timespan].
   Instant minusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp - t);
+
+  Timespan get _asRataDie => unixTimestamp + _rataDieOffset;
 
   /// Formats this as an ISO 8601 timestamp.
   ///

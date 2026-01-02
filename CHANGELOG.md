@@ -26,6 +26,7 @@ and this project adheres to
   - `LocalDate()`
   - `LocalTime()`
   - `LocalDateTime()`
+  - `OffsetDateTime.withOffset()`
 - Using [`clock` package](https://pub.dev/packages/clock) for all `now()`
   constructors.
 - Improved failure output of `hasDate` and `hasTime`
