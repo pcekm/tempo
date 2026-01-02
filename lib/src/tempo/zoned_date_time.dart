@@ -146,8 +146,8 @@ class ZonedDateTime
   /// a bit fiddly, but I don't have any better ideas right now.
   static ZonedDateTime _forLocal(LocalDateTime local, [String? zoneId]) {
     zoneId ??= defaultZoneId;
-    var instant = Instant._fromJulianDay(
-        local.date.minusTimespan(Timespan(days: 1))._asJulianDate);
+    var instant = Instant._fromRataDieDate(
+        local.date.minusTimespan(Timespan(days: 1))._asTimespan);
     var candidate = ZonedDateTime.fromInstant(instant, zoneId);
     while (candidate.toLocal() < local) {
       instant = instant.plusTimespan(candidate.toLocal().timespanUntil(local));

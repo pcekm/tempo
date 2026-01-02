@@ -59,11 +59,6 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// {@macro datetime_precision}
   Instant.now() : this.fromDateTime(clock.now());
 
-  Instant._fromJulianDay(Timespan julian)
-      : unixTimestamp = Timespan(
-                seconds: julian.seconds, nanoseconds: julian.nanosecondPart) -
-            _julianOffset;
-
   Instant._fromRataDieDate(_BigTime rd)
       : unixTimestamp =
             Timespan(seconds: rd._secondPart, nanoseconds: rd._nanosecondPart) -
@@ -81,7 +76,6 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   static const Instant maximum =
       Instant.fromUnix(Timespan(seconds: 253402300799, nanoseconds: 999999999));
 
-  static const Timespan _julianOffset = Timespan(days: 2440587, hours: 12);
   static const Timespan _rataDieOffset = Timespan(days: 719163);
 
   @override
@@ -96,9 +90,7 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   Instant toInstant() => this;
 
   @override
-  LocalDateTime toLocal() => LocalDateTime._fromJulianDay(_julianDay);
-
-  Timespan get _julianDay => unixTimestamp + _julianOffset;
+  LocalDateTime toLocal() => LocalDateTime._fromRataDieDate(_asRataDie);
 
   /// Adds a [Timespan].
   Instant plusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp + t);
@@ -113,9 +105,7 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   /// For example, `2000-01-02T03:04:05.123456789Z`.
   @override
   String toString() {
-    var parts = julianDayToGregorian(_julianDay);
-    var dateTime = LocalDateTime(
-        parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
+    var dateTime = LocalDateTime._fromRataDieDate(_asRataDie);
     return _iso8601DateTime(dateTime, ZoneOffset(0), true);
   }
 

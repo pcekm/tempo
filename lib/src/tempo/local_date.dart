@@ -79,7 +79,7 @@ class LocalDate extends _RataDieDate
       ZonedDateTime.withZoneId(zoneId ?? defaultZoneId, year, month, day);
 
   @override
-  Instant toInstant() => Instant._fromJulianDay(_asJulianDate);
+  Instant toInstant() => Instant._fromRataDieDate(this);
 
   @override
   LocalDateTime toLocal() => LocalDateTime.combine(this);

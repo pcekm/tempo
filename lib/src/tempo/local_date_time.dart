@@ -65,12 +65,6 @@ class LocalDateTime extends _RataDieDate
       : this(date.year, date.month, date.day, time?.hour ?? 0,
             time?.minute ?? 0, time?.second ?? 0, time?.nanosecond ?? 0);
 
-  LocalDateTime._fromGregorian(Gregorian parts)
-      : this(parts.year, parts.month, parts.day, 0, 0, 0, parts.nanosecond);
-
-  LocalDateTime._fromJulianDay(Timespan julianDay)
-      : this._fromGregorian(julianDayToGregorian(julianDay));
-
   LocalDateTime._fromRataDieDate(super.rd) : super._fromBigTime();
 
   /// Parses an ISO 8601 datetime string. Discards the zone offset (if any).
@@ -134,7 +128,7 @@ class LocalDateTime extends _RataDieDate
 
   /// Converts this to an Instant.
   @override
-  Instant toInstant() => Instant._fromJulianDay(_asJulianDate);
+  Instant toInstant() => Instant._fromRataDieDate(this);
 
   @override
   OffsetDateTime atOffset([ZoneOffset? offset]) =>
@@ -163,7 +157,7 @@ class LocalDateTime extends _RataDieDate
   /// dt1.timespanUntil(dt2) == Timespan(days: 32, hours: 1);
   /// ```
   Timespan timespanUntil(LocalDateTime other) =>
-      other._asJulianDate - _asJulianDate;
+      other._asTimespan - _asTimespan;
 
   /// Finds the [Period] between this and another [HasDate].
   ///
@@ -224,7 +218,7 @@ class LocalDateTime extends _RataDieDate
   /// dt.plusTimespan(timespan) == LocalDateTime(2000, 1, 31, 1);
   /// ```
   LocalDateTime plusTimespan(Timespan amount) =>
-      LocalDateTime._fromJulianDay(_asJulianDate + amount);
+      LocalDateTime._fromRataDieDate(_asTimespan + amount);
 
   /// Subtracts a [Timespan].
   ///
@@ -234,11 +228,11 @@ class LocalDateTime extends _RataDieDate
   /// dt.minusTimespan(timespan) == LocalDateTime(2000, 1, 1, 23);
   /// ```
   LocalDateTime minusTimespan(Timespan amount) =>
-      LocalDateTime._fromJulianDay(_asJulianDate - amount);
+      LocalDateTime._fromRataDieDate(_asTimespan - amount);
 
   @override
   int compareTo(LocalDateTime other) =>
-      _asJulianDate.compareTo(other._asJulianDate);
+      _asTimespan.compareTo(other._asTimespan);
 
   /// Greater than operator.
   bool operator >(LocalDateTime other) => compareTo(other) > 0;

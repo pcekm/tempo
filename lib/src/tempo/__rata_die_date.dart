@@ -67,12 +67,6 @@ class _RataDieDate extends _BigTime implements HasDate {
   Timespan get _asTimespan =>
       Timespan(seconds: _secondPart, nanoseconds: _nanosecondPart);
 
-  /// Converts this to a Julian Date.
-  ///
-  /// Assumes this is time in UTC.
-  Timespan get _asJulianDate =>
-      _asTimespan + Timespan(days: 1721424, hours: 12);
-
   /// Converts a Rata Die date to years, months, days, and nanoseconds past
   /// midnight on the Gregorian calendar.
   ({int year, int month, int day}) _toGregorian() {

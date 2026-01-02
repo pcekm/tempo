@@ -124,7 +124,6 @@ import 'package:meta/meta.dart';
 import 'package:string_scanner/string_scanner.dart';
 
 import 'src/tempo/common.dart';
-import 'src/tempo/julian_day.dart';
 import 'timezone.dart';
 
 export 'timezone.dart'
