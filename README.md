@@ -1,6 +1,8 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pcekm/tempo/dart.yml)
 
-<img alt="Tempo logo" src="https://github.com/pcekm/tempo/doc/images/tempo_logo_outlined.svg" width="50%">
+<img alt="Tempo logo"
+    src="https://raw.githubusercontent.com/pcekm/tempo/refs/heads/main/doc/images/tempo_logo_outlined.svg"
+    width="50%">
 
 ## Introduction
 
