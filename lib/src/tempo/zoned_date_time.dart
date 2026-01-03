@@ -191,6 +191,37 @@ class ZonedDateTime
   /// If this is a daylight savings (or summer) time.
   bool get isDst => offset.isDst;
 
+  /// Returns a new datetime with one or more fields replaced.
+  ///
+  /// Uses the largest valid day if the day is invalid in the resulting month.
+  ///
+  /// ```dart
+  /// var dt = OffsetDateTime(2000, 1, 31, 12, 23);
+  /// dt.replace(month: 4) == OffsetDateTime(2000, 4, 30, 12, 23);
+  /// dt.replace(second: 59) == OffsetDateTime(2000, 4, 30, 12, 23, 59);
+  /// ```
+  ZonedDateTime replace({
+    int? year,
+    int? month,
+    int? day,
+    int? hour,
+    int? minute,
+    int? second,
+    int? nanosecond,
+    String? zoneId,
+  }) {
+    return ZonedDateTime._forLocal(
+        _dateTime.toLocal().replace(
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute,
+            second: second,
+            nanosecond: nanosecond),
+        zoneId ?? this.zoneId);
+  }
+
   /// Converts this to a [LocalDateTime].
   ///
   /// The result will have exactly the same year, month, day, etc. but will

@@ -271,6 +271,35 @@ void main() {
     });
   });
 
+  group('replace()', () {
+    test('all fields', () {
+      var dt = ZonedDateTime.withZoneId("America/Denver", 1, 2, 3, 4, 5, 6, 7);
+      var repl = dt.replace(
+          year: 7,
+          month: 6,
+          day: 5,
+          hour: 4,
+          minute: 3,
+          second: 2,
+          nanosecond: 1);
+      expect(repl, hasDateAndTime(7, 6, 5, 4, 3, 2, 1));
+      expect(repl.zoneId, "America/Denver");
+    });
+
+    test('offset', () {
+      var dt = ZonedDateTime.withZoneId("Europe/Tallinn", 1, 2, 3, 4, 5, 6, 7);
+      var repl = dt.replace(zoneId: "America/Los_Angeles");
+      expect(repl, hasDateAndTime(1, 2, 3, 4, 5, 6, 7));
+      expect(repl.zoneId, "America/Los_Angeles");
+    });
+
+    test('invalid day of month', () {
+      var dt = ZonedDateTime(2025, 12, 31, 4, 3, 2, 1);
+      var repl = dt.replace(month: 2);
+      expect(repl, hasDateAndTime(2025, 2, 28, 4, 3, 2, 1));
+    });
+  });
+
   test('inLeapYear', () {
     expect(ZonedDateTime(1900).inLeapYear, false, reason: 'year = 1900');
     expect(ZonedDateTime(1904).inLeapYear, true, reason: 'year = 1904');

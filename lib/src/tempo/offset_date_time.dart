@@ -128,6 +128,37 @@ class OffsetDateTime extends _RataDieDate
   @override
   Timespan get unixTimestamp => _instant.unixTimestamp;
 
+  /// Returns a new datetime with one or more fields replaced.
+  ///
+  /// Uses the largest valid day if the day is invalid in the resulting month.
+  ///
+  /// ```dart
+  /// var dt = OffsetDateTime(2000, 1, 31, 12, 23);
+  /// dt.replace(month: 4) == OffsetDateTime(2000, 4, 30, 12, 23);
+  /// dt.replace(second: 59) == OffsetDateTime(2000, 4, 30, 12, 23, 59);
+  /// ```
+  OffsetDateTime replace({
+    int? year,
+    int? month,
+    int? day,
+    int? hour,
+    int? minute,
+    int? second,
+    int? nanosecond,
+    ZoneOffset? offset,
+  }) {
+    return OffsetDateTime.fromLocalDateTime(
+        _dateTime.replace(
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute,
+            second: second,
+            nanosecond: nanosecond),
+        offset ?? this.offset);
+  }
+
   /// Converts this to a `LocalDateTime`.
   ///
   /// The result will have exactly the same year, month, day, etc. but will

@@ -90,8 +90,7 @@ class LocalDateTime extends _RataDieDate
 
   /// Returns a new datetime with one or more fields replaced.
   ///
-  /// See [LocalDate.replace] and [LocalTime.replace] for more information on
-  /// replacements to the respective parts of the datetime.
+  /// Uses the largest valid day if the day is invalid in the resulting month.
   ///
   /// ```dart
   /// var dt = LocalDateTime(2000, 1, 31, 12, 23);

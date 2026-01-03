@@ -43,8 +43,9 @@ class LocalDate extends _RataDieDate
   /// ```
   factory LocalDate.parse(String date) => _parseIso8601Date(date);
 
-  /// Returns a new date with one or more fields replaced. Uses the largest
-  /// valid day if the resulting month is shorter.
+  /// Returns a new date with one or more fields replaced.
+  ///
+  /// Uses the largest valid day if the day is invalid in the resulting month.
   ///
   /// ```dart
   /// var date = LocalDate(2000, 1, 31);

@@ -17,6 +17,8 @@ and this project adheres to
 - Added `format()` methods that take a `DateFormat` from the intl package and
   return a string.
 - All date and datetime objects have an `inLeapYear` property.
+- `replace()` methods on `OffsetDateTime` and `ZonedDateTime` that replace
+  individual fields in the object.
 
 ### Changed
 

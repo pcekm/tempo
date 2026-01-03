@@ -82,17 +82,25 @@ void main() {
     expect(dt, hasDateAndTime(2000, 3, 4, 5, 6, 7, 8));
   });
 
-  test('replace()', () {
-    var dt = LocalDateTime(1, 2, 3, 4, 5, 6, 7);
-    var repl = dt.replace(
-        year: 7,
-        month: 6,
-        day: 5,
-        hour: 4,
-        minute: 3,
-        second: 2,
-        nanosecond: 1);
-    expect(repl, hasDateAndTime(7, 6, 5, 4, 3, 2, 1));
+  group('replace()', () {
+    test('all fields', () {
+      var dt = LocalDateTime(1, 2, 3, 4, 5, 6, 7);
+      var repl = dt.replace(
+          year: 7,
+          month: 6,
+          day: 5,
+          hour: 4,
+          minute: 3,
+          second: 2,
+          nanosecond: 1);
+      expect(repl, hasDateAndTime(7, 6, 5, 4, 3, 2, 1));
+    });
+
+    test('invalid day of month', () {
+      var dt = LocalDateTime(2025, 12, 31, 4, 3, 2, 1);
+      var repl = dt.replace(month: 2);
+      expect(repl, hasDateAndTime(2025, 2, 28, 4, 3, 2, 1));
+    });
   });
 
   group('weekday', () {
