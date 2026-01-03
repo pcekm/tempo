@@ -91,13 +91,9 @@ class LocalDate extends _RataDieDate
 
   /// Finds the [Period] between this date and another.
   ///
-  /// It first finds the number of months by advancing the smaller date
-  /// until it is within 1 month of the larger. Then it finds the number
-  /// of days between them. The final result is normalized into years,
-  /// months and days—all positive or all negative.
-  ///
-  /// To count the total number of days between two dates use
-  /// [timespanUntil].
+  /// This counts the number of years, months and days between two dates and
+  /// returns the result as a [Period]. To count the total number of days
+  /// between two dates use [timespanUntil].
   ///
   /// ```dart
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
@@ -112,6 +108,10 @@ class LocalDate extends _RataDieDate
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
   Period periodUntil(HasDate other) {
+    // This first finds the number of months by advancing the smaller date
+    // until it is within 1 month of the larger. Then it finds the number
+    // of days between them. The final result is normalized into years,
+    // months and days—all positive or all negative.
     var otherDate = LocalDate(other.year, other.month, other.day);
     late int sign;
     late LocalDate d1;

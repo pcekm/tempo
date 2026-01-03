@@ -421,6 +421,13 @@ void main() {
           Period(years: -75, months: -9, days: -20));
     });
 
+    test('readme example', () {
+      final date1 = LocalDateTime(2025, 1, 1);
+      final date2 = LocalDateTime(2029, 2, 2);
+      final period = date1.periodUntil(date2);
+      expect(period, Period(years: 4, months: 1, days: 1));
+    });
+
     test('doc examples', () {
       expect(
           LocalDate(2000, 1, 1).periodUntil(LocalDate(2000, 3, 2)) ==
