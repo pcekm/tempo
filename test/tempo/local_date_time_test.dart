@@ -169,6 +169,26 @@ void main() {
     test('toLocal', () {
       expect(dt.toLocal(), same(dt));
     });
+
+    group('date', () {
+      test('positive RD', () {
+        final want = LocalDate(2000, 1, 2);
+        expect(dt.date, want);
+        expect(dt.date.hashCode, want.hashCode);
+      });
+
+      test('negative RD', () {
+        final negDt = dt.replace(year: -2000);
+        final want = LocalDate(-2000, 1, 2);
+        expect(negDt.date, want);
+        expect(negDt.date.hashCode, want.hashCode);
+      });
+    });
+
+    test('time', () {
+      final want = LocalTime(3, 4, 5, 006007008);
+      expect(dt.time, want);
+    });
   });
 
   test('timespanUntil', () {

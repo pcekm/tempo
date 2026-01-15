@@ -21,7 +21,9 @@ class LocalDate extends _RataDieDate
   const LocalDate([int year = 0, int month = 1, int day = 1])
       : super(year, month, day, 0, 0, 0, 0);
 
-  LocalDate._fromRataDieDate(super.bigTime) : super._fromBigTime();
+  LocalDate._fromRataDieDate(_BigTime rataDieDate)
+      : super._fromBigTime(
+            _BigTime(days: (rataDieDate._secondPart / sPerDay).floor()));
 
   /// Constructs a `LocalDate` with the current date and time in the
   /// current time zone.
