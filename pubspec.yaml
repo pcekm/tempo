@@ -6,6 +6,7 @@ description: >-
 
 version: 1.0.1
 repository: https://github.com/pcekm/tempo
+documentation: https://niladic.org/tempo/
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
