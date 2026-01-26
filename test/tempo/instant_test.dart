@@ -52,6 +52,27 @@ void main() {
         OffsetDateTime.withOffset(ZoneOffset(1), 1970, 1, 1, 1));
   });
 
+  test('toDateTime', () {
+    // A bit involved: Create a date in UTC, convert it to a local DateTime,
+    // then convert that back to UTC. Unfortunately it's not possible to
+    // learn the local time zone in a portable way.
+    expect(timeline[946872306].toDateTime().toUtc(),
+        DateTime.utc(2000, 1, 3, 4, 5, 6, 123, 456));
+  });
+
+  test('toDateTime rounds down', () {
+    expect(
+        Instant.fromUnix(Timespan(
+                days: 10958,
+                hours: 23,
+                minutes: 59,
+                seconds: 59,
+                nanoseconds: 999999999))
+            .toDateTime()
+            .toUtc(),
+        DateTime.utc(2000, 1, 2, 23, 59, 59, 999, 999));
+  });
+
   test('timespanUntil()', () {
     expect(timeline[-1].timespanUntil(timeline[1]), Timespan(seconds: 2));
     expect(timeline[1].timespanUntil(timeline[-1]), Timespan(seconds: -2));

@@ -146,6 +146,11 @@ void main() {
       expect(dt.toDateTime(), want);
     });
 
+    test('toDateTime rounds down', () {
+      expect(LocalDateTime(2000, 1, 2, 23, 59, 59, 999999999).toDateTime(),
+          DateTime(2000, 1, 2, 23, 59, 59, 999, 999));
+    });
+
     test('toInstant', () {
       final want = Instant.fromUnix(sinceEpoch);
       expect(dt.toInstant(), want);

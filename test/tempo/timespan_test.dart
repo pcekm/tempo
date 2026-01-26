@@ -143,6 +143,9 @@ void main() {
       expect(Timespan().inDays, 0);
       expect(Timespan(days: 10, nanoseconds: 1).inDays, 10);
       expect(Timespan(days: -10, nanoseconds: -1).inDays, -10);
+      expect(
+          Timespan(seconds: 100000000, nanoseconds: 999999999).inMicroseconds,
+          100000000999999);
     });
 
     test('inHours', () {

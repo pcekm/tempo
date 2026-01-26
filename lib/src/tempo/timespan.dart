@@ -97,7 +97,7 @@ class Timespan extends _BigTime implements Comparable<Timespan> {
   int get inSeconds => seconds;
 
   int _sum(int secondMultiplier, int nanoDivisor) =>
-      (seconds * secondMultiplier + nanosecondPart / nanoDivisor).truncate();
+      seconds * secondMultiplier + nanosecondPart ~/ nanoDivisor;
 
   /// Gets the timespan in milliseconds.
   int get inMilliseconds => _sum(msPerSecond, nsPerMillisecond);

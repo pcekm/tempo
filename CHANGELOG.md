@@ -10,6 +10,16 @@ and this project adheres to
 
 - `periodUntil` methods on `OffsetDateTime` and `ZonedDateTime`
 
+## Fixed
+
+- A bug when truncating values involving a very large number of nanoseconds to
+  microseconds:
+  - Converting a recent to `DateTime` from times that were closer than 1 µs to
+    midnight would incorrectly result in midnight the next day, instead of 1 µs
+    to midnight on the same day.
+  - Converting a large `Timespan` to microseconds would sometimes round up when
+    the nanosecond part was within 1 µs of the next second.
+
 ## [1.0.1] - 2026-01-15
 
 ### Fixed

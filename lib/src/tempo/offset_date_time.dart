@@ -120,6 +120,7 @@ class OffsetDateTime extends _RataDieDate
   }
 
   LocalDateTime get _dateTime => LocalDateTime._fromRataDieDate(this);
+
   Instant get _instant => Instant._fromRataDieDate(_add(-offset.asTimespan));
 
   /// The amount the time zone is offset from UTC.

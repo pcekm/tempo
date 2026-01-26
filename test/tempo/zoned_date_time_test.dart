@@ -349,6 +349,14 @@ void main() {
       expect(dt, DateTime.utc(2000, 1, 2, 3, 4, 5, 6, 7));
     });
 
+    test('toDateTime rounds down', () {
+      expect(
+          ZonedDateTime.withZoneId('UTC', 2000, 1, 2, 23, 59, 59, 999999999)
+              .toDateTime()
+              .toUtc(),
+          DateTime.utc(2000, 1, 2, 23, 59, 59, 999, 999));
+    });
+
     test('toInstant', () {
       var dt = ZonedDateTime.withZoneId(
           'America/Los_Angeles', 2000, 1, 2, 3, 4, 5, 6);

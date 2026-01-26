@@ -311,6 +311,15 @@ void main() {
       expect(nepalOffsetTime.toDateTime(), want);
     });
 
+    test('toDateTime rounds down', () {
+      expect(
+          OffsetDateTime.withOffset(
+                  ZoneOffset(0), 2000, 1, 2, 23, 59, 59, 999999999)
+              .toDateTime()
+              .toUtc(),
+          DateTime.utc(2000, 1, 2, 23, 59, 59, 999, 999));
+    });
+
     test('toInstant()', () {
       expect(nepalOffsetTime.toInstant(),
           hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
