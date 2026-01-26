@@ -209,6 +209,37 @@ class OffsetDateTime extends _RataDieDate
   OffsetDateTime minusPeriod(Period period) =>
       OffsetDateTime.fromLocalDateTime(_dateTime.minusPeriod(period), offset);
 
+  /// Finds the [Period] between this and another [HasDate].
+  ///
+  /// This method is equivalent to calling `toLocal().periodUntil(date)`, but
+  /// it does some checks first. In particular, finding the period between
+  /// dates in different time zones doesn't make sense, and this will throw an
+  /// [ArgumentError].
+  ///
+  /// | [date]           |                        |
+  /// | ---------------- | ---------------------- |
+  /// | [LocalDate]      | OK                     |
+  /// | [LocalDateTime]  | OK                     |
+  /// | [ZonedDateTime]  | Throws exception       |
+  /// | [OffsetDateTime] | OK if [offset] matches |
+  ///
+  /// If you're sure the operation makes sense in your specific case, or your
+  /// application can tolerate the uncertainty, you can avoid the safety checks
+  /// by converting to a `LocalDateTime` first.
+  @override
+  Period periodUntil(HasDate date) {
+    final otherOffset = date is OffsetDateTime ? date.offset : null;
+    if (date is OffsetDateTime && offset != otherOffset) {
+      throw ArgumentError.value(
+          date, 'date', 'Mismatching offset fields ($offset != $otherOffset)');
+    }
+    if (date is ZonedDateTime) {
+      throw ArgumentError.value(date, 'date',
+          'Target must be either a LocalDate/DateTime or another OffsetDateTime');
+    }
+    return toLocal().periodUntil(date);
+  }
+
   /// Formats this as an ISO 8601 date time with offset.
   ///
   /// ```dart

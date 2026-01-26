@@ -8,7 +8,11 @@ part of '../../tempo.dart';
 @immutable
 class ZonedDateTime
     with _HasInstantImpl, _Formatting
-    implements HasDateTime, HasInstant, _ConvertibleDate {
+    implements
+        HasDateTime,
+        HasInstant,
+        _ConvertibleDate,
+        _PeriodArithmetic<ZonedDateTime> {
   @override
   Timespan get unixTimestamp => _dateTime.unixTimestamp;
 
@@ -282,6 +286,7 @@ class ZonedDateTime
   /// back to standard time.
   ///
   /// See also [plusTimespan].
+  @override
   ZonedDateTime plusPeriod(Period period) =>
       ZonedDateTime._forLocal(_dateTime.toLocal().plusPeriod(period), zoneId);
 
@@ -294,8 +299,40 @@ class ZonedDateTime
   /// back to standard time.
   ///
   /// See also [minusTimespan].
+  @override
   ZonedDateTime minusPeriod(Period period) =>
       ZonedDateTime._forLocal(_dateTime.toLocal().minusPeriod(period), zoneId);
+
+  /// Finds the [Period] between this and another [HasDate].
+  ///
+  /// This method is equivalent to calling `toLocal().periodUntil(date)`, but
+  /// it does some checks first. In particular, finding the period between
+  /// dates in different time zones doesn't make sense, and this will throw an
+  /// [ArgumentError].
+  ///
+  /// | [date]           |                        |
+  /// | ---------------- | ---------------------- |
+  /// | [LocalDate]      | OK                     |
+  /// | [LocalDateTime]  | OK                     |
+  /// | [ZonedDateTime]  | OK if [zoneId] matches |
+  /// | [OffsetDateTime] | Throws exception       |
+  ///
+  /// If you're sure the operation makes sense in your specific case, or your
+  /// application can tolerate the uncertainty, you can avoid the safety checks
+  /// by converting to a `LocalDateTime` first.
+  @override
+  Period periodUntil(HasDate date) {
+    final otherZoneId = date is ZonedDateTime ? date.zoneId : null;
+    if (date is ZonedDateTime && zoneId != otherZoneId) {
+      throw ArgumentError.value(
+          date, 'date', 'Mismatching zoneId fields ($zoneId != $otherZoneId)');
+    }
+    if (date is OffsetDateTime) {
+      throw ArgumentError.value(date, 'date',
+          'Target must be either a LocalDate/DateTime or another ZonedDateTime');
+    }
+    return toLocal().periodUntil(date);
+  }
 
   @override
   int get year => _dateTime.year;

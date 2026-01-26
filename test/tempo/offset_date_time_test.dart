@@ -344,14 +344,38 @@ void main() {
         hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
   });
 
-  test('plusPeriod()', () {
-    expect(nstTime.plusPeriod(Period(months: 1)),
-        OffsetDateTime.withOffset(nstOffset, 2001, 2, 1));
-  });
+  group('period arithmetic', () {
+    test('plusPeriod()', () {
+      expect(nstTime.plusPeriod(Period(months: 1)),
+          OffsetDateTime.withOffset(nstOffset, 2001, 2, 1));
+    });
 
-  test('minusPeriod()', () {
-    expect(nstTime.minusPeriod(Period(months: 1)),
-        OffsetDateTime.withOffset(nstOffset, 2000, 12, 1));
+    test('minusPeriod()', () {
+      expect(nstTime.minusPeriod(Period(months: 1)),
+          OffsetDateTime.withOffset(nstOffset, 2000, 12, 1));
+    });
+
+    group('periodUntil', () {
+      test('same offset', () {
+        var dt1 = OffsetDateTime(2000, 1, 2, 3, 4, 5, 6);
+        var dt2 = OffsetDateTime(2001, 3, 5, 6, 7, 8, 9);
+        expect(dt1.periodUntil(dt2), Period(years: 1, months: 2, days: 3));
+      });
+
+      test('different offsets', () {
+        var dt1 =
+            OffsetDateTime.withOffset(ZoneOffset(0), 2000, 1, 2, 3, 4, 5, 6);
+        var dt2 =
+            OffsetDateTime.withOffset(ZoneOffset(-1), 2001, 3, 5, 6, 7, 8, 9);
+        expect(() => dt1.periodUntil(dt2), throwsA(isA<ArgumentError>()));
+      });
+
+      test('ZonedDateTime', () {
+        var dt1 = ZonedDateTime.withZoneId('UTC', 2000, 1, 2, 3, 4, 5, 6);
+        var dt2 = dt1.asOffsetDateTime;
+        expect(() => dt1.periodUntil(dt2), throwsA(isA<ArgumentError>()));
+      });
+    });
   });
 
   test('compareTo()', () {

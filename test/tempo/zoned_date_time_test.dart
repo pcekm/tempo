@@ -401,6 +401,27 @@ void main() {
       // Remains unchanged in spite of DST.
       expect(got, hasDateAndTime(1999, 7, 2, 3, 4, 5, 6));
     });
+
+    group('periodUntil', () {
+      test('same timezone', () {
+        var dt1 = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+        var dt2 = ZonedDateTime(2001, 3, 5, 6, 7, 8, 9);
+        expect(dt1.periodUntil(dt2), Period(years: 1, months: 2, days: 3));
+      });
+
+      test('different timezones', () {
+        var dt1 = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+        var dt2 =
+            ZonedDateTime.withZoneId('Atlantic/Azores', 2001, 3, 5, 6, 7, 8, 9);
+        expect(() => dt1.periodUntil(dt2), throwsA(isA<ArgumentError>()));
+      });
+
+      test('OffsetDateTime', () {
+        var dt1 = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+        var dt2 = dt1.asOffsetDateTime;
+        expect(() => dt1.periodUntil(dt2), throwsA(isA<ArgumentError>()));
+      });
+    });
   });
 
   // Basic tests. The heavy lifting (and more thorough tests) are done

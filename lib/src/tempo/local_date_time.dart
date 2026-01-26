@@ -178,6 +178,7 @@ class LocalDateTime extends _RataDieDate
   /// LocalDateTime(2000, 1, 1).periodUntil(LocalDateTime(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
+  @override
   Period periodUntil(HasDate other) => date.periodUntil(other);
 
   /// Adds a [Period] of time.

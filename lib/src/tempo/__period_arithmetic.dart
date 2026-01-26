@@ -30,4 +30,16 @@ abstract class _PeriodArithmetic<T> {
   /// one day from `2023-03-31` first subtracts one month to get `2023-02-28`
   /// and then subtracts one day for a final result of `2023-02-27`.
   T minusPeriod(Period p);
+
+  /// Finds the [Period] between this and another [HasDate].
+  ///
+  /// The time component (if any) is ignored.
+  ///
+  /// It first finds the number of months by advancing the smaller date
+  /// until it is within 1 month of the larger. Then it finds the number
+  /// of days between them. The final result is normalized into years,
+  /// months and days—all positive or all negative.
+  ///
+  /// To count the total amount of time, use [timespanUntil].
+  Period periodUntil(HasDate other);
 }

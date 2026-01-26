@@ -110,6 +110,7 @@ class LocalDate extends _RataDieDate
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
+  @override
   Period periodUntil(HasDate other) {
     // This first finds the number of months by advancing the smaller date
     // until it is within 1 month of the larger. Then it finds the number
