@@ -41,9 +41,25 @@ void main() {
     });
 
     test('now()', () {
-      var t = withClock(Clock.fixed(DateTime(2000, 1, 2, 3, 4, 5, 6, 7)),
+      // This is a bit tricky. We need to ensure that now() tracks
+      // defaultZoneId and not whatever time zone DateTime happens to be using.
+      // (Which, unfortunately, can't be portably discovered in Dart.)
+      //
+      // Here's what's happening:
+      //
+      //   - Set defaultZoneId to a value that's unlikely to be DateTime's
+      //     default
+      //   - Set the clock to midnight in that unlikely timezone
+      //
+      // Assuming the time zones disagree, the test should fail if it tracks
+      // DateTime and not defaultZoneId.
+      defaultZoneId = 'Pacific/Kiritimati';
+      var d = withClock(
+          Clock.fixed(DateTime.utc(2026, 1, 2, 3, 4, 5, 6, 7)
+              .subtract(Duration(hours: 14)) // Kiritimati's UTC offset
+              .toLocal()),
           () => LocalTime.now());
-      expect(t, hasTime(3, 4, 5, 006007000));
+      expect(d, hasTime(3, 4, 5, 6007000));
     });
   });
 

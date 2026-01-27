@@ -25,11 +25,10 @@ class LocalDate extends _RataDieDate
       : super._fromBigTime(
             _BigTime(days: (rataDieDate._secondPart / sPerDay).floor()));
 
-  /// Constructs a `LocalDate` with the current date and time in the
-  /// current time zone.
+  /// Constructs a `LocalDate` with the current date and time in [defaultZoneId].
   ///
   /// {@macro datetime_precision}
-  LocalDate.now() : this.fromDateTime(clock.now());
+  factory LocalDate.now() => ZonedDateTime.now().toLocal().date;
 
   /// Constructs a `LocalDate` from a standard Dart [DateTime].
   ///

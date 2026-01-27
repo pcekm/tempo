@@ -30,11 +30,11 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
                 nanosecond) %
             nsPerDay;
 
-  /// Constructs a [LocalTime] with the current time in the current time zone.
+  /// Constructs a [LocalTime] with the current time in [defaultZoneId].
   ///
   /// This uses [DateTime] underneath, and the resulting time will have the same
   /// precision.
-  LocalTime.now() : this.fromDateTime(clock.now());
+  factory LocalTime.now() => ZonedDateTime.now().toLocal().time;
 
   /// Constructs a [LocalTime] from a standard Dart [DateTime].
   ///

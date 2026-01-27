@@ -10,6 +10,11 @@ and this project adheres to
 
 - `periodUntil` methods on `OffsetDateTime` and `ZonedDateTime`
 
+## Changed
+
+- `now()` constructors for `LocalTime`, `LocalDate` and `LocalDateTime` use
+  `defaultZoneId` instead of `DateTime`'s default.
+
 ## Fixed
 
 - A bug when truncating values involving a very large number of nanoseconds to

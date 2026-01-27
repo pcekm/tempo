@@ -71,9 +71,25 @@ void main() {
     });
 
     test('now()', () {
-      var d = withClock(Clock.fixed(DateTime(2000, 1, 2, 3, 4, 5, 6, 7)),
+      // This is a bit tricky. We need to ensure that now() tracks
+      // defaultZoneId and not whatever time zone DateTime happens to be using.
+      // (Which, unfortunately, can't be portably discovered in Dart.)
+      //
+      // Here's what's happening:
+      //
+      //   - Set defaultZoneId to a value that's unlikely to be DateTime's
+      //     default
+      //   - Set the clock to midnight in that unlikely timezone
+      //
+      // Assuming the time zones disagree, the test should fail if it tracks
+      // DateTime and not defaultZoneId.
+      defaultZoneId = 'Pacific/Kiritimati';
+      var d = withClock(
+          Clock.fixed(DateTime.utc(2026, 1, 2, 3, 4, 5, 6, 7)
+              .subtract(Duration(hours: 14)) // Kiritimati's UTC offset
+              .toLocal()),
           () => LocalDateTime.now());
-      expect(d, hasDateAndTime(2000, 1, 2, 3, 4, 5, 006007000));
+      expect(d, hasDateAndTime(2026, 1, 2, 3, 4, 5, 6007000));
     });
   });
 
@@ -157,18 +173,26 @@ void main() {
     });
 
     test('inTimezone', () {
-      final want = ZonedDateTime.fromUnix(sinceEpoch);
+      final want = ZonedDateTime(2000, 1, 2, 3, 4, 5, 006007008);
       expect(dt.inTimezone(), want);
     });
 
     test('inTimezone with time zone', () {
-      final want = ZonedDateTime.fromUnix(sinceEpoch, 'UTC');
-      expect(dt.inTimezone(), want);
+      final tz = 'Asia/Kathmandu';
+      final want = ZonedDateTime.withZoneId(tz, 2000, 1, 2, 3, 4, 5, 006007008);
+      expect(dt.inTimezone(tz), want);
     });
 
     test('atOffset', () {
-      final want = OffsetDateTime.fromUnix(sinceEpoch);
-      expect(dt.atOffset(ZoneOffset(0)), want);
+      final want = OffsetDateTime(2000, 1, 2, 3, 4, 5, 006007008);
+      expect(dt.atOffset(), want);
+    });
+
+    test('atOffset with offset', () {
+      final offset = ZoneOffset(2, 23);
+      final want =
+          OffsetDateTime.withOffset(offset, 2000, 1, 2, 3, 4, 5, 006007008);
+      expect(dt.atOffset(offset), want);
     });
 
     test('toLocal', () {

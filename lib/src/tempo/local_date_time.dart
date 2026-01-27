@@ -38,11 +38,11 @@ class LocalDateTime extends _RataDieDate
       super.second,
       super.nanosecond]);
 
-  /// Constructs a `LocalDateTime` with the current date and time in the
-  /// current time zone.
+  /// Constructs a `LocalDateTime` with the current date and time in
+  /// [defaultZoneId].
   ///
   /// {@macro datetime_precision}
-  LocalDateTime.now() : this.fromDateTime(clock.now());
+  factory LocalDateTime.now() => ZonedDateTime.now().toLocal();
 
   /// Constructs a `LocalDateTime` from a standard Dart [DateTime].
   ///
