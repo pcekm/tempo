@@ -1,24 +1,65 @@
 import 'package:tempo/tempo.dart';
 import 'package:test/test.dart';
 
+Matcher hasParts({int years = 0, int months = 0, int days = 0}) => isA<Period>()
+    .having((p) => p.years, 'years', years)
+    .having((p) => p.months, 'months', months)
+    .having((p) => p.days, 'days', days);
+
 void main() {
   test('parse', () {
-    expect(Period.parse('P1Y2M3D'), Period(years: 1, months: 2, days: 3));
-    expect(Period.parse('P-1Y-2M-3D'), Period(years: -1, months: -2, days: -3));
-    expect(Period.parse('P2W'), Period(days: 14));
-    expect(Period.parse('P3DT1H'), Period(days: 3));
+    expect(Period.parse('P1Y2M3D'), hasParts(years: 1, months: 2, days: 3));
+    expect(
+        Period.parse('P-1Y-2M-3D'), hasParts(years: -1, months: -2, days: -3));
+    expect(Period.parse('P2W'), hasParts(days: 14));
+    expect(Period.parse('P3DT1H'), hasParts(days: 3));
   });
 
-  test('normalize()', () {
-    expect(Period(years: 1, months: 13, days: 3).normalize(),
-        Period(years: 2, months: 1, days: 3));
-    expect(Period(days: 35).normalize(), Period(days: 35));
-    expect(Period(months: 11).normalize(), Period(months: 11));
+  group('normalization', () {
+    test('both positive', () {
+      expect(Period(months: 12, days: 3), hasParts(years: 1, days: 3));
+      expect(Period(years: 1, months: 13, days: 3),
+          hasParts(years: 2, months: 1, days: 3));
+      expect(Period(days: 35), hasParts(days: 35));
+      expect(Period(months: 11), hasParts(months: 11));
+    });
+
+    test('+years, -months', () {
+      expect(Period(years: 0, months: -1, days: 3),
+          hasParts(years: 0, months: -1, days: 3));
+      expect(Period(years: 0, months: -12), hasParts(years: -1));
+      expect(Period(years: 0, months: -13, days: 3),
+          hasParts(years: -1, months: -1, days: 3));
+      expect(
+          Period(years: 1, months: -1, days: 3), hasParts(months: 11, days: 3));
+      expect(Period(years: 1, months: -13, days: 3),
+          hasParts(months: -1, days: 3));
+      expect(Period(years: 2, months: -13, days: 3),
+          hasParts(months: 11, days: 3));
+    });
+
+    test('-years, +months', () {
+      expect(Period(years: -1, months: 1, days: 3),
+          hasParts(months: -11, days: 3));
+      expect(
+          Period(years: -1, months: 13, days: 3), hasParts(months: 1, days: 3));
+      expect(Period(years: -2, months: 1, days: 3),
+          hasParts(years: -1, months: -11, days: 3));
+      expect(Period(years: -2, months: 13, days: 3),
+          hasParts(months: -11, days: 3));
+    });
+
+    test('both negative', () {
+      expect(Period(years: -1, months: -1, days: 3),
+          hasParts(years: -1, months: -1, days: 3));
+      expect(Period(years: -1, months: -13, days: 3),
+          hasParts(years: -2, months: -1, days: 3));
+    });
   });
 
   test('unary-', () {
     expect(-Period(years: 1, months: 2, days: 3),
-        Period(years: -1, months: -2, days: -3));
+        hasParts(years: -1, months: -2, days: -3));
   });
 
   group('toString()', () {

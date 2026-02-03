@@ -113,8 +113,7 @@ class LocalDate extends _RataDieDate
   Period periodUntil(HasDate other) {
     // This first finds the number of months by advancing the smaller date
     // until it is within 1 month of the larger. Then it finds the number
-    // of days between them. The final result is normalized into years,
-    // months and days—all positive or all negative.
+    // of days between them.
     var otherDate = LocalDate(other.year, other.month, other.day);
     late int sign;
     late LocalDate d1;
@@ -130,18 +129,16 @@ class LocalDate extends _RataDieDate
     }
     var months = _absoluteMonth(d2) - _absoluteMonth(d1);
     if (d1.day <= d2.day) {
-      return Period(months: sign * months, days: sign * (d2.day - d1.day))
-          .normalize();
+      return Period(months: sign * months, days: sign * (d2.day - d1.day));
     } else {
       --months;
       var advanced = d1.plusPeriod(Period(months: months));
       return Period(
-              months: sign * months,
-              days: sign *
-                  (daysInMonth(advanced.year, advanced.month) -
-                      advanced.day +
-                      d2.day))
-          .normalize();
+          months: sign * months,
+          days: sign *
+              (daysInMonth(advanced.year, advanced.month) -
+                  advanced.day +
+                  d2.day));
     }
   }
 

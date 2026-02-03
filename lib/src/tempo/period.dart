@@ -28,7 +28,33 @@ class Period {
   final int days;
 
   /// Creates a period of years, months, and/or days.
-  const Period({this.years = 0, this.months = 0, this.days = 0});
+  ///
+  /// The result will be normalized as follows:
+  ///
+  ///  - -12 < [months] < 12
+  ///  - [years.sign] == [months.sign] if both are nonzero
+  ///
+  /// The [days] field can't be normalized since the number of years or
+  /// months a period of days represents varies.
+  ///
+  /// ```dart
+  /// Period(months: 25) == Period(years: 2, months: 1);
+  /// Period(months: 12, days: 5) == Period(years: 1, days: 5);
+  /// Period(days: 35) == Period(days: 35);  // unchanged
+  /// Period(years: -2, months: 1) == Period(years: -1, months: -11);
+  /// Period(years: 2, months: -1) == Period(years: 1, months: 11);
+  /// ```
+  const Period({int years = 0, int months = 0, int days = 0})
+      : this._normalizedSign(years + months ~/ 12,
+            months % 12 - (months % 12 != 0 && months < 0 ? 12 : 0), days);
+
+  const Period._normalizedSign(int years, int months, this.days)
+      : years = years +
+            (years > 0 && months < 0 ? -1 : 0) +
+            (years < 0 && months > 0 ? 1 : 0),
+        months = months +
+            (years > 0 && months < 0 ? 12 : 0) +
+            (years < 0 && months > 0 ? -12 : 0);
 
   /// Parses an ISO 8601 period string.
   ///
@@ -44,19 +70,19 @@ class Period {
         years: fields.years, months: fields.months, days: fields.days);
   }
 
-  /// Returns an equivalent period where months is less than 12 and
-  /// all fields have matching signs.
+  /// Returns an equivalent period where months is less than 12.
   ///
-  /// This does not attempt to convert days to months or years, which
-  /// would be ambiguous.
+  /// Leaves [days] untouched. This field can't be normalized, since the
+  /// number of years or months a period of days represents varies.
   ///
   /// ```dart
   /// Period(months: 25).normalize() == Period(years: 2, months: 1);
   /// Period(months: 12, days: 5).normalize() == Period(years: 1, days: 5);
   /// Period(days: 35).normalize() == Period(days: 35);  // unchanged
   /// ```
-  Period normalize() => Period(
-      years: years + months ~/ 12, months: months.remainder(12), days: days);
+  @Deprecated('This call is a no-op and can be removed. '
+      'All Periods are now normalized by the constructor.')
+  Period normalize() => this;
 
   /// Negates all elements in the period.
   Period operator -() {
@@ -69,10 +95,6 @@ class Period {
   /// are equal. Because "year" and "month" are flexible concepts—some years
   /// and months are different than others (leap years, February), comparing
   /// them to days would be ambiguous.
-  ///
-  /// Furthermore, even though a period of 1 year is unambiguously the same
-  /// amount of time as 12 months, they would still compare unequal. To
-  /// determine if two periods are equivalent, [normalize] them first.
   ///
   /// ```dart
   /// Period(days: 30) != Period(months: 1);
