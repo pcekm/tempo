@@ -14,6 +14,8 @@ and this project adheres to
 
 - `Period` normalization now correctly handles negative values of year and
   month.
+- `Timespan` normalization now correctly handles negative milli-, micro- and
+  nanosecond values that exactly divide one second.
 
 ### Deprecated
 

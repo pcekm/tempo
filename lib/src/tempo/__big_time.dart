@@ -57,12 +57,20 @@ class _BigTime {
                 nanoseconds ~/ _nsPerSecond,
             _nsPerMillisecond *
                     (milliseconds % _millisecondsPerSecond +
-                        (milliseconds < 0 ? -_millisecondsPerSecond : 0)) +
+                        (milliseconds % _millisecondsPerSecond != 0 &&
+                                milliseconds < 0
+                            ? -_millisecondsPerSecond
+                            : 0)) +
                 _nsPerMicrosecond *
                     (microseconds % _microsecondsPerSecond +
-                        (microseconds < 0 ? -_microsecondsPerSecond : 0)) +
+                        (microseconds % _microsecondsPerSecond != 0 &&
+                                microseconds < 0
+                            ? -_microsecondsPerSecond
+                            : 0)) +
                 nanoseconds % _nsPerSecond +
-                (nanoseconds < 0 ? -_nsPerSecond : 0));
+                (nanoseconds % _nsPerSecond != 0 && nanoseconds < 0
+                    ? -_nsPerSecond
+                    : 0));
 
   const _BigTime._normalizedSign(int secondPart, int nanosecondPart)
       : _secondPart = secondPart +

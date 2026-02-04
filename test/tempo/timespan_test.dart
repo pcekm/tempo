@@ -56,6 +56,10 @@ void main() {
               microseconds: 1,
               nanoseconds: 1),
           hasParts(-22 * _hourSecs - 58 * _minuteSecs - 58, -998998999));
+
+      expect(Timespan(milliseconds: -1000), hasParts(-1, 0));
+      expect(Timespan(microseconds: -1000000), hasParts(-1, 0));
+      expect(Timespan(nanoseconds: -_nano), hasParts(-1, 0));
     });
 
     test('normalization', () {

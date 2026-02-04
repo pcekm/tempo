@@ -14,6 +14,9 @@ void main() {
     expect(ZoneOffset(48, 0), isOffset(0, 0));
     expect(ZoneOffset(-24, 30), isOffset(-23, -30));
     expect(ZoneOffset(-48, 0), isOffset(0, 0));
+    expect(ZoneOffset(-24), isOffset(0));
+    expect(ZoneOffset(0, -60), isOffset(-1));
+    expect(ZoneOffset(0, 0, -60), isOffset(0, -1));
   });
 
   test('fromDuration()', () {
