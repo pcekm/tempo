@@ -84,7 +84,7 @@ class PosixTz {
     var day = Weekday.values[(w - 1) % 7 + 1];
     var time = LocalTime(2); // Time change defaults to 2 AM wall time.
     if (s.scan('/')) {
-      time = LocalTime().plusTimespan(_scanTimespan(s)!);
+      time = LocalTime() + _scanTimespan(s)!;
     }
     return TimeChangeRule((b) => b
       ..month = month

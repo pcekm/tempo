@@ -133,9 +133,22 @@ void main() {
         Timespan(nanoseconds: -1));
   });
 
+  test('timespan addition', () {
+    var t = LocalTime(12);
+    expect(t + Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4),
+        LocalTime(13, 2, 3, 4));
+  });
+
+  test('timespan subtraction', () {
+    var t = LocalTime(12);
+    expect(t - Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4),
+        LocalTime(10, 57, 56, 999999996));
+  });
+
   test('plusTimespan()', () {
     var t = LocalTime(12);
     expect(
+        // ignore: deprecated_member_use_from_same_package
         t.plusTimespan(
             Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4)),
         LocalTime(13, 2, 3, 4));
@@ -144,6 +157,7 @@ void main() {
   test('minusTimespan()', () {
     var t = LocalTime(12);
     expect(
+        // ignore: deprecated_member_use_from_same_package
         t.minusTimespan(
             Timespan(hours: 1, minutes: 2, seconds: 3, nanoseconds: 4)),
         LocalTime(10, 57, 56, 999999996));

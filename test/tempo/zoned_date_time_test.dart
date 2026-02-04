@@ -377,8 +377,24 @@ void main() {
     setUp(() {
       defaultZoneId = 'America/Los_Angeles';
     });
+
+    test('addition', () {
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var got = dt + Timespan(days: 120);
+      // One hour ahead because of DST:
+      expect(got, hasDateAndTime(2000, 5, 1, 4, 4, 5, 6));
+    });
+
+    test('subtraction', () {
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var got = dt - Timespan(days: 120);
+      // One hour ahead because of DST:
+      expect(got, hasDateAndTime(1999, 9, 4, 4, 4, 5, 6));
+    });
+
     test('plusTimespan', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      // ignore: deprecated_member_use_from_same_package
       var got = dt.plusTimespan(Timespan(days: 120));
       // One hour ahead because of DST:
       expect(got, hasDateAndTime(2000, 5, 1, 4, 4, 5, 6));
@@ -386,6 +402,7 @@ void main() {
 
     test('minusTimespan', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      // ignore: deprecated_member_use_from_same_package
       var got = dt.minusTimespan(Timespan(days: 120));
       // One hour ahead because of DST:
       expect(got, hasDateAndTime(1999, 9, 4, 4, 4, 5, 6));
@@ -396,8 +413,24 @@ void main() {
     setUp(() {
       defaultZoneId = 'America/Los_Angeles';
     });
+
     test('plusPeriod', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var got = dt + Period(months: 6);
+      // Remains unchanged in spite of DST.
+      expect(got, hasDateAndTime(2000, 7, 2, 3, 4, 5, 6));
+    });
+
+    test('minusPeriod', () {
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      var got = dt - Period(months: 6);
+      // Remains unchanged in spite of DST.
+      expect(got, hasDateAndTime(1999, 7, 2, 3, 4, 5, 6));
+    });
+
+    test('plusPeriod', () {
+      var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      // ignore: deprecated_member_use_from_same_package
       var got = dt.plusPeriod(Period(months: 6));
       // Remains unchanged in spite of DST.
       expect(got, hasDateAndTime(2000, 7, 2, 3, 4, 5, 6));
@@ -405,6 +438,7 @@ void main() {
 
     test('minusPeriod', () {
       var dt = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
+      // ignore: deprecated_member_use_from_same_package
       var got = dt.minusPeriod(Period(months: 6));
       // Remains unchanged in spite of DST.
       expect(got, hasDateAndTime(1999, 7, 2, 3, 4, 5, 6));

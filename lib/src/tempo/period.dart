@@ -17,7 +17,7 @@ part of '../../tempo.dart';
 ///
 /// {@category relative}
 @immutable
-class Period {
+class Period implements RelativeTime {
   /// The number of years in the period.
   final int years;
 
@@ -32,7 +32,7 @@ class Period {
   /// The result will be normalized as follows:
   ///
   ///  - -12 < [months] < 12
-  ///  - [years.sign] == [months.sign] if both are nonzero
+  ///  - `years.sign` == `months.sign` if both are nonzero
   ///
   /// The [days] field can't be normalized since the number of years or
   /// months a period of days represents varies.

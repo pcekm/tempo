@@ -6,11 +6,7 @@ part of '../../tempo.dart';
 @immutable
 class LocalDate extends _RataDieDate
     with _Formatting
-    implements
-        HasDate,
-        Comparable<LocalDate>,
-        _PeriodArithmetic<LocalDate>,
-        _ConvertibleDate {
+    implements HasDate, Comparable<LocalDate>, _ConvertibleDate {
   /// Constructs a `LocalDate` from individual parts.
   ///
   /// {@macro astro_year}
@@ -109,7 +105,6 @@ class LocalDate extends _RataDieDate
   /// LocalDate(2000, 1, 1).periodUntil(LocalDate(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  @override
   Period periodUntil(HasDate other) {
     // This first finds the number of months by advancing the smaller date
     // until it is within 1 month of the larger. Then it finds the number
@@ -132,7 +127,7 @@ class LocalDate extends _RataDieDate
       return Period(months: sign * months, days: sign * (d2.day - d1.day));
     } else {
       --months;
-      var advanced = d1.plusPeriod(Period(months: months));
+      var advanced = d1._plusPeriod(Period(months: months));
       return Period(
           months: sign * months,
           days: sign *
@@ -150,18 +145,64 @@ class LocalDate extends _RataDieDate
   Timespan timespanUntil(LocalDate other) =>
       Timespan(days: other._asTimespan.inDays - _asTimespan.inDays);
 
+  /// {@template addition_operator}
+  /// Adds a `Timespan` or `Period`.
+  ///
+  /// Adding a [Timespan] adds that exact amount of time.
+  ///
+  /// Adding a [Period] increments (or decrements) the date by a specific
+  /// number of months or years while—as much as possible—keeping the day
+  /// (and time, if any) the same. When this is not possible the result
+  /// will be the last day of the month. For  example, adding one month to
+  /// `2023-01-31` gives `2023-01-28`.
+  ///
+  /// The days part is applied last. For example, adding one month and one day
+  /// to `2023-01-31` first adds one month to get `2023-02-28` and then
+  /// adds one day for a final result of `2023-03-01`.
+  /// {@endtemplate}
+  LocalDate operator +(RelativeTime amount) => switch (amount) {
+        Period() => _plusPeriod(amount),
+        Timespan() => _plusTimespan(amount),
+      };
+
+  /// {@template subtraction_operator}
+  /// Subtracts a `Timespan` or `Period`.
+  ///
+  /// Subtracting a [Timespan] subtracts that exact amount of time.
+  ///
+  /// Subtracting a [Period] increments (or decrements) the date by a specific
+  /// number of months or years while—as much as possible—keeping the day
+  /// (and time, if any) the same. When this is not possible the result
+  /// will be the last day of the month. For  example, adding one month to
+  /// `2023-01-31` gives `2023-01-28`.
+  ///
+  /// The days part is applied last. For example, adding one month and one day
+  /// to `2023-01-31` first adds one month to get `2023-02-28` and then
+  /// adds one day for a final result of `2023-03-01`.
+  /// {@endtemplate}
+  LocalDate operator -(RelativeTime amount) => switch (amount) {
+        Period() => _plusPeriod(-amount),
+        Timespan() => _minusTimespan(amount),
+      };
+
   /// Adds a [Timespan].
   ///
   /// The date is incremented or decremented by the number of days in the
   /// timespan. Fractional results are rounded down.
-  LocalDate plusTimespan(Timespan t) =>
+  @Deprecated('Use + and - operators instead')
+  LocalDate plusTimespan(Timespan t) => _plusTimespan(t);
+
+  LocalDate _plusTimespan(Timespan t) =>
       LocalDate._fromRataDieDate(_asTimespan + t);
 
   /// Subtracts a [Timespan].
   ///
   /// The date is decremented or incremented by the number of days in the
   /// timespan. Fractional results are rounded down.
-  LocalDate minusTimespan(Timespan t) =>
+  @Deprecated('Use + and - operators instead')
+  LocalDate minusTimespan(Timespan t) => _minusTimespan(t);
+
+  LocalDate _minusTimespan(Timespan t) =>
       LocalDate._fromRataDieDate(_asTimespan - t);
 
   /// Adds [Period] of time.
@@ -174,8 +215,10 @@ class LocalDate extends _RataDieDate
   /// The days part is applied last. For example, adding one month and one day
   /// to `2023-01-31` first adds one month to get `2023-02-28` and then
   /// adds one day for a final result of `2023-03-01`.
-  @override
-  LocalDate plusPeriod(Period p) {
+  @Deprecated('Use + and - operators instead')
+  LocalDate plusPeriod(Period p) => _plusPeriod(p);
+
+  LocalDate _plusPeriod(Period p) {
     var y = year + p.years + p.months ~/ 12;
     var months = p.months.remainder(12);
     var m = month + months;
@@ -185,8 +228,8 @@ class LocalDate extends _RataDieDate
       ++y;
     }
     m = (m - 1) % 12 + 1;
-    return LocalDate(y, m, min(day, daysInMonth(y, m)))
-        .plusTimespan(Timespan(days: p.days));
+    return LocalDate(y, m, min(day, daysInMonth(y, m))) +
+        Timespan(days: p.days);
   }
 
   /// Subtracts [Period] of time.
@@ -199,8 +242,8 @@ class LocalDate extends _RataDieDate
   /// The days part is applied last. For example, subtracting one month and
   /// one day from `2023-03-31` first subtracts one month to get `2023-02-28`
   /// and then subtracts one day for a final result of `2023-02-27`.
-  @override
-  LocalDate minusPeriod(Period p) => plusPeriod(-p);
+  @Deprecated('Use + and - operators instead')
+  LocalDate minusPeriod(Period p) => _plusPeriod(-p);
 
   @override
   int compareTo(LocalDate other) {

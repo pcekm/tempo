@@ -94,10 +94,18 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
   LocalDateTime toLocal() => LocalDateTime._fromRataDieDate(_asRataDie);
 
   /// Adds a [Timespan].
-  Instant plusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp + t);
+  Instant operator +(Timespan t) => Instant.fromUnix(unixTimestamp + t);
+
+  /// Adds a [Timespan].
+  @Deprecated('Use + and - operators instead')
+  Instant plusTimespan(Timespan t) => this + t;
 
   /// Subtracts a [Timespan].
-  Instant minusTimespan(Timespan t) => Instant.fromUnix(unixTimestamp - t);
+  Instant operator -(Timespan t) => Instant.fromUnix(unixTimestamp - t);
+
+  /// Subtracts a [Timespan].
+  @Deprecated('Use + and - operators instead')
+  Instant minusTimespan(Timespan t) => this - t;
 
   Timespan get _asRataDie => unixTimestamp + _rataDieOffset;
 

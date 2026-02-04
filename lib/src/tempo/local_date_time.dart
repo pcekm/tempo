@@ -9,11 +9,7 @@ part of '../../tempo.dart';
 @immutable
 class LocalDateTime extends _RataDieDate
     with _TimeFields, _Formatting
-    implements
-        Comparable<LocalDateTime>,
-        HasDateTime,
-        _PeriodArithmetic<LocalDateTime>,
-        _ConvertibleDate {
+    implements Comparable<LocalDateTime>, HasDateTime, _ConvertibleDate {
   /// Constructs a new `LocalDateTime`.
   ///
   /// The time arguments wrap in exactly the same way they do in [LocalTime],
@@ -178,34 +174,49 @@ class LocalDateTime extends _RataDieDate
   /// LocalDateTime(2000, 1, 1).periodUntil(LocalDateTime(2010, 2, 3)) ==
   ///     Period(years: 10, months: 1, days: 2);
   /// ```
-  @override
   Period periodUntil(HasDate other) => date.periodUntil(other);
+
+  /// {@macro addition_operator}
+  LocalDateTime operator +(RelativeTime amount) => switch (amount) {
+        Period() => _plusPeriod(amount),
+        Timespan() => _plusTimespan(amount),
+      };
+
+  /// {@macro subtraction_operator}
+  LocalDateTime operator -(RelativeTime amount) => switch (amount) {
+        Period() => _minusPeriod(amount),
+        Timespan() => _minusTimespan(amount),
+      };
 
   /// Adds a [Period] of time.
   ///
   /// This acts on the date parts in exactly the same way as
-  /// [LocalDate.plusPeriod()] and leaves the time untouched.
+  /// [LocalDate.plusPeriod] and leaves the time untouched.
   ///
   /// ```dart
   /// var d = LocalDateTime(2000);
   /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
   /// ```
-  @override
-  LocalDateTime plusPeriod(Period amount) =>
-      LocalDateTime.combine(date.plusPeriod(amount), time);
+  @Deprecated('Use + and - operators instead')
+  LocalDateTime plusPeriod(Period amount) => _plusPeriod(amount);
+
+  LocalDateTime _plusPeriod(Period amount) =>
+      LocalDateTime.combine(date._plusPeriod(amount), time);
 
   /// Subtracts a [Period] of time.
   ///
   /// This acts on the date parts in exactly the same way as
-  /// [LocalDate.plusPeriod()] and leaves the time untouched.
+  /// [LocalDate.minusPeriod] and leaves the time untouched.
   ///
   /// ```dart
   /// var d = LocalDateTime(2000);
   /// d.plusPeriod(Period(days: 1)) == LocalDateTime(2000, 1, 2);
   /// ```
-  @override
-  LocalDateTime minusPeriod(Period amount) =>
-      LocalDateTime.combine(date.minusPeriod(amount), time);
+  @Deprecated('Use + and - operators instead')
+  LocalDateTime minusPeriod(Period amount) => _minusPeriod(amount);
+
+  LocalDateTime _minusPeriod(Period amount) =>
+      LocalDateTime.combine(date._plusPeriod(-amount), time);
 
   /// Adds a [Timespan].
   ///
@@ -214,7 +225,10 @@ class LocalDateTime extends _RataDieDate
   /// var timespan = Timespan(days: 30, hours: 1);
   /// dt.plusTimespan(timespan) == LocalDateTime(2000, 1, 31, 1);
   /// ```
-  LocalDateTime plusTimespan(Timespan amount) =>
+  @Deprecated('Use + and - operators instead')
+  LocalDateTime plusTimespan(Timespan amount) => _plusTimespan(amount);
+
+  LocalDateTime _plusTimespan(Timespan amount) =>
       LocalDateTime._fromRataDieDate(_asTimespan + amount);
 
   /// Subtracts a [Timespan].
@@ -224,7 +238,10 @@ class LocalDateTime extends _RataDieDate
   /// var timespan = Timespan(days: 30, hours: 1);
   /// dt.minusTimespan(timespan) == LocalDateTime(2000, 1, 1, 23);
   /// ```
-  LocalDateTime minusTimespan(Timespan amount) =>
+  @Deprecated('Use + and - operators instead')
+  LocalDateTime minusTimespan(Timespan amount) => _minusTimespan(amount);
+
+  LocalDateTime _minusTimespan(Timespan amount) =>
       LocalDateTime._fromRataDieDate(_asTimespan - amount);
 
   @override

@@ -1,30 +1,27 @@
 import 'package:tempo/tempo.dart';
 
 /// Same day and time next month.
-LocalDateTime nextMonth(LocalDateTime date) =>
-    date.plusPeriod(Period(months: 1));
+LocalDateTime nextMonth(LocalDateTime date) => date + Period(months: 1);
 
 /// Same day and time next year.
-LocalDateTime nextYear(LocalDateTime date) => date.plusPeriod(Period(years: 1));
+LocalDateTime nextYear(LocalDateTime date) => date + Period(years: 1);
 
 /// Exactly 24 hours from now.
-ZonedDateTime add24h(ZonedDateTime date) =>
-    date.plusTimespan(Timespan(days: 1));
+ZonedDateTime add24h(ZonedDateTime date) => date + Timespan(days: 1);
 
 /// Also exactly 24 hours from now.
-ZonedDateTime alsoAdd24h(ZonedDateTime date) =>
-    date.plusTimespan(Timespan(hours: 24));
+ZonedDateTime alsoAdd24h(ZonedDateTime date) => date + Timespan(hours: 24);
 
 /// The exact same time tomorrow. This works even if there's a time change
 /// and the local time gains or loses an hour.
-ZonedDateTime addOneDay(ZonedDateTime date) => date.plusPeriod(Period(days: 1));
+ZonedDateTime addOneDay(ZonedDateTime date) => date + Period(days: 1);
 
 /// Calls [func] with each day between [start] and [end].
 void forEachDay(LocalDate start, LocalDate end, void Function(LocalDate) func) {
   for (var date = start;
       date < end;
-      // Since LocalDate has no time changes, plusTimespan() would also work:
-      date = date.plusPeriod(Period(days: 1))) {
+      // Since LocalDate has no time changes, adding a Timespan would also work:
+      date = date + Period(days: 1)) {
     func(date);
   }
 }
@@ -36,13 +33,13 @@ int daysUntil(LocalDate date) => LocalDate.now().periodUntil(date).days;
 void printCalendar(int year, int month) {
   final monthStart = LocalDate(year, month);
   final offset = monthStart.weekday.us;
-  final calendarStart = monthStart.minusPeriod(Period(days: offset));
-  final monthEnd = monthStart.plusPeriod(Period(months: 1));
+  final calendarStart = monthStart - Period(days: offset);
+  final monthEnd = monthStart + Period(months: 1);
   print('Sun Mon Tue Wed Thu Fri Sat');
   var row = [];
   for (var date = calendarStart;
       date < monthEnd;
-      date = date.plusPeriod(Period(days: 1))) {
+      date = date + Period(days: 1)) {
     if (row.length >= 7) {
       print(row.join(' '));
       row = [];

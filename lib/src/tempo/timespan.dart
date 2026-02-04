@@ -32,7 +32,7 @@ part of '../../tempo.dart';
 ///
 /// {@category relative}
 @immutable
-class Timespan extends _BigTime implements Comparable<Timespan> {
+class Timespan extends _BigTime implements Comparable<Timespan>, RelativeTime {
   /// Constructs a `Timespan`.
   ///
   /// This is meant to work much like a higher-precision [Duration].

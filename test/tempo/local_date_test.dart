@@ -263,27 +263,56 @@ void main() {
   });
 
   group('Timespan arithmetic:', () {
+    test('addition', () {
+      expect(LocalDate(2000) + Timespan(days: 1), hasDate(2000, 1, 2));
+      expect(LocalDate(2000) + Timespan(days: -1), hasDate(1999, 12, 31));
+      expect(LocalDate(2000) + Timespan(hours: 23), hasDate(2000));
+      expect(LocalDate(2000) + Timespan(hours: -23), hasDate(1999, 12, 31));
+      expect(LocalDate(2000) + Timespan(seconds: -1), hasDate(1999, 12, 31));
+    });
+
+    test('subtraction', () {
+      expect(LocalDate(2000) - Timespan(days: 1), hasDate(1999, 12, 31));
+      expect(LocalDate(2000) - Timespan(days: -1), hasDate(2000, 1, 2));
+      expect(LocalDate(2000) - Timespan(hours: -23), hasDate(2000));
+      expect(LocalDate(2000) - Timespan(hours: 23), hasDate(1999, 12, 31));
+      expect(LocalDate(2000) - Timespan(seconds: 1), hasDate(1999, 12, 31));
+    });
+
     test('plusTimespan()', () {
       expect(
-          LocalDate(2000).plusTimespan(Timespan(days: 1)), hasDate(2000, 1, 2));
+          // ignore: deprecated_member_use_from_same_package
+          LocalDate(2000).plusTimespan(Timespan(days: 1)),
+          hasDate(2000, 1, 2));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).plusTimespan(Timespan(days: -1)),
           hasDate(1999, 12, 31));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).plusTimespan(Timespan(hours: 23)), hasDate(2000));
-      expect(LocalDate(2000).plusTimespan(Timespan(hours: -23)),
+      expect(
+          // ignore: deprecated_member_use_from_same_package
+          LocalDate(2000).plusTimespan(Timespan(hours: -23)),
           hasDate(1999, 12, 31));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).plusTimespan(Timespan(seconds: -1)),
           hasDate(1999, 12, 31));
     });
 
     test('minusTimespan()', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).minusTimespan(Timespan(days: 1)),
           hasDate(1999, 12, 31));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).minusTimespan(Timespan(days: -1)),
           hasDate(2000, 1, 2));
       expect(
-          LocalDate(2000).minusTimespan(Timespan(hours: -23)), hasDate(2000));
+          // ignore: deprecated_member_use_from_same_package
+          LocalDate(2000).minusTimespan(Timespan(hours: -23)),
+          hasDate(2000));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).minusTimespan(Timespan(hours: 23)),
           hasDate(1999, 12, 31));
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2000).minusTimespan(Timespan(seconds: 1)),
           hasDate(1999, 12, 31));
     });
@@ -292,41 +321,99 @@ void main() {
   group('Period arithmetic:', () {
     test('single fields', () {
       var d = LocalDate(2001, 2, 3);
+      expect(d + Period(days: 1), hasDate(2001, 2, 4));
+      expect(d + Period(days: 28), hasDate(2001, 3, 3));
+      expect(d + Period(months: 1), hasDate(2001, 3, 3));
+      expect(d + Period(months: 12), hasDate(2002, 2, 3));
+      expect(d + Period(years: 4), hasDate(2005, 2, 3));
+    });
+
+    test('negative single fields', () {
+      var d = LocalDate(2001, 2, 3);
+      expect(d + Period(days: -1), hasDate(2001, 2, 2));
+      expect(d + Period(days: -3), hasDate(2001, 1, 31));
+      expect(d + Period(months: -1), hasDate(2001, 1, 3));
+      expect(d + Period(months: -12), hasDate(2000, 2, 3));
+      expect(d + Period(years: -4), hasDate(1997, 2, 3));
+    });
+
+    test('order of operations', () {
+      expect(LocalDate(2023, 1, 31) + Period(months: 1, days: 1),
+          hasDate(2023, 3, 1));
+    });
+
+    test('months increment year', () {
+      var d = LocalDate(2000, 12, 1);
+      expect(d + Period(months: 1), hasDate(2001, 1, 1));
+    });
+
+    test('months decrement year', () {
+      var d = LocalDate(2001, 1, 1);
+      expect(d - Period(months: 1), hasDate(2000, 12, 1));
+    });
+
+    test('month clamping', () {
+      var d = LocalDate(1999, 1, 31);
+      expect(d + Period(months: 1), hasDate(1999, 2, 28));
+      expect(d - Period(months: 2), hasDate(1998, 11, 30));
+      expect(d + Period(years: 1, months: 1), hasDate(2000, 2, 29));
+    });
+  });
+
+  group('Period arithmetic (deprecated):', () {
+    test('single fields', () {
+      var d = LocalDate(2001, 2, 3);
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(days: 1)), hasDate(2001, 2, 4));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(days: 28)), hasDate(2001, 3, 3));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: 1)), hasDate(2001, 3, 3));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: 12)), hasDate(2002, 2, 3));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(years: 4)), hasDate(2005, 2, 3));
     });
 
     test('negative single fields', () {
       var d = LocalDate(2001, 2, 3);
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(days: -1)), hasDate(2001, 2, 2));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(days: -3)), hasDate(2001, 1, 31));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: -1)), hasDate(2001, 1, 3));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: -12)), hasDate(2000, 2, 3));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(years: -4)), hasDate(1997, 2, 3));
     });
 
     test('order of operations', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(LocalDate(2023, 1, 31).plusPeriod(Period(months: 1, days: 1)),
           hasDate(2023, 3, 1));
     });
 
     test('months increment year', () {
       var d = LocalDate(2000, 12, 1);
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: 1)), hasDate(2001, 1, 1));
     });
 
     test('months decrement year', () {
       var d = LocalDate(2001, 1, 1);
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: -1)), hasDate(2000, 12, 1));
     });
 
     test('month clamping', () {
       var d = LocalDate(1999, 1, 31);
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: 1)), hasDate(1999, 2, 28));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(months: -2)), hasDate(1998, 11, 30));
+      // ignore: deprecated_member_use_from_same_package
       expect(d.plusPeriod(Period(years: 1, months: 1)), hasDate(2000, 2, 29));
     });
   });

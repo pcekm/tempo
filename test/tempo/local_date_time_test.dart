@@ -235,47 +235,103 @@ void main() {
         Period(years: 1, months: 1, days: 1));
   });
 
+  test('timespan addition', () {
+    var d = LocalDateTime(2000);
+    expect(d + Timespan(seconds: 1), hasDateAndTime(2000, 1, 1, 0, 0, 1));
+    expect(
+        d + Timespan(days: 1, seconds: 1), hasDateAndTime(2000, 1, 2, 0, 0, 1));
+    expect(
+        d + Timespan(nanoseconds: 1), hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
+    expect(d + Timespan(seconds: -1), hasDateAndTime(1999, 12, 31, 23, 59, 59));
+    expect(d + Timespan(days: -1, seconds: -1),
+        hasDateAndTime(1999, 12, 30, 23, 59, 59));
+    expect(d + Timespan(nanoseconds: -1),
+        hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
+  });
+
+  test('timespan subtraction', () {
+    var d = LocalDateTime(2000);
+    expect(d - Timespan(seconds: -1), hasDateAndTime(2000, 1, 1, 0, 0, 1));
+    expect(d - Timespan(days: -1, seconds: -1),
+        hasDateAndTime(2000, 1, 2, 0, 0, 1));
+    expect(
+        d - Timespan(nanoseconds: -1), hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
+    expect(d - Timespan(seconds: 1), hasDateAndTime(1999, 12, 31, 23, 59, 59));
+    expect(d - Timespan(days: 1, seconds: 1),
+        hasDateAndTime(1999, 12, 30, 23, 59, 59));
+    expect(d - Timespan(nanoseconds: 1),
+        hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
+  });
+
   test('plusTimespan', () {
     var d = LocalDateTime(2000);
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(seconds: 1)),
         hasDateAndTime(2000, 1, 1, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(days: 1, seconds: 1)),
         hasDateAndTime(2000, 1, 2, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(nanoseconds: 1)),
         hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(seconds: -1)),
         hasDateAndTime(1999, 12, 31, 23, 59, 59));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(days: -1, seconds: -1)),
         hasDateAndTime(1999, 12, 30, 23, 59, 59));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusTimespan(Timespan(nanoseconds: -1)),
         hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
   });
 
   test('minusTimespan', () {
     var d = LocalDateTime(2000);
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(seconds: -1)),
         hasDateAndTime(2000, 1, 1, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(days: -1, seconds: -1)),
         hasDateAndTime(2000, 1, 2, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(nanoseconds: -1)),
         hasDateAndTime(2000, 1, 1, 0, 0, 0, 1));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(seconds: 1)),
         hasDateAndTime(1999, 12, 31, 23, 59, 59));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(days: 1, seconds: 1)),
         hasDateAndTime(1999, 12, 30, 23, 59, 59));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusTimespan(Timespan(nanoseconds: 1)),
         hasDateAndTime(1999, 12, 31, 23, 59, 59, 999999999));
   });
 
+  test('period addition', () {
+    var d = LocalDateTime(2000);
+    expect(d + Period(months: 1), hasDateAndTime(2000, 2));
+    expect(d + Period(months: -1), hasDateAndTime(1999, 12));
+  });
+
+  test('period subtraction', () {
+    var d = LocalDateTime(2000);
+    expect(d - Period(months: -1), hasDateAndTime(2000, 2));
+    expect(d - Period(months: 1), hasDateAndTime(1999, 12));
+  });
+
   test('plusPeriod', () {
     var d = LocalDateTime(2000);
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusPeriod(Period(months: 1)), hasDateAndTime(2000, 2));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.plusPeriod(Period(months: -1)), hasDateAndTime(1999, 12));
   });
 
   test('minusPeriod', () {
     var d = LocalDateTime(2000);
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusPeriod(Period(months: -1)), hasDateAndTime(2000, 2));
+    // ignore: deprecated_member_use_from_same_package
     expect(d.minusPeriod(Period(months: 1)), hasDateAndTime(1999, 12));
   });
 

@@ -8,11 +8,7 @@ part of '../../tempo.dart';
 @immutable
 class ZonedDateTime
     with _HasInstantImpl, _Formatting
-    implements
-        HasDateTime,
-        HasInstant,
-        _ConvertibleDate,
-        _PeriodArithmetic<ZonedDateTime> {
+    implements HasDateTime, HasInstant, _ConvertibleDate {
   @override
   Timespan get unixTimestamp => _dateTime.unixTimestamp;
 
@@ -151,17 +147,17 @@ class ZonedDateTime
   static ZonedDateTime _forLocal(LocalDateTime local, [String? zoneId]) {
     zoneId ??= defaultZoneId;
     var instant = Instant._fromRataDieDate(
-        local.date.minusTimespan(Timespan(days: 1))._asTimespan);
+        local.date._minusTimespan(Timespan(days: 1))._asTimespan);
     var candidate = ZonedDateTime.fromInstant(instant, zoneId);
     while (candidate.toLocal() < local) {
-      instant = instant.plusTimespan(candidate.toLocal().timespanUntil(local));
+      instant = instant + candidate.toLocal().timespanUntil(local);
       candidate = ZonedDateTime.fromInstant(instant, zoneId);
     }
     if (candidate.toLocal() > local) {
       // We either overshot or the requested date was in the gap between
       // a jump forward. See if jumping back again fixes things. If not,
       // we've done the best we can.
-      instant = instant.plusTimespan(candidate.toLocal().timespanUntil(local));
+      instant = instant + candidate.toLocal().timespanUntil(local);
       var dt = ZonedDateTime.fromInstant(instant, zoneId);
       if (dt.toLocal() == local) {
         return dt;
@@ -257,6 +253,46 @@ class ZonedDateTime
   @override
   Instant toInstant() => _dateTime.toInstant();
 
+  /// Adds a `Timespan` or `Period`.
+  ///
+  /// Adding a [Timespan] increments the underlying [Instant] by exactly
+  /// that amount. When adding a whole number of days, this could result
+  /// in the time changing because of daylight savings.
+  ///
+  /// Adding a [Period] increments (or decrements) the date by a specific
+  /// number of months or years while—as much as possible—keeping the day
+  /// (and time, if any) the same. When this is not possible the result
+  /// will be the last day of the month. For  example, adding one month to
+  /// `2023-01-31` gives `2023-01-28`.
+  ///
+  /// The days part is applied last. For example, adding one month and one day
+  /// to `2023-01-31` first adds one month to get `2023-02-28` and then
+  /// adds one day for a final result of `2023-03-01`.
+  ZonedDateTime operator +(RelativeTime amount) => switch (amount) {
+        Period() => _plusPeriod(amount),
+        Timespan() => _plusTimespan(amount),
+      };
+
+  /// Subtracts a `Timespan` or `Period`.
+  ///
+  /// Subtracting a `Timespan` decrements the underlying [Instant] by exactly
+  /// that amount. When subtracting a whole number of days, this could result
+  /// in the time changing because of daylight savings.
+  ///
+  /// Subtracting a `Period` increments (or decrements) the date by a specific
+  /// number of months or years while—as much as possible—keeping the day
+  /// (and time, if any) the same. When this is not possible the result
+  /// will be the last day of the month. For  example, adding one month to
+  /// `2023-01-31` gives `2023-01-28`.
+  ///
+  /// The days part is applied last. For example, adding one month and one day
+  /// to `2023-01-31` first adds one month to get `2023-02-28` and then
+  /// adds one day for a final result of `2023-03-01`.
+  ZonedDateTime operator -(RelativeTime amount) => switch (amount) {
+        Period() => _minusPeriod(amount),
+        Timespan() => _minusTimespan(amount),
+      };
+
   /// Adds a [Timespan].
   ///
   /// This increments the underlying [Instant] by exactly [timespan].
@@ -264,8 +300,11 @@ class ZonedDateTime
   /// changing because of daylight savings.
   ///
   /// See also [plusPeriod].
-  ZonedDateTime plusTimespan(Timespan timespan) =>
-      ZonedDateTime.fromInstant(toInstant().plusTimespan(timespan), zoneId);
+  @Deprecated('Use + and - operators instead.')
+  ZonedDateTime plusTimespan(Timespan timespan) => _plusTimespan(timespan);
+
+  ZonedDateTime _plusTimespan(Timespan timespan) =>
+      ZonedDateTime.fromInstant(toInstant() + timespan, zoneId);
 
   /// Subtracts a [Timespan].
   ///
@@ -274,8 +313,11 @@ class ZonedDateTime
   /// changing because of daylight savings.
   ///
   /// See also [minusPeriod].
-  ZonedDateTime minusTimespan(Timespan timespan) =>
-      ZonedDateTime.fromInstant(toInstant().minusTimespan(timespan), zoneId);
+  @Deprecated('Use + and - operators instead.')
+  ZonedDateTime minusTimespan(Timespan timespan) => _minusTimespan(timespan);
+
+  ZonedDateTime _minusTimespan(Timespan timespan) =>
+      ZonedDateTime.fromInstant(toInstant() - timespan, zoneId);
 
   /// Adds a [Period].
   ///
@@ -286,9 +328,11 @@ class ZonedDateTime
   /// back to standard time.
   ///
   /// See also [plusTimespan].
-  @override
-  ZonedDateTime plusPeriod(Period period) =>
-      ZonedDateTime._forLocal(_dateTime.toLocal().plusPeriod(period), zoneId);
+  @Deprecated('Use + and - operators instead.')
+  ZonedDateTime plusPeriod(Period period) => _plusPeriod(period);
+
+  ZonedDateTime _plusPeriod(Period period) =>
+      ZonedDateTime._forLocal(_dateTime.toLocal()._plusPeriod(period), zoneId);
 
   /// Subtracts a [Period].
   ///
@@ -299,9 +343,11 @@ class ZonedDateTime
   /// back to standard time.
   ///
   /// See also [minusTimespan].
-  @override
-  ZonedDateTime minusPeriod(Period period) =>
-      ZonedDateTime._forLocal(_dateTime.toLocal().minusPeriod(period), zoneId);
+  @Deprecated('Use + and - operators instead.')
+  ZonedDateTime minusPeriod(Period period) => _minusPeriod(period);
+
+  ZonedDateTime _minusPeriod(Period period) =>
+      ZonedDateTime._forLocal(_dateTime.toLocal()._minusPeriod(period), zoneId);
 
   /// Finds the [Period] between this and another [HasDate].
   ///
@@ -320,7 +366,6 @@ class ZonedDateTime
   /// If you're sure the operation makes sense in your specific case, or your
   /// application can tolerate the uncertainty, you can avoid the safety checks
   /// by converting to a `LocalDateTime` first.
-  @override
   Period periodUntil(HasDate date) {
     final otherZoneId = date is ZonedDateTime ? date.zoneId : null;
     if (date is ZonedDateTime && zoneId != otherZoneId) {

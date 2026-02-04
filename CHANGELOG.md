@@ -6,6 +6,11 @@ and this project adheres to
 
 ## [unreleased] - YYYY-MM-DD
 
+### Added
+
+- `operator+` and `operator-` operators on all datetime types that work on both
+  `Timespan` and `Period`
+
 ### Changed
 
 - The `Period` constructor automatically normalizes values.
@@ -20,6 +25,8 @@ and this project adheres to
 ### Deprecated
 
 - `Period.normalize()` is now a no-op. Any calls can be safely removed.
+- All methods for adding and subtracting `Timespan` and `Period`. Use the +
+  and - operators instead.
 
 ## [1.1.0] - 2026-02-02
 

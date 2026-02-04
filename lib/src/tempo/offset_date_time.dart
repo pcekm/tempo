@@ -6,11 +6,7 @@ part of '../../tempo.dart';
 @immutable
 class OffsetDateTime extends _RataDieDate
     with _TimeFields, _HasInstantImpl, _Formatting
-    implements
-        HasInstant,
-        HasDateTime,
-        _PeriodArithmetic<OffsetDateTime>,
-        _ConvertibleDate {
+    implements HasInstant, HasDateTime, _ConvertibleDate {
   /// Constructs an `OffsetDateTime` from the individual components of a date
   /// and time.
   ///
@@ -174,6 +170,18 @@ class OffsetDateTime extends _RataDieDate
   DateTime toDateTime() => DateTime.fromMicrosecondsSinceEpoch(
       _instant.unixTimestamp.inMicroseconds);
 
+  /// {@macro addition_operator}
+  OffsetDateTime operator +(RelativeTime amount) => switch (amount) {
+        Period() => _plusPeriod(amount),
+        Timespan() => _plusTimespan(amount),
+      };
+
+  /// {@macro subtraction_operator}
+  OffsetDateTime operator -(RelativeTime amount) => switch (amount) {
+        Period() => _minusPeriod(amount),
+        Timespan() => _minusTimespan(amount),
+      };
+
   /// Adds a `Timespan`.
   ///
   /// This increments the underlying [Instant] by exactly [timespan].
@@ -185,8 +193,11 @@ class OffsetDateTime extends _RataDieDate
   /// dt.plusTimespan(timespan) ==
   ///   OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 13, 1);
   /// ```
-  OffsetDateTime plusTimespan(Timespan timespan) =>
-      OffsetDateTime.fromInstant(_instant.plusTimespan(timespan), offset);
+  @Deprecated('Use + and - operators instead.')
+  OffsetDateTime plusTimespan(Timespan timespan) => _plusTimespan(timespan);
+
+  OffsetDateTime _plusTimespan(Timespan timespan) =>
+      OffsetDateTime.fromInstant(_instant + timespan, offset);
 
   /// Subtracts a `Timespan`.
   ///
@@ -199,16 +210,23 @@ class OffsetDateTime extends _RataDieDate
   /// dt.minusTimespan(timespan) ==
   ///   OffsetDateTime(ZoneOffset(-8), 2000, 1, 1, 11, 59);
   /// ```
-  OffsetDateTime minusTimespan(Timespan timespan) =>
-      OffsetDateTime.fromInstant(_instant.minusTimespan(timespan), offset);
+  @Deprecated('Use + and - operators instead.')
+  OffsetDateTime minusTimespan(Timespan timespan) => _minusTimespan(timespan);
 
-  @override
-  OffsetDateTime plusPeriod(Period period) =>
-      OffsetDateTime.fromLocalDateTime(_dateTime.plusPeriod(period), offset);
+  OffsetDateTime _minusTimespan(Timespan timespan) =>
+      OffsetDateTime.fromInstant(_instant - timespan, offset);
 
-  @override
-  OffsetDateTime minusPeriod(Period period) =>
-      OffsetDateTime.fromLocalDateTime(_dateTime.minusPeriod(period), offset);
+  @Deprecated('Use + and - operators instead.')
+  OffsetDateTime plusPeriod(Period period) => _plusPeriod(period);
+
+  OffsetDateTime _plusPeriod(Period period) =>
+      OffsetDateTime.fromLocalDateTime(_dateTime._plusPeriod(period), offset);
+
+  @Deprecated('Use + and - operators instead.')
+  OffsetDateTime minusPeriod(Period period) => _minusPeriod(period);
+
+  OffsetDateTime _minusPeriod(Period period) =>
+      OffsetDateTime.fromLocalDateTime(_dateTime._minusPeriod(period), offset);
 
   /// Finds the [Period] between this and another [HasDate].
   ///
@@ -227,7 +245,6 @@ class OffsetDateTime extends _RataDieDate
   /// If you're sure the operation makes sense in your specific case, or your
   /// application can tolerate the uncertainty, you can avoid the safety checks
   /// by converting to a `LocalDateTime` first.
-  @override
   Period periodUntil(HasDate date) {
     final otherOffset = date is OffsetDateTime ? date.offset : null;
     if (date is OffsetDateTime && offset != otherOffset) {

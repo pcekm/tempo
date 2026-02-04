@@ -342,24 +342,49 @@ void main() {
     expect(nepalOffsetTime.timespanUntil(nstTime), delta);
   });
 
+  test('timespan addition', () {
+    var got = nepalOffsetTime + delta;
+    expect(got, hasUnixNanoseconds(nstUnixSeconds, nstUnixNanoseconds));
+  });
+
+  test('timespan subtraction', () {
+    var got = nstTime - delta;
+    expect(got.toInstant(),
+        hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
+  });
+
   test('plusTimespan()', () {
+    // ignore: deprecated_member_use_from_same_package
     var got = nepalOffsetTime.plusTimespan(delta);
     expect(got, hasUnixNanoseconds(nstUnixSeconds, nstUnixNanoseconds));
   });
 
   test('minusTimespan()', () {
+    // ignore: deprecated_member_use_from_same_package
     var got = nstTime.minusTimespan(delta);
     expect(got.toInstant(),
         hasUnixNanoseconds(nepalUnixSeconds, nepalUnixNanoseconds));
   });
 
   group('period arithmetic', () {
+    test('period addition', () {
+      expect(nstTime + Period(months: 1),
+          OffsetDateTime.withOffset(nstOffset, 2001, 2, 1));
+    });
+
+    test('minusPeriod()', () {
+      expect(nstTime - Period(months: 1),
+          OffsetDateTime.withOffset(nstOffset, 2000, 12, 1));
+    });
+
     test('plusPeriod()', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(nstTime.plusPeriod(Period(months: 1)),
           OffsetDateTime.withOffset(nstOffset, 2001, 2, 1));
     });
 
     test('minusPeriod()', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(nstTime.minusPeriod(Period(months: 1)),
           OffsetDateTime.withOffset(nstOffset, 2000, 12, 1));
     });
