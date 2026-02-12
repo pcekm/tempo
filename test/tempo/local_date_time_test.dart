@@ -335,6 +335,81 @@ void main() {
     expect(d.minusPeriod(Period(months: 1)), hasDateAndTime(1999, 12));
   });
 
+  group('quantize', () {
+    test('examples', () {
+      final date = LocalDateTime(2021, 2, 3, 4, 5, 6, 7);
+      expect(date.quantize(Period(years: 1)), hasDateAndTime(2021, 1, 1));
+      expect(date.quantize(Period(days: 1)), hasDateAndTime(2021, 2, 3));
+      expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 3));
+      expect(date.quantize(Timespan(minutes: 10)),
+          hasDateAndTime(2021, 2, 3, 4, 0));
+      expect(date.quantize(Timespan(seconds: 4)),
+          hasDateAndTime(2021, 2, 3, 4, 5, 4));
+      expect(date.quantize(Timespan(nanoseconds: 5)),
+          hasDateAndTime(2021, 2, 3, 4, 5, 6, 5));
+    });
+
+    group('by Timespan', () {
+      test('positive RD by positive Timespan', () {
+        expect(
+            LocalDateTime(5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            hasDateAndTime(5000, 2, 3, 4, 30));
+      });
+
+      test('negative RD by positive Timespan', () {
+        expect(
+            LocalDateTime(-5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            hasDateAndTime(-5000, 2, 3, 4, 30));
+      });
+
+      test('positive RD by negative Timespan', () {
+        expect(
+            LocalDateTime(5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            hasDateAndTime(5000, 2, 3, 4, 35));
+      });
+
+      test('negative RD by negative Timespan', () {
+        expect(
+            LocalDateTime(-5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            hasDateAndTime(-5000, 2, 3, 4, 35));
+      });
+    });
+
+    group('by Period', () {
+      test('positive RD by positive Period', () {
+        final date = LocalDateTime(2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)), hasDateAndTime(2025, 2, 2));
+        expect(date.quantize(Period(months: 3)), hasDateAndTime(2025, 1, 1));
+        expect(date.quantize(Period(years: 10)), hasDateAndTime(2020));
+      });
+
+      test('negative RD by positive Period', () {
+        final date = LocalDateTime(-2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)), hasDateAndTime(-2025, 2, 2));
+        expect(date.quantize(Period(months: 3)), hasDateAndTime(-2025, 1, 1));
+        expect(date.quantize(Period(years: 10)), hasDateAndTime(-2030));
+      });
+
+      test('positive RD by negative Period', () {
+        final date = LocalDateTime(2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)), hasDateAndTime(2025, 2, 9));
+        expect(date.quantize(-Period(months: 3)), hasDateAndTime(2025, 4, 1));
+        expect(date.quantize(-Period(years: 10)), hasDateAndTime(2030));
+      });
+
+      test('negative RD by negative Period', () {
+        final date = LocalDateTime(-2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)), hasDateAndTime(-2025, 2, 9));
+        expect(date.quantize(-Period(months: 3)), hasDateAndTime(-2025, 4, 1));
+        expect(date.quantize(-Period(years: 10)), hasDateAndTime(-2020));
+      });
+    });
+  });
+
   group('Comparison operator', () {
     test('== (and hash code)', () {
       var d1 = LocalDateTime(2000, 1, 2, 3, 4, 5, 6);

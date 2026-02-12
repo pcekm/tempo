@@ -163,6 +163,27 @@ void main() {
         LocalTime(10, 57, 56, 999999996));
   });
 
+  group('quantize', () {
+    test('examples', () {
+      final time = LocalTime(4, 5, 6, 7);
+      expect(time.quantize(Timespan(days: 1)), hasTime(0));
+      expect(time.quantize(Timespan(hours: 3)), hasTime(3));
+      expect(time.quantize(Timespan(minutes: 10)), hasTime(4, 0));
+      expect(time.quantize(Timespan(seconds: 4)), hasTime(4, 5, 4));
+      expect(time.quantize(Timespan(nanoseconds: 5)), hasTime(4, 5, 6, 5));
+    });
+
+    test('positive Timespan', () {
+      expect(LocalTime(4, 34, 35, 36).quantize(Timespan(minutes: 5)),
+          hasTime(4, 30));
+    });
+
+    test('negative Timespan', () {
+      expect(LocalTime(4, 34, 35, 36).quantize(-Timespan(minutes: 5)),
+          hasTime(4, 35));
+    });
+  });
+
   group('Comparison operator', () {
     test('== (and hash equality)', () {
       var t1 = LocalTime(3, 4, 5, 6);

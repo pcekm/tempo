@@ -258,6 +258,34 @@ class OffsetDateTime extends _RataDieDate
     return toLocal().periodUntil(date);
   }
 
+  /// {@macro quantize_base}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final date =
+  ///     OffsetDateTime.withOffset(ZoneOffset(-8), 2021, 2, 3, 4, 5, 6, 7);
+  /// expect(date.quantize(Period(years: 5)), hasDateAndTime(2020, 1, 1));
+  /// expect(date.quantize(Period(days: 7)), hasDateAndTime(2021, 1, 31));
+  /// expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 4));
+  /// ```
+  ///
+  /// {@macro quantize_period}
+  ///
+  /// {@template quantize_utc}
+  /// **Note:** While quantizing a [Timespan] of days works nearly
+  /// the same as a [Period] of days, there is one important difference:
+  /// The `Timespan` will quantize to a date in UTC rather than the date
+  /// in the given zone or offset. In general, it's best to use a `Period`
+  /// of days instead, which uses the correct zone or offset.
+  /// {@endtemplate}
+  @experimental
+  OffsetDateTime quantize(RelativeTime amount) => switch (amount) {
+        Timespan() =>
+          OffsetDateTime.fromInstant(_instant.quantize(amount), offset),
+        Period() => toLocal().quantize(amount).atOffset(offset),
+      };
+
   /// Formats this as an ISO 8601 date time with offset.
   ///
   /// ```dart

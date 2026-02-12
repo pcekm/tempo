@@ -412,6 +412,92 @@ void main() {
     });
   });
 
+  group('quantize', () {
+    test('examples', () {
+      final date =
+          OffsetDateTime.withOffset(ZoneOffset(-8), 2021, 2, 3, 4, 5, 6, 7);
+      expect(date.quantize(Period(years: 5)), hasDateAndTime(2020, 1, 1));
+      expect(date.quantize(Period(days: 7)), hasDateAndTime(2021, 1, 31));
+      expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 4));
+    });
+
+    group('by Timespan', () {
+      test('positive RD by positive Timespan', () {
+        expect(
+            OffsetDateTime.withOffset(nepalOffset, 5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            allOf(hasDateAndTime(5000, 2, 3, 4, 30), hasOffset(5, 45)));
+      });
+
+      test('negative RD by positive Timespan', () {
+        expect(
+            OffsetDateTime.withOffset(nepalOffset, -5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            allOf(hasDateAndTime(-5000, 2, 3, 4, 30), hasOffset(5, 45)));
+      });
+
+      test('positive RD by negative Timespan', () {
+        expect(
+            OffsetDateTime.withOffset(nepalOffset, 5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            allOf(hasDateAndTime(5000, 2, 3, 4, 35), hasOffset(5, 45)));
+      });
+
+      test('negative RD by negative Timespan', () {
+        expect(
+            OffsetDateTime.withOffset(nepalOffset, -5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            allOf(hasDateAndTime(-5000, 2, 3, 4, 35), hasOffset(5, 45)));
+      });
+    });
+
+    group('by Period', () {
+      test('positive RD by positive Period', () {
+        final date =
+            OffsetDateTime.withOffset(nepalOffset, 2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)),
+            allOf(hasDateAndTime(2025, 2, 2), hasOffset(5, 45)));
+        expect(date.quantize(Period(months: 3)),
+            allOf(hasDateAndTime(2025, 1, 1), hasOffset(5, 45)));
+        expect(date.quantize(Period(years: 10)),
+            allOf(hasDateAndTime(2020), hasOffset(5, 45)));
+      });
+
+      test('negative RD by positive Period', () {
+        final date =
+            OffsetDateTime.withOffset(nepalOffset, -2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)),
+            allOf(hasDateAndTime(-2025, 2, 2), hasOffset(5, 45)));
+        expect(date.quantize(Period(months: 3)),
+            allOf(hasDateAndTime(-2025, 1, 1), hasOffset(5, 45)));
+        expect(date.quantize(Period(years: 10)),
+            allOf(hasDateAndTime(-2030), hasOffset(5, 45)));
+      });
+
+      test('positive RD by negative Period', () {
+        final date =
+            OffsetDateTime.withOffset(nepalOffset, 2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)),
+            allOf(hasDateAndTime(2025, 2, 9), hasOffset(5, 45)));
+        expect(date.quantize(-Period(months: 3)),
+            allOf(hasDateAndTime(2025, 4, 1), hasOffset(5, 45)));
+        expect(date.quantize(-Period(years: 10)),
+            allOf(hasDateAndTime(2030), hasOffset(5, 45)));
+      });
+
+      test('negative RD by negative Period', () {
+        final date =
+            OffsetDateTime.withOffset(nepalOffset, -2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)),
+            allOf(hasDateAndTime(-2025, 2, 9), hasOffset(5, 45)));
+        expect(date.quantize(-Period(months: 3)),
+            allOf(hasDateAndTime(-2025, 4, 1), hasOffset(5, 45)));
+        expect(date.quantize(-Period(years: 10)),
+            allOf(hasDateAndTime(-2020), hasOffset(5, 45)));
+      });
+    });
+  });
+
   test('compareTo()', () {
     expect(nepalOffsetTime.compareTo(nstTime), isNegative);
   });

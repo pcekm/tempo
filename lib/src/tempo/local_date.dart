@@ -141,7 +141,7 @@ class LocalDate extends _RataDieDate
   /// always be an integer number of days.
   ///
   /// To find the number of years, months and days between two dates, use
-  /// [periodUntil()].
+  /// [periodUntil].
   Timespan timespanUntil(LocalDate other) =>
       Timespan(days: other._asTimespan.inDays - _asTimespan.inDays);
 
@@ -249,6 +249,82 @@ class LocalDate extends _RataDieDate
   int compareTo(LocalDate other) {
     return _asTimespan.compareTo(other._asTimespan);
   }
+
+  /// {@template quantize_base}
+  /// Rounds this to a value divisible by [amount].
+  ///
+  /// The result will be the nearest time divisible by [amount] that's
+  /// _earlier than or the same as_ this. If [amount] is negative,
+  /// the result will be the nearest time _later than or the same as_ this.
+  /// In other words, this returns `floor(this / amount * amount)` if
+  /// this is positive, and `ceiling(this / amount * amount)` if this is
+  /// negative.
+  /// {@endtemplate}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final date = LocalDate(2021, 2, 3);
+  /// expect(date.quantize(Period(days: 7)), hasDate(2021, 1, 31));
+  /// expect(date.quantize(Period(months: 3)), hasDate(2021, 1, 1));
+  /// expect(date.quantize(Period(years: 5)), hasDate(2020, 1, 1));
+  /// ```
+  ///
+  /// {@template quantize_period}
+  /// Quantizing by days uses the total number of days since a fixed epoch
+  /// beginning on Sunday and not the beginning of the month. This ensures
+  /// a consistent amount of time between quantized dates. It's also
+  /// useful for quantizing to the beginning of the week. For example:
+  ///
+  /// ```dart
+  /// final date = LocalDate(2026, 2, 10); // (A Tuesday)
+  /// expect(date.quantize(Period(days: 7)), hasDate(2026, 2, 8));
+  /// ```
+  ///
+  /// Quantizing to a weekday other than Sunday is a bit trickier. The basic
+  /// idea is to subtract the number of days from Sunday to the target weekday,
+  /// quantize, and then add those days back:
+  ///
+  /// ```dart
+  /// final adjustment = Period(days: Weekday.thursday.us);
+  /// final mostRecentThursday =
+  ///     (date - adjustment).quantize(Period(days: 7)) + adjustment;
+  /// expect(mostRecentThursday, hasDate(2026, 2, 5));
+  /// ```
+  ///
+  /// Quantizing by month uses the number of months since the beginning of the
+  /// year. For example:
+  ///
+  /// ```dart
+  /// final date = LocalDate(2025, 5, 3);
+  /// final startOfMonth = date.quantize(Period(months: 1));
+  /// expect(startOfMonth, hasDate(2025, 5, 1));
+  /// final startOfQuarter = date.quantize(Period(months: 3));
+  /// expect(startOfQuarter, hasDate(2025, 4, 1));
+  /// ```
+  /// {@endtemplate}
+  @experimental
+  LocalDate quantize(RelativeTime amount) => switch (amount) {
+        Period() => _quantizePeriod(amount),
+        Timespan() => _quantizeTimespan(amount),
+      };
+
+  static int _quantizeInt(int number, int modulus) => switch (modulus) {
+        > 0 => (number / modulus).floor() * modulus,
+        0 => number,
+        _ => (number / -modulus).ceil() * -modulus,
+      };
+
+  LocalDate _quantizePeriod(Period amount) => switch (amount) {
+        Period(years: != 0) => LocalDate(_quantizeInt(year, amount.years)),
+        Period(months: != 0) =>
+          LocalDate(year, _quantizeInt(month - 1, amount.months) + 1),
+        Period(days: != 0) => _quantizeTimespan(Timespan(days: amount.days)),
+        Period() => this
+      };
+
+  LocalDate _quantizeTimespan(Timespan amount) =>
+      LocalDate._fromRataDieDate(_quantize(amount));
 
   /// Greater than operator.
   bool operator >(LocalDate other) => compareTo(other) > 0;

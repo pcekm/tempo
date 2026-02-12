@@ -116,6 +116,26 @@ class LocalTime implements Comparable<LocalTime>, HasTime {
   @Deprecated('Use + and - operators instead.')
   LocalTime minusTimespan(Timespan span) => this - span;
 
+  /// {@macro quantize_base}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final time = LocalTime(4, 5, 6, 7);
+  /// expect(time.quantize(Timespan(days: 1)), hasTime(0));
+  /// expect(time.quantize(Timespan(hours: 3)), hasTime(3));
+  /// expect(time.quantize(Timespan(minutes: 10)), hasTime(4, 0));
+  /// expect(time.quantize(Timespan(seconds: 4)), hasTime(4, 5, 4));
+  /// expect(time.quantize(Timespan(nanoseconds: 5)), hasTime(4, 5, 6, 5));
+  /// ```
+  @experimental
+  LocalTime quantize(Timespan amount) => LocalTime(
+      0,
+      0,
+      0,
+      (nanosecondsSinceMidnight / amount.inNanoseconds).floor() *
+          amount.inNanoseconds);
+
   /// Compares this to another [LocalTime].
   @override
   int compareTo(LocalTime other) => Comparable.compare(

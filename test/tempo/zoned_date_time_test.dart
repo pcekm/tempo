@@ -4,14 +4,14 @@ import 'package:test/test.dart';
 import 'package:tempo/tempo.dart';
 import 'package:tempo/testing.dart';
 
-class _HasDst extends CustomMatcher {
-  _HasDst(dynamic matcher) : super('Has isDst that is', 'isDst', matcher);
-  @override
-  bool featureValueOf(dynamic actual) => actual.isDst;
-}
+Matcher hasDst(bool dst) =>
+    isA<ZonedDateTime>().having((d) => d.isDst, 'isDst', dst);
 
-final isDst = _HasDst(true);
-final isNotDst = _HasDst(false);
+final isDst = hasDst(true);
+final isNotDst = hasDst(false);
+
+Matcher hasZoneId(Object zoneId) =>
+    isA<ZonedDateTime>().having((d) => d.zoneId, 'zoneId', zoneId);
 
 void main() {
   setUp(() {
@@ -462,6 +462,92 @@ void main() {
         var dt1 = ZonedDateTime(2000, 1, 2, 3, 4, 5, 6);
         var dt2 = dt1.asOffsetDateTime;
         expect(() => dt1.periodUntil(dt2), throwsA(isA<ArgumentError>()));
+      });
+    });
+  });
+
+  group('quantize', () {
+    final zoneId = "Etc/GMT-8";
+
+    test('examples', () {
+      final date = ZonedDateTime.withZoneId(
+          "America/Los_Angeles", 2021, 2, 3, 4, 5, 6, 7);
+      expect(date.quantize(Period(years: 5)), hasDateAndTime(2020, 1, 1));
+      expect(date.quantize(Period(days: 7)), hasDateAndTime(2021, 1, 31));
+      expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 4));
+      expect(date.quantize(Timespan(minutes: 10)),
+          hasDateAndTime(2021, 2, 3, 4, 0));
+    });
+
+    group('by Timespan', () {
+      test('positive RD by positive Timespan', () {
+        expect(
+            ZonedDateTime.withZoneId(zoneId, 5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            allOf(hasDateAndTime(5000, 2, 3, 4, 30), hasZoneId(zoneId)));
+      });
+
+      test('negative RD by positive Timespan', () {
+        expect(
+            ZonedDateTime.withZoneId(zoneId, -5000, 2, 3, 4, 34, 35, 36)
+                .quantize(Timespan(minutes: 5)),
+            allOf(hasDateAndTime(-5000, 2, 3, 4, 30), hasZoneId(zoneId)));
+      });
+
+      test('positive RD by negative Timespan', () {
+        expect(
+            ZonedDateTime.withZoneId(zoneId, 5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            allOf(hasDateAndTime(5000, 2, 3, 4, 35), hasZoneId(zoneId)));
+      });
+
+      test('negative RD by negative Timespan', () {
+        expect(
+            ZonedDateTime.withZoneId(zoneId, -5000, 2, 3, 4, 34, 35, 36)
+                .quantize(-Timespan(minutes: 5)),
+            allOf(hasDateAndTime(-5000, 2, 3, 4, 35), hasZoneId(zoneId)));
+      });
+    });
+
+    group('by Period', () {
+      test('positive RD by positive Period', () {
+        final date = ZonedDateTime.withZoneId(zoneId, 2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)),
+            allOf(hasDateAndTime(2025, 2, 2), hasZoneId(zoneId)));
+        expect(date.quantize(Period(months: 3)),
+            allOf(hasDateAndTime(2025, 1, 1), hasZoneId(zoneId)));
+        expect(date.quantize(Period(years: 10)),
+            allOf(hasDateAndTime(2020), hasZoneId(zoneId)));
+      });
+
+      test('negative RD by positive Period', () {
+        final date = ZonedDateTime.withZoneId(zoneId, -2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(Period(days: 7)),
+            allOf(hasDateAndTime(-2025, 2, 2), hasZoneId(zoneId)));
+        expect(date.quantize(Period(months: 3)),
+            allOf(hasDateAndTime(-2025, 1, 1), hasZoneId(zoneId)));
+        expect(date.quantize(Period(years: 10)),
+            allOf(hasDateAndTime(-2030), hasZoneId(zoneId)));
+      });
+
+      test('positive RD by negative Period', () {
+        final date = ZonedDateTime.withZoneId(zoneId, 2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)),
+            allOf(hasDateAndTime(2025, 2, 9), hasZoneId(zoneId)));
+        expect(date.quantize(-Period(months: 3)),
+            allOf(hasDateAndTime(2025, 4, 1), hasZoneId(zoneId)));
+        expect(date.quantize(-Period(years: 10)),
+            allOf(hasDateAndTime(2030), hasZoneId(zoneId)));
+      });
+
+      test('negative RD by negative Period', () {
+        final date = ZonedDateTime.withZoneId(zoneId, -2025, 2, 3, 4, 5, 6, 7);
+        expect(date.quantize(-Period(days: 7)),
+            allOf(hasDateAndTime(-2025, 2, 9), hasZoneId(zoneId)));
+        expect(date.quantize(-Period(months: 3)),
+            allOf(hasDateAndTime(-2025, 4, 1), hasZoneId(zoneId)));
+        expect(date.quantize(-Period(years: 10)),
+            allOf(hasDateAndTime(-2020), hasZoneId(zoneId)));
       });
     });
   });

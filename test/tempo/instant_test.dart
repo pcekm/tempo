@@ -123,6 +123,42 @@ void main() {
     });
   });
 
+  group('quantize', () {
+    test('examples', () {
+      final instant = Instant.fromUnix(Timespan(seconds: 123456789));
+      expect(instant.quantize(Timespan(seconds: 5)), hasUnixSeconds(123456785));
+      expect(instant.quantize(Timespan(minutes: 1)), hasUnixSeconds(123456780));
+    });
+
+    test('positive RD by positive Timespan', () {
+      expect(
+          Instant.fromUnix(Timespan(seconds: 95620478706))
+              .quantize(Timespan(seconds: 5)),
+          hasUnixSeconds(95620478705));
+    });
+
+    test('negative RD by positive Timespan', () {
+      expect(
+          Instant.fromUnix(Timespan(seconds: -219917505294))
+              .quantize(Timespan(seconds: 5)),
+          hasUnixSeconds(-219917505295));
+    });
+
+    test('positive RD by negative Timespan', () {
+      expect(
+          Instant.fromUnix(Timespan(seconds: 95620478706))
+              .quantize(-Timespan(seconds: 5)),
+          hasUnixSeconds(95620478710));
+    });
+
+    test('negative RD by negative Timespan', () {
+      expect(
+          Instant.fromUnix(Timespan(seconds: -219917505294))
+              .quantize(-Timespan(seconds: 5)),
+          hasUnixSeconds(-219917505290));
+    });
+  });
+
   test('toString()', () {
     expect(timeline[-1].toString(), '1969-12-31T23:59:59Z');
     expect(timeline[0].toString(), '1970-01-01T00:00Z');

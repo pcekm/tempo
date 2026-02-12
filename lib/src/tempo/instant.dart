@@ -109,6 +109,19 @@ class Instant with _HasInstantImpl implements HasInstant, _ConvertibleDate {
 
   Timespan get _asRataDie => unixTimestamp + _rataDieOffset;
 
+  /// {@macro quantize_base}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final instant = Instant.fromUnix(Timespan(seconds: 123456789));
+  /// expect(instant.quantize(Timespan(seconds: 5)), hasUnixSeconds(123456785));
+  /// expect(instant.quantize(Timespan(minutes: 1)), hasUnixSeconds(123456780));
+  ///```
+  @experimental
+  Instant quantize(Timespan amount) =>
+      Instant._fromRataDieDate(_asRataDie._quantize(amount));
+
   /// Formats this as an ISO 8601 timestamp.
   ///
   /// For example, `2000-01-02T03:04:05.123456789Z`.

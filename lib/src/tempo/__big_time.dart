@@ -121,6 +121,23 @@ class _BigTime {
   _BigTime _div(num other) => _BigTime(
       seconds: _secondPart ~/ other, nanoseconds: _nanosecondPart ~/ other);
 
+  /// Rounds this to the nearest [other].
+  ///
+  /// More precisely, returns a _BigTime t such that t is divisible by [other],
+  /// and this - [other] < t <= this. When [other] is negative, t will be
+  /// this <= t < this + [other].
+  _BigTime _quantize(_BigTime other) {
+    final point = BigInt.from(1000000000);
+    final thisBig =
+        BigInt.from(_secondPart) * point + BigInt.from(_nanosecondPart);
+    final otherBig = BigInt.from(other._secondPart) * point +
+        BigInt.from(other._nanosecondPart);
+    final res = thisBig ~/ otherBig * otherBig -
+        (thisBig.isNegative != otherBig.isNegative ? otherBig : BigInt.zero);
+    return _BigTime(
+        seconds: (res ~/ point).toInt(), nanoseconds: (res % point).toInt());
+  }
+
   /// Unary negation operation.
   _BigTime _neg() =>
       _BigTime(seconds: -_secondPart, nanoseconds: -_nanosecondPart);

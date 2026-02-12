@@ -10,6 +10,9 @@ and this project adheres to
 
 - `operator+` and `operator-` operators on all datetime types that work on both
   `Timespan` and `Period`
+- New, experimental `quantize` call. This can be use to round a datetime down
+  (or up) to a specific precision. The specifics of how this works may change in
+  the future.
 
 ### Changed
 

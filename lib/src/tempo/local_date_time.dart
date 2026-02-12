@@ -244,6 +244,36 @@ class LocalDateTime extends _RataDieDate
   LocalDateTime _minusTimespan(Timespan amount) =>
       LocalDateTime._fromRataDieDate(_asTimespan - amount);
 
+  /// {@macro quantize_base}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final date = LocalDateTime(2021, 2, 3, 4, 5, 6, 7);
+  /// expect(date.quantize(Period(years: 1)), hasDateAndTime(2021, 1, 1));
+  /// expect(date.quantize(Period(days: 1)), hasDateAndTime(2021, 2, 3));
+  /// expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 3));
+  /// expect(date.quantize(Timespan(minutes: 10)),
+  ///     hasDateAndTime(2021, 2, 3, 4, 0));
+  /// expect(date.quantize(Timespan(seconds: 4)),
+  ///     hasDateAndTime(2021, 2, 3, 4, 5, 4));
+  /// expect(date.quantize(Timespan(nanoseconds: 5)),
+  ///     hasDateAndTime(2021, 2, 3, 4, 5, 6, 5));
+  /// ```
+  ///
+  /// {@macro quantize_period}
+  @experimental
+  LocalDateTime quantize(RelativeTime amount) => switch (amount) {
+        Period() => _quantizePeriod(amount),
+        Timespan() => _quantizeTimespan(amount),
+      };
+
+  LocalDateTime _quantizePeriod(Period amount) =>
+      LocalDateTime.combine(date._quantizePeriod(amount));
+
+  LocalDateTime _quantizeTimespan(Timespan amount) =>
+      LocalDateTime._fromRataDieDate(_quantize(amount));
+
   @override
   int compareTo(LocalDateTime other) =>
       _asTimespan.compareTo(other._asTimespan);

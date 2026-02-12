@@ -594,4 +594,96 @@ void main() {
     expect(LocalDate(2000).timespanUntil(LocalDate(1999, 12, 1)),
         Timespan(days: -31));
   });
+
+  group('quantize', () {
+    test('examples', () {
+      final date = LocalDate(2021, 2, 3);
+      expect(date.quantize(Period(days: 7)), hasDate(2021, 1, 31));
+      expect(date.quantize(Period(months: 3)), hasDate(2021, 1, 1));
+      expect(date.quantize(Period(years: 5)), hasDate(2020, 1, 1));
+    });
+
+    group('by Timespan', () {
+      test('various amounts', () {
+        final d = LocalDate(2021, 2, 3);
+        expect(d.quantize(Timespan(days: 1)), hasDate(2021, 2, 3));
+        // Quantizing a LocalDate by less than 1 day is a bit silly, but it does
+        // work:
+        expect(d.quantize(Timespan(hours: 2)), hasDate(2021, 2, 3));
+        expect(d.quantize(Timespan(minutes: 10)), hasDate(2021, 2, 3));
+        expect(d.quantize(Timespan(seconds: 4)), hasDate(2021, 2, 3));
+        expect(d.quantize(Timespan(nanoseconds: 5)), hasDate(2021, 2, 3));
+      });
+
+      test('positive RD by positive Timespan', () {
+        expect(LocalDate(5000, 2, 3).quantize(Timespan(days: 7)),
+            hasDate(5000, 2, 2));
+      });
+
+      test('negative RD by positive Timespan', () {
+        expect(LocalDate(-5000, 2, 3).quantize(Timespan(days: 7)),
+            hasDate(-5000, 2, 2));
+      });
+
+      test('positive RD by negative Timespan', () {
+        expect(LocalDate(5000, 2, 3).quantize(-Timespan(days: 7)),
+            hasDate(5000, 2, 9));
+      });
+
+      test('negative RD by negative Timespan', () {
+        expect(LocalDate(-5000, 2, 3).quantize(-Timespan(days: 7)),
+            hasDate(-5000, 2, 9));
+      });
+    });
+
+    group('by Period', () {
+      test('positive RD by positive Period', () {
+        final date = LocalDate(2025, 2, 3);
+        expect(date.quantize(Period(days: 7)), hasDate(2025, 2, 2));
+        expect(date.quantize(Period(months: 3)), hasDate(2025, 1, 1));
+        expect(date.quantize(Period(years: 10)), hasDate(2020));
+      });
+
+      test('negative RD by positive Period', () {
+        final date = LocalDate(-2025, 2, 3);
+        expect(date.quantize(Period(days: 7)), hasDate(-2025, 2, 2));
+        expect(date.quantize(Period(months: 3)), hasDate(-2025, 1, 1));
+        expect(date.quantize(Period(years: 10)), hasDate(-2030));
+      });
+
+      test('positive RD by negative Period', () {
+        final date = LocalDate(2025, 2, 3);
+        expect(date.quantize(-Period(days: 7)), hasDate(2025, 2, 9));
+        expect(date.quantize(-Period(months: 3)), hasDate(2025, 4, 1));
+        expect(date.quantize(-Period(years: 10)), hasDate(2030));
+      });
+
+      test('negative RD by negative Period', () {
+        final date = LocalDate(-2025, 2, 3);
+        expect(date.quantize(-Period(days: 7)), hasDate(-2025, 2, 9));
+        expect(date.quantize(-Period(months: 3)), hasDate(-2025, 4, 1));
+        expect(date.quantize(-Period(years: 10)), hasDate(-2020));
+      });
+
+      test('specific weekday example', () {
+        // Loop from Thursday to Wednesday, to make sure it actually works for
+        // every day of the week.
+        for (var day = 5; day < 12; day++) {
+          final date = LocalDate(2026, 2, day);
+          final adjustment = Period(days: Weekday.thursday.us);
+          final mostRecentThursday =
+              (date - adjustment).quantize(Period(days: 7)) + adjustment;
+          expect(mostRecentThursday, hasDate(2026, 2, 5));
+        }
+      });
+
+      test('by month examples', () {
+        final date = LocalDate(2025, 5, 3);
+        final startOfMonth = date.quantize(Period(months: 1));
+        expect(startOfMonth, hasDate(2025, 5, 1));
+        final startOfQuarter = date.quantize(Period(months: 3));
+        expect(startOfQuarter, hasDate(2025, 4, 1));
+      });
+    });
+  });
 }

@@ -379,6 +379,30 @@ class ZonedDateTime
     return toLocal().periodUntil(date);
   }
 
+  /// {@macro quantize_base}
+  ///
+  /// Examples:
+  ///
+  /// ```dart
+  /// final date = ZonedDateTime.withZoneId(
+  ///     "America/Los_Angeles", 2021, 2, 3, 4, 5, 6, 7);
+  /// expect(date.quantize(Period(years: 5)), hasDateAndTime(2020, 1, 1));
+  /// expect(date.quantize(Period(days: 7)), hasDateAndTime(2021, 1, 31));
+  /// expect(date.quantize(Timespan(hours: 3)), hasDateAndTime(2021, 2, 3, 4));
+  /// expect(date.quantize(Timespan(minutes: 10)),
+  ///     hasDateAndTime(2021, 2, 3, 4, 0));
+  /// ```
+  ///
+  /// {@macro quantize_period}
+  ///
+  /// {@macro quantize_utc}
+  @experimental
+  ZonedDateTime quantize(RelativeTime amount) => switch (amount) {
+        Timespan() =>
+          ZonedDateTime.fromInstant(toInstant().quantize(amount), zoneId),
+        Period() => toLocal().quantize(amount).inTimezone(zoneId),
+      };
+
   @override
   int get year => _dateTime.year;
 
