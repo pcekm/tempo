@@ -25,4 +25,10 @@ enum Weekday {
   ///
   /// US weekdays are numbered 0=Sunday to 6=Saturday.
   int get us => index % 7;
+
+  /// Parses a string to a weekday.
+  ///
+  /// Takes a lower-case weekday name in English and returns the respective enumerated value.
+  factory Weekday.parse(String string) =>
+      Weekday.values.skip(1).where((val) => val.name == string).single;
 }
